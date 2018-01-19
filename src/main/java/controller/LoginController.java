@@ -19,7 +19,7 @@ import java.util.ResourceBundle;
 public class LoginController implements Initializable {
 
     private User user;
-    private int attemps;
+    private int attemps; // Se bloquea la cuenta a los 5 intentos
 
     @FXML
     private TextField usernameID;
@@ -32,14 +32,23 @@ public class LoginController implements Initializable {
 
     @FXML
     private void loginClick(ActionEvent event) throws Exception {
-        if(user.login(usernameID.getText(), passwordID.getText())) {
+        if(user.login(usernameID.getText(), passwordID.getText(), rememberID.isSelected())) {
             ((Stage)loginID.getScene().getWindow()).close();
 
             Stage stage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("view/home.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/home.fxml"));
 
-            stage.setTitle("syncPoliformaT - Home");
-            stage.setScene(new Scene(root));
+            Parent sceneMain = loader.load();
+
+            HomeController controller = loader.getController();
+            controller.init(user);
+
+            Scene scene =new Scene(sceneMain);
+            scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
+
+            stage.setScene(scene);
+            stage.setTitle("syncPoliformaT");
+            stage.setResizable(false);
             stage.show();
         } else {
             attemps++;
