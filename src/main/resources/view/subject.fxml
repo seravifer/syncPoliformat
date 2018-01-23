@@ -2,6 +2,7 @@
 
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.SVGPath?>
@@ -10,7 +11,7 @@
 <fx:root minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="400.0" style="-fx-background-color: white;" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Circle fill="#cde8ff" layoutX="50.0" layoutY="50.0" radius="29.0" stroke="TRANSPARENT" strokeType="INSIDE" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="21.0" />
-      <Label fx:id="nameID" layoutX="97.0" layoutY="25.0" prefHeight="27.0" prefWidth="214.0" text="ISW" wrapText="true">
+      <Label fx:id="longNameID" layoutX="97.0" layoutY="25.0" prefHeight="27.0" prefWidth="214.0" text="Ingeneria del Software" wrapText="true">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
@@ -20,10 +21,20 @@
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <SVGPath content="M17,13L12,18L7,13H10V9H14V13M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z" fill="#0000007e" layoutX="356.0" layoutY="40.0" AnchorPane.bottomAnchor="42.0" AnchorPane.rightAnchor="22.0" AnchorPane.topAnchor="42.0">
+      <SVGPath fx:id="donwloadID" content="M17,13L12,18L7,13H10V9H14V13M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z" fill="#00000080" layoutX="356.0" layoutY="40.0" AnchorPane.bottomAnchor="42.0" AnchorPane.rightAnchor="22.0" AnchorPane.topAnchor="42.0">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
       </SVGPath>
+      <ProgressIndicator fx:id="loadingID" layoutX="319.0" layoutY="37.0" prefHeight="27.0" prefWidth="24.0" visible="false" />
+      <SVGPath fx:id="cancelID" content="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z" fill="#00000080" layoutX="354.0" layoutY="38.0" visible="false">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></SVGPath>
+      <Label fx:id="nameID" alignment="CENTER" layoutX="22.0" layoutY="37.0" prefHeight="27.0" prefWidth="58.0" text="ISW">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
    </children>
 </fx:root>

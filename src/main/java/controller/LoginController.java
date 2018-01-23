@@ -43,8 +43,8 @@ public class LoginController implements Initializable {
             HomeController controller = loader.getController();
             controller.init(user);
 
-            Scene scene =new Scene(sceneMain);
-            scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
+            Scene scene = new Scene(sceneMain);
+            //scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
 
             stage.setScene(scene);
             stage.setTitle("syncPoliformaT");

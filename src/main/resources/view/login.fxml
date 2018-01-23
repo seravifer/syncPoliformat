@@ -9,16 +9,16 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="255.0" prefWidth="270.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+<AnchorPane prefHeight="450.0" prefWidth="400.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
    <children>
-      <TextField fx:id="usernameID" layoutX="52.0" layoutY="95.0" prefHeight="25.0" prefWidth="167.0" promptText="DNI" />
-      <PasswordField fx:id="passwordID" layoutX="52.0" layoutY="135.0" prefHeight="25.0" prefWidth="167.0" promptText="Contraseña" />
-      <CheckBox fx:id="rememberID" layoutX="52.0" layoutY="169.0" mnemonicParsing="false" text="Recordarme" />
-      <Button fx:id="loginID" layoutX="135.0" layoutY="202.0" mnemonicParsing="false" onAction="#loginClick" text="Iniciar sesión">
+      <TextField fx:id="usernameID" layoutX="97.0" layoutY="182.0" prefHeight="25.0" prefWidth="206.0" promptText="DNI" />
+      <PasswordField fx:id="passwordID" layoutX="97.0" layoutY="226.0" prefHeight="25.0" prefWidth="206.0" promptText="Contraseña" />
+      <CheckBox fx:id="rememberID" layoutX="97.0" layoutY="258.0" mnemonicParsing="false" text="Recordarme" />
+      <Button fx:id="loginID" layoutX="118.0" layoutY="303.0" mnemonicParsing="false" onAction="#loginClick" prefHeight="25.0" prefWidth="165.0" text="Iniciar sesión">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></Button>
-      <ImageView cache="true" fitHeight="87.0" fitWidth="199.0" layoutX="36.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView cache="true" fitHeight="118.0" fitWidth="273.0" layoutX="64.0" layoutY="57.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../res/logo-poliformat.png" />
          </image>

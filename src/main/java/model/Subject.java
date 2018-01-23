@@ -1,12 +1,13 @@
 package model;
 
-import utils.Tree;
-import utils.File;
-import utils.Utils;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import utils.File;
+import utils.Tree;
+import utils.Utils;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -35,11 +36,6 @@ public class Subject {
         return fileSystem;
     }
 
-
-    /**
-     * Descarga y pasea la asignatura a una estructura definida ¿Tree?
-     *
-     */
     public void parseSubject() throws IOException {
         JsonArray items = Json.parse(Utils.getJson("content/site/" + id + ".json"))
                 .asObject().get("content_collection").asArray();
@@ -94,10 +90,7 @@ public class Subject {
 
     }
 
-    /**
-     * Descarga la asignatura ya parseada
-     */
     public void downloadSubject() {
-
+        fileSystem.print();
     }
 }
