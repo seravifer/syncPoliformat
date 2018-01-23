@@ -25,4 +25,9 @@ public class File {
     public URL getUrl() {
         return url;
     }
+
+    @Override
+    public String toString () {
+        return url.toString();
+    }
 }
