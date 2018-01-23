@@ -1,15 +1,14 @@
 package controller;
 
-import javafx.event.ActionEvent;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXPasswordField;
+import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import model.User;
 
@@ -22,16 +21,19 @@ public class LoginController implements Initializable {
     private int attemps; // Se bloquea la cuenta a los 5 intentos
 
     @FXML
-    private TextField usernameID;
-    @FXML
-    private PasswordField passwordID;
-    @FXML
-    private Button loginID;
-    @FXML
-    private CheckBox rememberID;
+    private JFXTextField usernameID;
 
     @FXML
-    private void loginClick(ActionEvent event) throws Exception {
+    private JFXPasswordField passwordID;
+
+    @FXML
+    private JFXCheckBox rememberID;
+
+    @FXML
+    private JFXButton loginID;
+
+    @FXML
+    private void loginClick() throws Exception {
         if(user.login(usernameID.getText(), passwordID.getText(), rememberID.isSelected())) {
             ((Stage)loginID.getScene().getWindow()).close();
 
@@ -44,7 +46,7 @@ public class LoginController implements Initializable {
             controller.init(user);
 
             Scene scene = new Scene(sceneMain);
-            //scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
+            scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
 
             stage.setScene(scene);
             stage.setTitle("syncPoliformaT");

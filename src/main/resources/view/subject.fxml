@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Cursor?>
+<?import com.jfoenix.controls.JFXSpinner?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressIndicator?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
-
 <fx:root minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="400.0" style="-fx-background-color: white;" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Circle fill="#cde8ff" layoutX="50.0" layoutY="50.0" radius="29.0" stroke="TRANSPARENT" strokeType="INSIDE" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="21.0" />
+      <Circle fx:id="circleID" fill="#cde8ff" layoutX="50.0" layoutY="50.0" radius="29.0" stroke="TRANSPARENT"
+              strokeType="INSIDE" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="22.0"
+              AnchorPane.topAnchor="21.0"/>
       <Label fx:id="longNameID" layoutX="97.0" layoutY="25.0" prefHeight="27.0" prefWidth="214.0" text="Ingeneria del Software" wrapText="true">
          <font>
             <Font name="System Bold" size="18.0" />
@@ -26,15 +28,18 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </SVGPath>
-      <ProgressIndicator fx:id="loadingID" layoutX="319.0" layoutY="37.0" prefHeight="27.0" prefWidth="24.0" visible="false" />
+      <ProgressIndicator layoutX="319.0" layoutY="37.0" prefHeight="27.0" prefWidth="24.0" visible="false"/>
       <SVGPath fx:id="cancelID" content="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z" fill="#00000080" layoutX="354.0" layoutY="38.0" visible="false">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></SVGPath>
-      <Label fx:id="nameID" alignment="CENTER" layoutX="22.0" layoutY="37.0" prefHeight="27.0" prefWidth="58.0" text="ISW">
+      <Label fx:id="nameID" alignment="CENTER" layoutX="22.0" layoutY="37.0" prefHeight="27.0" prefWidth="58.0"
+             text="ISW" textFill="WHITE">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
+      <JFXSpinner fx:id="loadingID" layoutX="317.0" layoutY="37.0" radius="10.0" startingAngle="0.0" visible="false"
+                  AnchorPane.bottomAnchor="36.0" AnchorPane.rightAnchor="55.0" AnchorPane.topAnchor="36.0"/>
    </children>
 </fx:root>

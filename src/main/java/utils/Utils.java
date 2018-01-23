@@ -7,6 +7,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
 
@@ -21,5 +22,9 @@ public class Utils {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    public static Integer random(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 }
