@@ -16,8 +16,12 @@ public class App  extends Application {
     public void start(Stage primaryStage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("view/login.fxml"));
 
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
+
+        primaryStage.setScene(scene);
         primaryStage.setTitle("syncPoliformaT");
-        primaryStage.setScene(new Scene(root));
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 }

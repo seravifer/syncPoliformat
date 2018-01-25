@@ -41,8 +41,7 @@ public class Tree<T> {
         }
 
         if (children.size() > 0) {
-            children.get(children.size() - 1)
-                    .print(prefix + (isTail ?"    " : "│   "), true);
+            children.get(children.size() - 1).print(prefix + (isTail ? "    " : "│   "), true);
         }
     }
 }

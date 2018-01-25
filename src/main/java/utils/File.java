@@ -4,22 +4,28 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class File {
+    private String title;
     private String type;
-    private String name;
+    private String route;
     private URL url;
 
-    public File(String type, String name, String url) throws MalformedURLException {
+    public File(String title, String type, String route, String url) throws MalformedURLException {
+        this.title = title.replaceAll("[\\\\/:*?\"<>|]", ""); // Clean invalid characters
         this.type = type;
-        this.name = name;
+        this.route = route;
         this.url = new URL(url);
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public String getType() {
         return type;
     }
 
-    public String getName() {
-        return name;
+    public String getRoute() {
+        return route;
     }
 
     public URL getUrl() {
@@ -27,7 +33,7 @@ public class File {
     }
 
     @Override
-    public String toString () {
-        return url.toString();
+    public String toString() {
+        return title;
     }
 }

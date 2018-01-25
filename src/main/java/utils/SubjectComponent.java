@@ -47,7 +47,7 @@ public class SubjectComponent extends AnchorPane {
         fxmlLoader.load();
 
         this.subject = sbt;
-        nameID.setText(subject.getName().replaceAll("[^a-zA-Z]", "").substring(0, 3).toUpperCase());
+        nameID.setText(subject.getShortName());
         longNameID.setText(subject.getName());
         dateID.setText("No ha sido descargada.");
         circleID.setFill(Color.web(colors[Utils.random(1, 6)]));

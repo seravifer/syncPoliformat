@@ -11,5 +11,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: com.eclipsesource.minimal-json:minimal-json:0.9.5" level="project" />
     <orderEntry type="library" name="Gradle: com.jfoenix:jfoenix:8.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jsoup:jsoup:1.8.3" level="project" />
   </component>
 </module>

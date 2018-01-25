@@ -48,7 +48,6 @@ public class HomeController implements Initializable {
 
     public void init(User user) throws IOException {
         this.user = user;
-        this.user.syncUserInfo();
         nameID.setText(user.getNameUser() + " " + user.getLastNameUser());
         mailID.setText(user.getMailUser());
         
@@ -57,7 +56,6 @@ public class HomeController implements Initializable {
         for (Subject item : poliformat.getSubjects()) {
             listID.getChildren().add(new SubjectComponent(item));
         }
-
     }
 
 }

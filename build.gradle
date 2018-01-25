@@ -15,4 +15,5 @@ repositories {
 dependencies {
     compile 'com.eclipsesource.minimal-json:minimal-json:0.9.5'
     compile 'com.jfoenix:jfoenix:8.0.1'
+    compile 'org.jsoup:jsoup:1.8.3'
 }

@@ -15,8 +15,9 @@ import java.util.regex.Pattern;
 
 public class Subject {
 
-    private String name;
     private String id;
+    private String name;
+    private String shortName;
     private Tree<File> fileSystem;
 
     public Subject(String name, String id) {
@@ -30,6 +31,14 @@ public class Subject {
 
     public String getId() {
         return id;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName.replaceAll("[^a-zA-Z]", "").substring(0, 3).toUpperCase();
     }
 
     public Tree<File> getFilesystem() {
@@ -51,6 +60,7 @@ public class Subject {
 
             String url = object.getString("url", null);
             String type = object.getString("type", null);
+            String title = object.getString("title", null);
 
             Matcher matcherParent = parentUrlPattern.matcher(url);
             String match = null;
@@ -66,30 +76,33 @@ public class Subject {
             }
 
             Matcher matcherUrl = urlPattern.matcher(url);
-            String id = null;
+            String route = null;
 
             if (matcherUrl.find()) {
-                id = matcherUrl.group();
+                route = matcherUrl.group();
             }
 
             if (i == 0) {
-                File root = new File(type, id, url);
+                File root = new File(title, type, route, url);
                 fileSystem = new Tree<>(root);
-                aux.put(fileSystem.getData().getName(), fileSystem);
+                aux.put(fileSystem.getData().getRoute(), fileSystem);
             } else {
-                File file = new File(type, id, url);
+                File file = new File(title, type, route, url);
                 Tree<File> fileNode = new Tree<>(file);
                 Tree<File> parentNode = aux.get(parentId);
 
                 if (parentNode != null) {
                     parentNode.addChild(fileNode);
-                    aux.put(fileNode.getData().getName(), fileNode);
+                    aux.put(fileNode.getData().getRoute(), fileNode);
                 }
             }
         }
 
     }
 
+    /**
+     * Usar el metodo Utils.downloadFile();
+     */
     public void downloadSubject() {
         fileSystem.print();
     }

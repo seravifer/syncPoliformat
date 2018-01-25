@@ -1,24 +1,24 @@
 package controller;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXPasswordField;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import model.User;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
     private User user;
-    private int attemps; // Se bloquea la cuenta a los 5 intentos
+    private int attemps = 3;
 
     @FXML
     private JFXTextField usernameID;
@@ -33,27 +33,56 @@ public class LoginController implements Initializable {
     private JFXButton loginID;
 
     @FXML
-    private void loginClick() throws Exception {
-        if(user.login(usernameID.getText(), passwordID.getText(), rememberID.isSelected())) {
-            ((Stage)loginID.getScene().getWindow()).close();
+    private Label errorID;
 
-            Stage stage = new Stage();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/home.fxml"));
+    @FXML
+    private JFXProgressBar loadingID;
 
-            Parent sceneMain = loader.load();
+    @FXML
+    private void loginClick() {
+        loginID.setDisable(true);
+        loadingID.setVisible(true);
+        new Thread(() -> {
+            try {
+                user.login(usernameID.getText(), passwordID.getText(), rememberID.isSelected());
+                Platform.runLater(() -> status(user.isLogged()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 
-            HomeController controller = loader.getController();
-            controller.init(user);
+    public void status(Boolean isLogged) {
+        try {
+            if (isLogged) {
+                ((Stage) loginID.getScene().getWindow()).close();
 
-            Scene scene = new Scene(sceneMain);
-            scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
+                Stage stage = new Stage();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/home.fxml"));
 
-            stage.setScene(scene);
-            stage.setTitle("syncPoliformaT");
-            stage.setResizable(false);
-            stage.show();
-        } else {
-            attemps++;
+                Parent sceneMain = loader.load();
+
+                HomeController controller = loader.getController();
+                controller.init(user);
+
+                Scene scene = new Scene(sceneMain);
+                scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
+
+                stage.setScene(scene);
+                stage.setTitle("syncPoliformaT");
+                stage.setResizable(false);
+                stage.show();
+            } else {
+                errorID.setVisible(true);
+                passwordID.setText("");
+                attemps--;
+            }
+
+            loginID.setDisable(false);
+            loadingID.setVisible(false);
+            if (attemps == 0) loginID.setDisable(true);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -67,7 +96,4 @@ public class LoginController implements Initializable {
             }
         });
     }
-
-
-
 }
