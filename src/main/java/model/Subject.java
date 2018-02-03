@@ -9,6 +9,8 @@ import utils.Tree;
 import utils.Utils;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -100,10 +102,33 @@ public class Subject {
 
     }
 
+    private static void downloadTree(Tree<File> node, String parentPath) {
+        File data = node.getData();
+        Path path = Paths.get(parentPath, data.getTitle());
+
+        if (data.getType().equals("collection")) {
+            java.io.File directory = new java.io.File(path.toString());
+            directory.mkdir();
+            System.out.printf("Creating the folder : %s\n", path.toString());
+        } else {
+            try {
+                Utils.downloadFile(data.getUrl().toString(), path.toString());
+                System.out.printf("Downloading the file : %s\n", path.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (Tree<File> child : node.getChildren()) {
+            downloadTree(child, path.toString());
+        }
+    }
+
     /**
      * Usar el metodo Utils.downloadFile();
      */
     public void downloadSubject() {
-        fileSystem.print();
+        downloadTree(fileSystem, "/home/kev/");
+        System.out.println("Download finished");
     }
 }

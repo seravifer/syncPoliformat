@@ -39,11 +39,11 @@ public class Utils {
         else return Integer.toString(year);
     }
 
-    public static void downloadFile(String urlFile, String routeFile, String nameFile) throws IOException {
+    public static void downloadFile(String urlFile, String path) throws IOException {
         URL url = new URL(urlFile);
 
         InputStream in = url.openStream();
-        FileOutputStream fos = new FileOutputStream(new File(routeFile + nameFile));
+        FileOutputStream fos = new FileOutputStream(new File(path));
 
         int length;
         byte[] buffer = new byte[2048];
