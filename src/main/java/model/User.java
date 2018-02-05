@@ -22,50 +22,6 @@ public class User {
         CookieHandler.setDefault(new CookieManager());
     }
 
-    public void login(String username, String password, Boolean remember) throws IOException {
-        String param = "&id=c&estilo=500&vista=MSE&cua=sakai&dni=" + username + "&clau=" + password + "&=Entrar";
-
-        URL link = new URL("https://www.upv.es/exp/aute_intranet");
-
-        HttpsURLConnection conn = (HttpsURLConnection) link.openConnection();
-        conn.setDoOutput(true);
-
-        DataOutputStream post = new DataOutputStream(conn.getOutputStream());
-        post.writeBytes(param);
-        post.flush();
-        post.close();
-
-        /*BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line;
-        while ((line = rd.readLine()) != null) {
-            System.out.println(line);
-        }
-        rd.close();*/
-
-        if (conn.getHeaderField("X-Sakai-Session") != null) {
-            isLogged = true;
-            syncUserInfo();
-            if (remember) saveCredentials(username, password);
-        } else {
-            isLogged = false;
-        }
-    }
-
-    // TODO recordar las credenciales
-    private void saveCredentials(String username, String password) {}
-
-    public void logout() {
-        CookieHandler.setDefault(new CookieManager());
-        // Or https://intranet.upv.es/bin2/intranet/expira_intranet/alumno?c
-    }
-
-    private void syncUserInfo() throws IOException {
-        JsonObject user = Json.parse(Utils.getJson("user/current.json")).asObject();
-        nameUser = user.get("firstName").asString();
-        lastNameUser = user.get("lastName").asString();
-        mailUser = user.get("email").asString();
-    }
-
     public String getNameUser() {
         return nameUser;
     }
@@ -80,5 +36,42 @@ public class User {
 
     public Boolean isLogged() {
         return isLogged;
+    }
+
+    public void login(String username, String password, Boolean remember) throws IOException {
+        String param = "&id=c&estilo=500&vista=MSE&cua=sakai&dni=" + username + "&clau=" + password + "&=Entrar";
+
+        URL link = new URL("https://www.upv.es/exp/aute_intranet");
+
+        HttpsURLConnection conn = (HttpsURLConnection) link.openConnection();
+        conn.setDoOutput(true);
+
+        DataOutputStream post = new DataOutputStream(conn.getOutputStream());
+        post.writeBytes(param);
+        post.flush();
+        post.close();
+
+        if (conn.getHeaderField("X-Sakai-Session") != null) {
+            isLogged = true;
+            syncUserInfo();
+            if (remember) saveCredentials(username, password);
+        } else {
+            isLogged = false;
+        }
+    }
+
+    public void logout() {
+        CookieHandler.setDefault(new CookieManager());
+        // Or https://intranet.upv.es/bin2/intranet/expira_intranet/alumno?c
+    }
+
+    // TODO recordar las credenciales
+    private void saveCredentials(String username, String password) {}
+
+    private void syncUserInfo() throws IOException {
+        JsonObject user = Json.parse(Utils.getJson("user/current.json")).asObject();
+        nameUser = user.get("firstName").asString();
+        lastNameUser = user.get("lastName").asString();
+        mailUser = user.get("email").asString();
     }
 }

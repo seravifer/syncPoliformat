@@ -1,17 +1,17 @@
-package utils;
+package model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class SubjectFile {
+public class FileType {
 
     private String title;
     private String type;
     private String route;
     private URL url;
 
-    public SubjectFile(String title, String type, String route, String url) throws MalformedURLException {
-        this.title = title.replaceAll("[\\\\/:*?\"<>|]", ""); // Clean invalid characters
+    public FileType(String title, String type, String route, String url) throws MalformedURLException {
+        this.title = title.replaceAll("[\\\\/:*?\"<>|]", "").replaceAll(" +$", "");
         this.type = type;
         this.route = route;
         this.url = new URL(url);

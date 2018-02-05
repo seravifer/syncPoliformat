@@ -19,6 +19,9 @@ public class SubjectComponent extends AnchorPane {
     private Label longNameID;
 
     @FXML
+    private Label nameID;
+
+    @FXML
     private Label dateID;
 
     @FXML
@@ -26,12 +29,6 @@ public class SubjectComponent extends AnchorPane {
 
     @FXML
     private JFXSpinner loadingID;
-
-    @FXML
-    private SVGPath cancelID;
-
-    @FXML
-    private Label nameID;
 
     @FXML
     private Circle circleID;
@@ -47,7 +44,7 @@ public class SubjectComponent extends AnchorPane {
         fxmlLoader.setController(this);
         fxmlLoader.load();
 
-        this.subject = sbt;
+        subject = sbt;
         nameID.setText(subject.getShortName());
         longNameID.setText(subject.getName());
         dateID.setText(subject.getLastUpdate());
@@ -56,34 +53,26 @@ public class SubjectComponent extends AnchorPane {
         donwloadID.setOnMouseClicked((event) -> {
             donwloadID.setVisible(false);
             loadingID.setVisible(true);
-            cancelID.setVisible(true);
             dateID.setText("Descargando asignatura...");
 
             Runnable myRunnable = () -> {
                 try {
                     subject.parseSubject();
+                    subject.downloadSubject();
                 } catch (IOException e) {
-                    //thread.interrupt();
                     finish();
                 }
-                subject.downloadSubject();
                 Platform.runLater(this::finish);
             };
 
             thread = new Thread(myRunnable);
             thread.start();
         });
-
-        cancelID.setOnMouseClicked((event) -> {
-            //thread.interrupt();
-            finish();
-        });
     }
 
     private void finish() {
         donwloadID.setVisible(true);
         loadingID.setVisible(false);
-        cancelID.setVisible(false);
         subject.updateLastUpdate(Utils.now());
         dateID.setText(subject.getLastUpdate());
     }

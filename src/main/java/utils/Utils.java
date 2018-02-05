@@ -45,20 +45,25 @@ public class Utils {
         else return Integer.toString(year);
     }
 
-    public static void downloadFile(String urlFile, String path) throws IOException {
-        URL url = new URL(urlFile);
-
-        InputStream in = url.openStream();
-        FileOutputStream fos = new FileOutputStream(new File(path));
-
-        int length;
-        byte[] buffer = new byte[2048];
-        while ((length = in.read(buffer)) > -1) {
-            fos.write(buffer, 0, length);
+    public static void downloadFile(URL url, String path) throws IOException {
+        String name = url.toString().substring(url.toString().lastIndexOf("/"));
+        int pos = name.lastIndexOf(".");
+        if (pos > 0) {
+            String extension = name.substring(pos);
+            if (!path.contains(extension)) path += extension;
         }
 
-        fos.close();
-        in.close();
+        InputStream input = url.openStream();
+        FileOutputStream output = new FileOutputStream(new File(path));
+
+        int length;
+        byte[] buffer = new byte[1024];
+        while ((length = input.read(buffer)) > -1) {
+            output.write(buffer, 0, length);
+        }
+
+        output.close();
+        input.close();
     }
 
     public static String appDirectory() {
