@@ -21,6 +21,7 @@ public class Subject {
     private String id;
     private String name;
     private String shortName;
+    private String lastUpdate;
     private Tree<SubjectFile> fileSystem;
 
     public Subject(String name, String id) {
@@ -40,8 +41,24 @@ public class Subject {
         return shortName;
     }
 
+    public String getLastUpdate() {
+        if (lastUpdate == null || lastUpdate.isEmpty())
+            return "No ha sido descargada todavía.";
+        else
+            return lastUpdate;
+    }
+
     public void setShortName(String shortName) {
         this.shortName = shortName.replaceAll("[^a-zA-Z]", "").substring(0, 3).toUpperCase();
+    }
+
+    public void setLastUpdate(String lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    public void updateLastUpdate(String lastUpdate) {
+        this.lastUpdate = lastUpdate;
+        Utils.updateSubject(this);
     }
 
     public Tree<SubjectFile> getFilesystem() {
@@ -103,6 +120,11 @@ public class Subject {
 
     }
 
+    public void downloadSubject() {
+        downloadTree(fileSystem, Utils.poliformatDirectory());
+        System.out.printf("Download finished for %s\n", name);
+    }
+
     private void downloadTree(Tree<SubjectFile> node, String parentPath) {
         SubjectFile data = node.getData();
         Path path = Paths.get(parentPath, data.getTitle());
@@ -123,10 +145,5 @@ public class Subject {
         for (Tree<SubjectFile> child : node.getChildren()) {
             downloadTree(child, path.toString());
         }
-    }
-
-    public void downloadSubject() {
-        downloadTree(fileSystem, "D:\\");
-        System.out.println("Download finished");
     }
 }

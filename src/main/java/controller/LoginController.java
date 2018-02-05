@@ -8,6 +8,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import model.User;
 
@@ -21,7 +23,7 @@ public class LoginController implements Initializable {
     private int attemps = 3;
 
     @FXML
-    private JFXTextField usernameID;
+    private JFXPasswordField usernameID;
 
     @FXML
     private JFXPasswordField passwordID;
@@ -39,6 +41,9 @@ public class LoginController implements Initializable {
     private JFXProgressBar loadingID;
 
     @FXML
+    private AnchorPane sceneID;
+
+    @FXML
     private void loginClick() {
         loginID.setDisable(true);
         loadingID.setVisible(true);
@@ -52,14 +57,13 @@ public class LoginController implements Initializable {
         }).start();
     }
 
-    public void status(Boolean isLogged) {
+    private void status(Boolean isLogged) {
         try {
             if (isLogged) {
                 ((Stage) loginID.getScene().getWindow()).close();
 
                 Stage stage = new Stage();
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/home.fxml"));
-
                 Parent sceneMain = loader.load();
 
                 HomeController controller = loader.getController();
@@ -95,5 +99,7 @@ public class LoginController implements Initializable {
                 usernameID.setText(oldValue);
             }
         });
+
+        sceneID.setOnKeyPressed((event) -> { if(event.getCode() == KeyCode.ENTER) loginID.fire(); });
     }
 }

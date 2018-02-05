@@ -9,8 +9,10 @@ import model.Poliformat;
 import model.Subject;
 import model.User;
 import utils.SubjectComponent;
+import utils.Utils;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -26,6 +28,9 @@ public class HomeController implements Initializable {
 
     @FXML
     private SVGPath settingsID;
+
+    @FXML
+    private SVGPath folderID;
 
     @FXML
     private SVGPath webID;
@@ -45,6 +50,14 @@ public class HomeController implements Initializable {
                 e.printStackTrace();
             }
         });
+
+        folderID.setOnMouseClicked(event -> {
+            try {
+                Desktop.getDesktop().open(new File(Utils.poliformatDirectory()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void init(User user) throws IOException {
@@ -53,7 +66,10 @@ public class HomeController implements Initializable {
         mailID.setText(user.getMailUser());
         
         poliformat = new Poliformat();
-        poliformat.syncSubjects();
+
+        poliformat.syncRemote();
+        poliformat.syncLocal();
+
         for (Subject item : poliformat.getSubjects()) {
             listID.getChildren().add(new SubjectComponent(item));
         }

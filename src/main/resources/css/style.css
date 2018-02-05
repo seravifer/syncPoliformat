@@ -38,5 +38,5 @@
 }
 
 .jfx-progress-bar > .bar {
-    -fx-background-color: red;
+    -fx-background-color: #C00000;
 }

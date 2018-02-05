@@ -38,7 +38,8 @@ public class SubjectComponent extends AnchorPane {
 
     private Subject subject;
     private Thread thread;
-    private String[] colors = {"#C0CA33", "#FFC107", "#78909C", "#3F51B5", "#42A5F5", "#795548", "#FFEA00", "#ffd54f", "#80deea"};
+    private String[] colors = {"#ad1457", "#6a1b9a", "#4527a0", "#283593", "#1565c0", "#0277bd", "#00838f", "#00695c",
+            "#2e7d32", "#558b2f", "#9e9d24", "#f9a825", "#ff8f00", "#ef6c00", "#d84315"};
 
     public SubjectComponent(Subject sbt) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/subject.fxml"));
@@ -49,8 +50,8 @@ public class SubjectComponent extends AnchorPane {
         this.subject = sbt;
         nameID.setText(subject.getShortName());
         longNameID.setText(subject.getName());
-        dateID.setText("No ha sido descargada.");
-        circleID.setFill(Color.web(colors[Utils.random(1, 6)]));
+        dateID.setText(subject.getLastUpdate());
+        circleID.setFill(Color.web(colors[Utils.random(1, 14)]));
 
         donwloadID.setOnMouseClicked((event) -> {
             donwloadID.setVisible(false);
@@ -63,7 +64,7 @@ public class SubjectComponent extends AnchorPane {
                     subject.parseSubject();
                 } catch (IOException e) {
                     //thread.interrupt();
-                    finish(); // No internet connection
+                    finish();
                 }
                 subject.downloadSubject();
                 Platform.runLater(this::finish);
@@ -83,7 +84,8 @@ public class SubjectComponent extends AnchorPane {
         donwloadID.setVisible(true);
         loadingID.setVisible(false);
         cancelID.setVisible(false);
-        dateID.setText(Utils.now());
+        subject.updateLastUpdate(Utils.now());
+        dateID.setText(subject.getLastUpdate());
     }
 
 }

@@ -1,5 +1,11 @@
 package utils;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import model.Subject;
+
 import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
 import java.io.*;
@@ -62,9 +68,40 @@ public class Utils {
         if (os.contains("win")) {
             pathFile = System.getenv("APPDATA");
         } else {
-            pathFile = System.getProperty("user.home");
+            pathFile = System.getProperty("user.home"); // ¿En que carpeta se guarda en Linux/Mac?
         }
 
         return pathFile + System.getProperty("file.separator") + "syncPoliformaT" + System.getProperty("file.separator");
+    }
+
+    public static String poliformatDirectory() {
+        return System.getProperty("user.home") +
+                System.getProperty("file.separator") +
+                "PoliformaT" +
+                System.getProperty("file.separator");
+    }
+
+    public static void updateSubject(Subject subject) {
+        try {
+            File file = new File(appDirectory() + "settings.json");
+            FileReader reader = new FileReader(file);
+            JsonObject settings = Json.parse(reader).asObject();
+            reader.close();
+            JsonArray jsonSubjects = settings.get("subjects").asArray();
+
+            for (JsonValue item : jsonSubjects) {
+                if (item.asObject().getString("id", null).equals(subject.getId())) {
+                    item.asObject().set("lastUpdate", subject.getLastUpdate());
+                    break;
+                }
+            }
+
+            settings.set("subjects", jsonSubjects);
+            PrintWriter printer = new PrintWriter(file, "UTF-8");
+            settings.writeTo(printer);
+            printer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

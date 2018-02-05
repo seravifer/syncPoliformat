@@ -1,32 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.*?>
-<?import javafx.scene.control.Label?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXProgressBar?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane prefHeight="450.0" prefWidth="400.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="sceneID" prefHeight="450.0" prefWidth="400.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
    <children>
-      <ImageView cache="true" fitHeight="118.0" fitWidth="273.0" layoutX="64.0" layoutY="57.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView cache="true" fitHeight="118.0" fitWidth="273.0" layoutX="64.0" layoutY="57.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="64.0" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="64.0">
          <image>
             <Image url="@../res/logo-poliformat.png" />
          </image>
       </ImageView>
-      <JFXTextField fx:id="usernameID" focusColor="#c00000" layoutX="91.0" layoutY="169.0" prefHeight="25.0"
-                    prefWidth="206.0" promptText="DNI"/>
-      <JFXPasswordField fx:id="passwordID" focusColor="#c00000" layoutX="91.0" layoutY="217.0" prefHeight="25.0"
-                        prefWidth="206.0" promptText="Contraseña"/>
-      <JFXCheckBox fx:id="rememberID" checkedColor="#c00000" layoutX="81.0" layoutY="259.0" text="Recordar"/>
-      <JFXButton fx:id="loginID" layoutX="124.0" layoutY="323.0" onAction="#loginClick" prefHeight="25.0"
-                 prefWidth="152.0" ripplerFill="#4d4d4d" style="-fx-background-color: #C00000;" text="Iniciar sesión"
-                 textFill="WHITE">
+      <JFXPasswordField fx:id="usernameID" focusColor="#c00000" layoutX="96.0" layoutY="174.0" prefHeight="25.0" prefWidth="206.0" promptText="DNI" AnchorPane.leftAnchor="96.0" AnchorPane.rightAnchor="96.0">
+         <font>
+            <Font name="Roboto" size="12.0" />
+         </font></JFXPasswordField>
+      <JFXPasswordField fx:id="passwordID" focusColor="#c00000" layoutX="96.0" layoutY="218.0" prefHeight="25.0" prefWidth="206.0" promptText="Contraseña" AnchorPane.leftAnchor="96.0" AnchorPane.rightAnchor="96.0">
+         <font>
+            <Font name="Roboto" size="12.0" />
+         </font></JFXPasswordField>
+      <JFXCheckBox fx:id="rememberID" checkedColor="#c00000" disable="true" focusTraversable="false" layoutX="96.0" layoutY="261.0" prefWidth="83.0" text="Recordar" textFill="#656565" AnchorPane.leftAnchor="96.0" AnchorPane.rightAnchor="220.0">
+         <font>
+            <Font name="Roboto" size="12.0" />
+         </font></JFXCheckBox>
+      <JFXButton fx:id="loginID" focusTraversable="false" layoutX="124.0" layoutY="310.0" onAction="#loginClick" prefHeight="25.0" prefWidth="152.0" ripplerFill="#4d4d4d" style="-fx-background-color: #C00000;" text="Iniciar sesión" textFill="WHITE">
          <cursor>
-            <Cursor fx:constant="HAND"/>
+            <Cursor fx:constant="HAND" />
          </cursor>
+         <font>
+            <Font name="Roboto Medium" size="14.0" />
+         </font>
       </JFXButton>
-      <Label fx:id="errorID" layoutX="90.0" layoutY="359.0" text="El DNI o la contraseña no son correctos."
-             textFill="#ff5656" visible="false"/>
-      <JFXProgressBar fx:id="loadingID" layoutY="398.0" prefHeight="2.0" prefWidth="400.0" visible="false"/>
+      <Label fx:id="errorID" layoutX="90.0" layoutY="359.0" text="El DNI o la contraseña no son correctos." textFill="#ff5656" visible="false" />
+      <JFXProgressBar fx:id="loadingID" layoutY="398.0" prefHeight="4.0" prefWidth="400.0" visible="false" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
    </children>
 </AnchorPane>
