@@ -3,13 +3,14 @@ package utils;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class File {
+public class SubjectFile {
+
     private String title;
     private String type;
     private String route;
     private URL url;
 
-    public File(String title, String type, String route, String url) throws MalformedURLException {
+    public SubjectFile(String title, String type, String route, String url) throws MalformedURLException {
         this.title = title.replaceAll("[\\\\/:*?\"<>|]", ""); // Clean invalid characters
         this.type = type;
         this.route = route;
