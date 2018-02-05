@@ -45,10 +45,10 @@ public class LoginController implements Initializable {
         new Thread(() -> {
             try {
                 user.login(usernameID.getText(), passwordID.getText(), rememberID.isSelected());
-                Platform.runLater(() -> status(user.isLogged()));
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("El usuario no tiene conexión a internet.");
             }
+            Platform.runLater(() -> status(user.isLogged()));
         }).start();
     }
 

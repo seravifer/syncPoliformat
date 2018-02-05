@@ -32,6 +32,7 @@ public class HomeController implements Initializable {
 
     @FXML
     private VBox listID;
+
     private User user;
     private Poliformat poliformat;
 

@@ -54,4 +54,17 @@ public class Utils {
         fos.close();
         in.close();
     }
+
+    public static String appDirectory() {
+        String pathFile;
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("win")) {
+            pathFile = System.getenv("APPDATA");
+        } else {
+            pathFile = System.getProperty("user.home");
+        }
+
+        return pathFile + System.getProperty("file.separator") + "syncPoliformaT" + System.getProperty("file.separator");
+    }
 }
