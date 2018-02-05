@@ -62,6 +62,7 @@ public class SubjectComponent extends AnchorPane {
                 try {
                     subject.parseSubject();
                 } catch (IOException e) {
+                    //thread.interrupt();
                     finish(); // No internet connection
                 }
                 subject.downloadSubject();
@@ -73,7 +74,7 @@ public class SubjectComponent extends AnchorPane {
         });
 
         cancelID.setOnMouseClicked((event) -> {
-            thread.interrupt(); // No funciona
+            //thread.interrupt();
             finish();
         });
     }

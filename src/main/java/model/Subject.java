@@ -4,10 +4,11 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import utils.File;
+import utils.SubjectFile;
 import utils.Tree;
 import utils.Utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,7 +21,7 @@ public class Subject {
     private String id;
     private String name;
     private String shortName;
-    private Tree<File> fileSystem;
+    private Tree<SubjectFile> fileSystem;
 
     public Subject(String name, String id) {
         this.name = name;
@@ -43,7 +44,7 @@ public class Subject {
         this.shortName = shortName.replaceAll("[^a-zA-Z]", "").substring(0, 3).toUpperCase();
     }
 
-    public Tree<File> getFilesystem() {
+    public Tree<SubjectFile> getFilesystem() {
         return fileSystem;
     }
 
@@ -51,7 +52,7 @@ public class Subject {
         JsonArray items = Json.parse(Utils.getJson("content/site/" + id + ".json"))
                 .asObject().get("content_collection").asArray();
 
-        HashMap<String, Tree<File>> aux = new HashMap<>();
+        HashMap<String, Tree<SubjectFile>> aux = new HashMap<>();
 
         Pattern parentUrlPattern = Pattern.compile("/content.+(?=/.*/$)|/content.+/");
         Pattern urlPattern = Pattern.compile("/content.+");
@@ -85,13 +86,13 @@ public class Subject {
             }
 
             if (i == 0) {
-                File root = new File(title, type, route, url);
+                SubjectFile root = new SubjectFile(title, type, route, url);
                 fileSystem = new Tree<>(root);
                 aux.put(fileSystem.getData().getRoute(), fileSystem);
             } else {
-                File file = new File(title, type, route, url);
-                Tree<File> fileNode = new Tree<>(file);
-                Tree<File> parentNode = aux.get(parentId);
+                SubjectFile file = new SubjectFile(title, type, route, url);
+                Tree<SubjectFile> fileNode = new Tree<>(file);
+                Tree<SubjectFile> parentNode = aux.get(parentId);
 
                 if (parentNode != null) {
                     parentNode.addChild(fileNode);
@@ -102,33 +103,30 @@ public class Subject {
 
     }
 
-    private static void downloadTree(Tree<File> node, String parentPath) {
-        File data = node.getData();
+    private void downloadTree(Tree<SubjectFile> node, String parentPath) {
+        SubjectFile data = node.getData();
         Path path = Paths.get(parentPath, data.getTitle());
 
         if (data.getType().equals("collection")) {
-            java.io.File directory = new java.io.File(path.toString());
+            File directory = new File(path.toString());
             directory.mkdir();
-            System.out.printf("Creating the folder : %s\n", path.toString());
+            System.out.printf("Creating the folder: %s\n", path.toString());
         } else {
             try {
                 Utils.downloadFile(data.getUrl().toString(), path.toString());
-                System.out.printf("Downloading the file : %s\n", path.toString());
+                System.out.printf("Downloading the file: %s\n", path.toString());
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Connection error");
             }
         }
 
-        for (Tree<File> child : node.getChildren()) {
+        for (Tree<SubjectFile> child : node.getChildren()) {
             downloadTree(child, path.toString());
         }
     }
 
-    /**
-     * Usar el metodo Utils.downloadFile();
-     */
     public void downloadSubject() {
-        downloadTree(fileSystem, "/home/kev/");
+        downloadTree(fileSystem, "D:\\");
         System.out.println("Download finished");
     }
 }
