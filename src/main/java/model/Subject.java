@@ -42,9 +42,8 @@ public class Subject {
 
     public String getLastUpdate() {
         if (lastUpdate == null || lastUpdate.isEmpty())
-            return "No ha sido descargada todavía.";
-        else
-            return lastUpdate;
+            return "No ha sido sincronizada todavía.";
+        else return lastUpdate;
     }
 
     public void setShortName(String shortName) {
@@ -64,7 +63,28 @@ public class Subject {
         return fileSystem;
     }
 
-    public void parseSubject() throws IOException {
+    /**
+     * Método lanzadera que sincroniza los archivos de Poliformat.
+     *
+     * @throws IOException
+     */
+    public void sync() throws IOException {
+        if (lastUpdate == null || lastUpdate.isEmpty()) {
+            parseSubject();
+            downloadSubject();
+        } else {
+            syncSubject();
+        }
+
+        saveChanges();
+    }
+
+    /**
+     * Convierte un archivo json en un arbol de archivos.
+     *
+     * @throws IOException
+     */
+    private void parseSubject() throws IOException {
         JsonArray items = Json.parse(Utils.getJson("content/site/" + id + ".json"))
                 .asObject().get("content_collection").asArray();
 
@@ -116,10 +136,12 @@ public class Subject {
                 }
             }
         }
-
     }
 
-    public void downloadSubject() {
+    /**
+     * Descarga la asignatura por primera vez.
+     */
+    private void downloadSubject() {
         System.out.printf("Download started: %s\n", name);
         downloadTree(fileSystem, Utils.poliformatDirectory());
         System.out.printf("Download finished: %s\n", name);
@@ -145,5 +167,20 @@ public class Subject {
         for (Tree<FileType> child : node.getChildren()) {
             downloadTree(child, path.toString());
         }
+    }
+
+    /**
+     * Compara los archivos locales con el remoto y descarga la diferencia.
+     */
+    private void syncSubject() throws IOException {
+        parseSubject();
+        downloadSubject();
+    }
+
+    /**
+     * Guarda en local el archivo 'json' que ya ha sido sincronizado.
+     */
+    public void saveChanges() throws IOException {
+        Utils.downloadRemote(id);
     }
 }

@@ -1,5 +1,10 @@
 package utils;
 
+import java.net.URI;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
@@ -18,6 +23,8 @@ import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
+
+    private static String separator = System.getProperty("file.separator");
 
     public static InputStreamReader getJson(String url) throws IOException {
         URL link = new URL("https://poliformat.upv.es/direct/" + url);
@@ -77,7 +84,7 @@ public class Utils {
             pathFile = Paths.get(System.getProperty("user.home"), ".local", "share").toString();
         }
 
-        return pathFile + System.getProperty("file.separator") + "syncPoliformaT" + System.getProperty("file.separator");
+        return pathFile + separator + "syncPoliformaT" + separator;
     }
 
     public static String poliformatDirectory() {
@@ -109,5 +116,20 @@ public class Utils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * https://stackoverflow.com/questions/921262/how-to-download-and-save-a-file-from-internet-using-java
+     *
+     * @param id
+     * @throws IOException
+     */
+    public static void downloadRemote(String id) throws IOException {
+        URL url = new URL("https://poliformat.upv.es/direct/content/site/" + id + ".json");
+        ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+        FileOutputStream fos = new FileOutputStream(appDirectory() + separator + id + ".json");
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        fos.close();
+        rbc.close();
     }
 }

@@ -57,8 +57,7 @@ public class SubjectComponent extends AnchorPane {
 
             Runnable myRunnable = () -> {
                 try {
-                    subject.parseSubject();
-                    subject.downloadSubject();
+                    subject.sync();
                 } catch (IOException e) {
                     finish();
                 }
