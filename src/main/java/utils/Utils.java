@@ -1,5 +1,6 @@
 package utils;
 
+import java.nio.file.Paths;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
@@ -73,7 +74,7 @@ public class Utils {
         if (os.contains("win")) {
             pathFile = System.getenv("APPDATA");
         } else {
-            pathFile = System.getProperty("user.home"); // ¿En que carpeta se guarda en Linux/Mac?
+            pathFile = Paths.get(System.getProperty("user.home"), ".local", "share").toString();
         }
 
         return pathFile + System.getProperty("file.separator") + "syncPoliformaT" + System.getProperty("file.separator");
