@@ -4,6 +4,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import utils.FileType;
 import utils.Tree;
 import utils.Utils;
 
@@ -70,7 +71,7 @@ public class Subject {
      */
     public void sync() throws IOException {
         if (lastUpdate == null || lastUpdate.isEmpty()) {
-            parseSubject();
+            parser();
             downloadSubject();
         } else {
             syncSubject();
@@ -84,7 +85,7 @@ public class Subject {
      *
      * @throws IOException
      */
-    private void parseSubject() throws IOException {
+    private void parser() throws IOException {
         JsonArray items = Json.parse(Utils.getJson("content/site/" + id + ".json"))
                 .asObject().get("content_collection").asArray();
 
@@ -173,7 +174,7 @@ public class Subject {
      * Compara los archivos locales con el remoto y descarga la diferencia.
      */
     private void syncSubject() throws IOException {
-        parseSubject();
+        parser();
         downloadSubject();
     }
 
@@ -181,6 +182,6 @@ public class Subject {
      * Guarda en local el archivo 'json' que ya ha sido sincronizado.
      */
     public void saveChanges() throws IOException {
-        Utils.downloadRemote(id);
+        Utils.saveRemote(id);
     }
 }

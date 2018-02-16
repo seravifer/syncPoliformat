@@ -1,4 +1,4 @@
-package model;
+package utils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,7 +33,6 @@ public class FileType {
         return url;
     }
 
-    @Override
     public String toString() {
         return title;
     }

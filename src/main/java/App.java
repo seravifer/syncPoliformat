@@ -2,7 +2,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -23,7 +22,7 @@ public class App  extends Application {
         //Font.loadFont(getClass().getResource("/css/Roboto.ttf").toExternalForm(), 14);
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("syncPoliformaT");
+        primaryStage.setTitle("syncPoliformat");
         primaryStage.setResizable(false);
         primaryStage.show();
     }

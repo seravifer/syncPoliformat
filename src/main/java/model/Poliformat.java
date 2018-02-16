@@ -25,6 +25,21 @@ public class Poliformat {
         return subjects;
     }
 
+    private void initApp() throws IOException {
+        File folder = new File(Utils.poliformatDirectory());
+        File settings = new File(Utils.appDirectory() + "settings.json");
+        File directory = new File(Utils.appDirectory());
+
+        folder.mkdir();
+        directory.mkdir();
+        settings.createNewFile();
+
+        JsonObject config = Json.object().add("subjects", Json.array());
+        PrintWriter printer = new PrintWriter(settings, "UTF-8");
+        config.writeTo(printer, PrettyPrint.PRETTY_PRINT);
+        printer.close();
+    }
+
     public void syncRemote() throws IOException {
         Document doc = Jsoup.connect("https://intranet.upv.es/pls/soalu/sic_asi.Lista_asig").get();
 
@@ -81,21 +96,6 @@ public class Poliformat {
         settings.set("subjects", jsonSubjects);
         PrintWriter printer = new PrintWriter(file, "UTF-8");
         settings.writeTo(printer);
-        printer.close();
-    }
-
-    private void initApp() throws IOException {
-        File folder = new File(Utils.poliformatDirectory());
-        File settings = new File(Utils.appDirectory() + "settings.json");
-        File directory = new File(Utils.appDirectory());
-
-        folder.mkdir();
-        directory.mkdir();
-        settings.createNewFile();
-
-        JsonObject config = Json.object().add("subjects", Json.array());
-        PrintWriter printer = new PrintWriter(settings, "UTF-8");
-        config.writeTo(printer);
         printer.close();
     }
 }

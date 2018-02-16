@@ -1,11 +1,5 @@
 package utils;
 
-import java.net.URI;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
@@ -13,9 +7,11 @@ import com.eclipsesource.json.JsonValue;
 import model.Subject;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.io.File;
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -61,37 +57,27 @@ public class Utils {
             if (!path.contains(extension)) path += extension;
         }
 
-        InputStream input = url.openStream();
-        FileOutputStream output = new FileOutputStream(new File(path));
-
-        int length;
-        byte[] buffer = new byte[1024];
-        while ((length = input.read(buffer)) > -1) {
-            output.write(buffer, 0, length);
+        Path finalPath = Paths.get(path);
+        try (InputStream in = url.openStream()) {
+            Files.copy(in, finalPath);
         }
-
-        output.close();
-        input.close();
     }
 
     public static String appDirectory() {
-        String pathFile;
+        String pathDirectory;
         String os = System.getProperty("os.name").toLowerCase();
 
         if (os.contains("win")) {
-            pathFile = System.getenv("APPDATA");
+            pathDirectory = System.getenv("APPDATA");
         } else {
-            pathFile = Paths.get(System.getProperty("user.home"), ".local", "share").toString();
+            pathDirectory = Paths.get(System.getProperty("user.home"), ".local", "share").toString();
         }
 
-        return pathFile + separator + "syncPoliformaT" + separator;
+        return Paths.get(pathDirectory, "syncPoliformat").toString();
     }
 
     public static String poliformatDirectory() {
-        return System.getProperty("user.home") +
-                System.getProperty("file.separator") +
-                "PoliformaT" +
-                System.getProperty("file.separator");
+        return Paths.get(System.getProperty("user.home"), "Poliformat").toString();
     }
 
     public static void updateSubject(Subject subject) {
@@ -124,12 +110,19 @@ public class Utils {
      * @param id
      * @throws IOException
      */
-    public static void downloadRemote(String id) throws IOException {
+    public static void saveRemote(String id) throws IOException {
         URL url = new URL("https://poliformat.upv.es/direct/content/site/" + id + ".json");
-        ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-        FileOutputStream fos = new FileOutputStream(appDirectory() + separator + id + ".json");
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        fos.close();
-        rbc.close();
+        Path path = Paths.get(appDirectory() + separator + id + ".json");
+        try (InputStream in = url.openStream()) {
+            Files.copy(in, path);
+        }
+    }
+
+    public static JsonObject loadLocal(String id) throws IOException {
+        File file = new File(appDirectory() + id + ".json");
+        FileReader reader = new FileReader(file);
+        JsonObject subjectLocal = Json.parse(reader).asObject();
+        reader.close();
+        return subjectLocal;
     }
 }

@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXCheckBox?>
-<?import com.jfoenix.controls.JFXPasswordField?>
-<?import com.jfoenix.controls.JFXProgressBar?>
-<?import javafx.scene.Cursor?>
+<?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
 <AnchorPane fx:id="sceneID" prefHeight="450.0" prefWidth="400.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
    <children>
       <ImageView cache="true" fitHeight="118.0" fitWidth="273.0" layoutX="64.0" layoutY="57.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="64.0" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="64.0">
@@ -30,7 +26,9 @@
          <font>
             <Font name="Roboto" size="12.0" />
          </font></JFXCheckBox>
-      <JFXButton fx:id="loginID" focusTraversable="false" layoutX="124.0" layoutY="310.0" onAction="#loginClick" prefHeight="25.0" prefWidth="152.0" ripplerFill="#4d4d4d" style="-fx-background-color: #C00000;" text="Iniciar sesión" textFill="WHITE">
+       <JFXButton fx:id="loginID" focusTraversable="false" layoutX="124.0" layoutY="310.0" onAction="#login"
+                  prefHeight="25.0" prefWidth="152.0" ripplerFill="#4d4d4d" style="-fx-background-color: #C00000;"
+                  text="Iniciar sesión" textFill="WHITE">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>

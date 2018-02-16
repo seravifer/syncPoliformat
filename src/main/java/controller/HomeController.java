@@ -3,12 +3,12 @@ package controller;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import model.Poliformat;
 import model.Subject;
 import model.User;
-import utils.SubjectComponent;
 import utils.Utils;
 
 import java.awt.*;
@@ -30,12 +30,6 @@ public class HomeController implements Initializable {
     private SVGPath settingsID;
 
     @FXML
-    private SVGPath folderID;
-
-    @FXML
-    private SVGPath webID;
-
-    @FXML
     private VBox listID;
 
     private User user;
@@ -43,21 +37,7 @@ public class HomeController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        webID.setOnMouseClicked(event -> {
-            try {
-                Desktop.getDesktop().browse(new URL("https://poliformat.upv.es/portal").toURI());
-            } catch (IOException | URISyntaxException e) {
-                e.printStackTrace();
-            }
-        });
 
-        folderID.setOnMouseClicked(event -> {
-            try {
-                Desktop.getDesktop().open(new File(Utils.poliformatDirectory()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     public void init(User user) throws IOException {
@@ -73,6 +53,22 @@ public class HomeController implements Initializable {
         for (Subject item : poliformat.getSubjects()) {
             listID.getChildren().add(new SubjectComponent(item));
         }
+    }
+
+    private void updateAll() {
+        for (int i = 0; i < listID.getChildren().size(); i++) {
+            ((SubjectComponent) listID.getChildren().get(i)).sync();
+        }
+    }
+
+    @FXML
+    private void openFolder(MouseEvent event) throws IOException {
+        Desktop.getDesktop().open(new File(Utils.poliformatDirectory()));
+    }
+
+    @FXML
+    private void openWeb(MouseEvent event) throws IOException, URISyntaxException {
+        Desktop.getDesktop().browse(new URL("https://poliformat.upv.es/portal").toURI());
     }
 
 }

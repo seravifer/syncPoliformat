@@ -1,6 +1,9 @@
 package controller;
 
-import com.jfoenix.controls.*;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXPasswordField;
+import com.jfoenix.controls.JFXProgressBar;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,8 +46,23 @@ public class LoginController implements Initializable {
     @FXML
     private AnchorPane sceneID;
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        user = new User();
+
+        usernameID.textProperty().addListener((ov, oldValue, newValue) -> {
+            if (usernameID.getText().length() > 8 || !usernameID.getText().matches("[0-9]*")) {
+                usernameID.setText(oldValue);
+            }
+        });
+
+        sceneID.setOnKeyPressed((event) -> {
+            if (event.getCode() == KeyCode.ENTER) loginID.fire();
+        });
+    }
+
     @FXML
-    private void loginClick() {
+    private void login() {
         loginID.setDisable(true);
         loadingID.setVisible(true);
         new Thread(() -> {
@@ -73,7 +91,7 @@ public class LoginController implements Initializable {
                 scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
 
                 stage.setScene(scene);
-                stage.setTitle("syncPoliformaT");
+                stage.setTitle("syncPoliformat");
                 stage.setResizable(false);
                 stage.show();
             } else {
@@ -88,18 +106,5 @@ public class LoginController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        user = new User();
-
-        usernameID.textProperty().addListener((ov, oldValue, newValue) -> {
-            if (usernameID.getText().length() > 8 || !usernameID.getText().matches("[0-9]*")) {
-                usernameID.setText(oldValue);
-            }
-        });
-
-        sceneID.setOnKeyPressed((event) -> { if(event.getCode() == KeyCode.ENTER) loginID.fire(); });
     }
 }
