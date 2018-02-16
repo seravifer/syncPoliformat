@@ -4,6 +4,8 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import network.SubjectRequester;
+import retrofit2.Response;
 import utils.FileType;
 import utils.Tree;
 import utils.Utils;
@@ -71,8 +73,13 @@ public class Subject {
      */
     public void sync() throws IOException {
         if (lastUpdate == null || lastUpdate.isEmpty()) {
-            parser();
-            downloadSubject();
+            Response<PoliformatEntity> response =  SubjectRequester.POLIFORMAT_SERVICE.getSubject(id + ".json").execute();
+            if (response.isSuccessful()) {
+                fileSystem = response.body().toFileTree();
+                downloadSubject();
+            } else {
+                // Error de conexion
+            }
         } else {
             syncSubject();
         }
