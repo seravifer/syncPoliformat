@@ -1,6 +1,6 @@
 package model;
 
-import network.ObjectParsers;
+import model.json.ObjectParsers;
 import utils.Tree;
 import utils.Utils;
 

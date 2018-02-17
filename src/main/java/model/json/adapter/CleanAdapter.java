@@ -1,4 +1,4 @@
-package network.adapter;
+package model.json.adapter;
 
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;

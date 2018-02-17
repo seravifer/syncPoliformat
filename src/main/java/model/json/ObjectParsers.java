@@ -1,11 +1,11 @@
-package network;
+package model.json;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import model.PoliformatEntity;
-import network.adapter.CleanAdapter;
-import network.adapter.ContentAdapter;
-import network.adapter.UrlAdapter;
+import model.json.adapter.CleanAdapter;
+import model.json.adapter.ContentAdapter;
+import model.json.adapter.UrlAdapter;
 
 public final class ObjectParsers {
     private ObjectParsers() {}

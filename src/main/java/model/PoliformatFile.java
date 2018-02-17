@@ -1,7 +1,7 @@
 package model;
 
 import com.squareup.moshi.Json;
-import network.adapter.Clean;
+import model.json.adapter.Clean;
 
 import java.net.URL;
 import java.nio.file.Path;
