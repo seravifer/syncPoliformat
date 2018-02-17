@@ -15,8 +15,6 @@ import java.util.ArrayList;
 
 public class Poliformat {
 
-    public static final String HOST = "poliformat.upv.es";
-
     private ArrayList<Subject> subjects;
 
     public Poliformat() {
@@ -29,7 +27,7 @@ public class Poliformat {
 
     private void initApp() throws IOException {
         File folder = new File(Utils.poliformatDirectory());
-        File settings = new File(Utils.appDirectory() + "settings.json");
+        File settings = new File(Utils.appDirectory(), "settings.json");
         File directory = new File(Utils.appDirectory());
 
         folder.mkdir();
@@ -71,7 +69,7 @@ public class Poliformat {
     }
 
     public void syncLocal() throws IOException {
-        File file = new File(Utils.appDirectory() + "settings.json");
+        File file = new File(Utils.appDirectory(), "settings.json");
 
         if (!file.exists()) initApp();
 
@@ -97,7 +95,7 @@ public class Poliformat {
 
         settings.set("subjects", jsonSubjects);
         PrintWriter printer = new PrintWriter(file, "UTF-8");
-        settings.writeTo(printer);
+        settings.writeTo(printer, PrettyPrint.PRETTY_PRINT);
         printer.close();
     }
 }

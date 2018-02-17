@@ -35,7 +35,6 @@ public class SubjectComponent extends AnchorPane {
     private Circle circleID;
 
     private Subject subject;
-    private Thread thread;
     private String[] colors = {"#ad1457", "#6a1b9a", "#4527a0", "#283593", "#1565c0", "#0277bd", "#00838f", "#00695c",
             "#2e7d32", "#558b2f", "#9e9d24", "#f9a825", "#ff8f00", "#ef6c00", "#d84315"};
 
@@ -68,12 +67,12 @@ public class SubjectComponent extends AnchorPane {
             try {
                 subject.sync();
             } catch (IOException e) {
-                Platform.runLater(this::finish); // ¿Avisar del error?
+                Platform.runLater(this::finish);
             }
             Platform.runLater(this::finish);
         };
 
-        thread = new Thread(myRunnable);
+        Thread thread = new Thread(myRunnable);
         thread.start();
     }
 

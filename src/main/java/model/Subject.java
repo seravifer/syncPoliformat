@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class Subject {
 
@@ -60,12 +61,11 @@ public class Subject {
     /**
      * Método lanzadera que sincroniza los archivos de Poliformat.
      *
-     * @throws IOException
      */
     public void sync() throws IOException {
+        PoliformatEntity response = ObjectParsers.ENTITY_PARSER.fromJson(Utils.getJson("content/site/" + id + ".json"));
+        fileSystem = response.toFileTree();
         if (lastUpdate == null || lastUpdate.isEmpty()) {
-            PoliformatEntity response =  ObjectParsers.ENTITY_PARSER.fromJson(Utils.getJson("content/site/" + id + ".json"));
-            fileSystem = response.toFileTree();
             downloadSubject();
         } else {
             syncSubject();
@@ -76,6 +76,7 @@ public class Subject {
 
     /**
      * Descarga la asignatura por primera vez.
+     *
      */
     private void downloadSubject() {
         System.out.printf("Download started: %s\n", name);
@@ -107,15 +108,22 @@ public class Subject {
 
     /**
      * Compara los archivos locales con el remoto y descarga la diferencia.
+     *
      */
     private void syncSubject() throws IOException {
-        PoliformatEntity response =  ObjectParsers.ENTITY_PARSER.fromJson(Utils.getJson("content/site/" + id + ".json"));
-        fileSystem = response.toFileTree();
-        downloadSubject();
+        PoliformatEntity response = ObjectParsers.ENTITY_PARSER.fromJson(Utils.loadLocal(id));
+        Tree<PoliformatFile> localTree = response.toFileTree();
+        List<PoliformatFile> files = fileSystem.merge(localTree);
+        downloadMergeFiles(files);
+    }
+
+    private void downloadMergeFiles(List<PoliformatFile> files) {
+
     }
 
     /**
      * Guarda en local el archivo 'json' que ya ha sido sincronizado.
+     *
      */
     public void saveChanges() throws IOException {
         Utils.saveRemote(id);

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PoliformatEntity {
+
     @Json(name = "entityPrefix")
     private String entityPrefix;
     @Json(name = "content_collection")
@@ -24,6 +25,7 @@ public class PoliformatEntity {
             parent.addChild(current);
             aux.put(current.getData().getUrl().toString(), current);
         }
+
         return root;
     }
 
@@ -31,15 +33,8 @@ public class PoliformatEntity {
         return entityPrefix;
     }
 
-    public void setEntityPrefix(String entityPrefix) {
-        this.entityPrefix = entityPrefix;
-    }
-
     public PoliformatFile[] getContentCollection() {
         return contentCollection;
     }
 
-    public void setContentCollection(PoliformatFile[] contentCollection) {
-        this.contentCollection = contentCollection;
-    }
 }

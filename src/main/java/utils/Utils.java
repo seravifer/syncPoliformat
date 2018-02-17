@@ -1,9 +1,6 @@
 package utils;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.*;
 import model.Subject;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -12,6 +9,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -19,8 +17,6 @@ import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
-
-    private static String separator = System.getProperty("file.separator");
 
     public static InputStreamReader getJsonStream(String url) throws IOException {
         URL link = new URL("https://poliformat.upv.es/direct/" + url);
@@ -73,14 +69,15 @@ public class Utils {
     public static void downloadFile(URL url, String path) throws IOException {
         String name = url.toString().substring(url.toString().lastIndexOf("/"));
         int pos = name.lastIndexOf(".");
+
         if (pos > 0) {
             String extension = name.substring(pos);
             if (!path.contains(extension)) path += extension;
         }
 
-        Path finalPath = Paths.get(path);
-        try (InputStream in = url.openStream()) {
-            Files.copy(in, finalPath);
+        Path to = Paths.get(path);
+        try (InputStream from = url.openStream()) {
+            Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
@@ -103,7 +100,7 @@ public class Utils {
 
     public static void updateSubject(Subject subject) {
         try {
-            File file = new File(appDirectory() + "settings.json");
+            File file = new File(appDirectory(), "settings.json");
             FileReader reader = new FileReader(file);
             JsonObject settings = Json.parse(reader).asObject();
             reader.close();
@@ -118,32 +115,23 @@ public class Utils {
 
             settings.set("subjects", jsonSubjects);
             PrintWriter printer = new PrintWriter(file, "UTF-8");
-            settings.writeTo(printer);
+            settings.writeTo(printer, PrettyPrint.PRETTY_PRINT);
             printer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * https://stackoverflow.com/questions/921262/how-to-download-and-save-a-file-from-internet-using-java
-     *
-     * @param id
-     * @throws IOException
-     */
     public static void saveRemote(String id) throws IOException {
         URL url = new URL("https://poliformat.upv.es/direct/content/site/" + id + ".json");
-        Path path = Paths.get(appDirectory(), id + ".json");
-        try (InputStream in = url.openStream()) {
-            Files.copy(in, path);
+        Path to = Paths.get(appDirectory(), id + ".json");
+        try (InputStream from = url.openStream()) {
+            Files.copy(from, to);
         }
     }
 
-    public static JsonObject loadLocal(String id) throws IOException {
-        File file = new File(appDirectory() + id + ".json");
-        FileReader reader = new FileReader(file);
-        JsonObject subjectLocal = Json.parse(reader).asObject();
-        reader.close();
-        return subjectLocal;
+    public static String loadLocal(String id) throws IOException {
+        return new String(Files.readAllBytes(Paths.get(appDirectory(), id + ".json")));
     }
+
 }

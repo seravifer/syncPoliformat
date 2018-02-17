@@ -8,6 +8,7 @@ import model.json.adapter.ContentAdapter;
 import model.json.adapter.UrlAdapter;
 
 public final class ObjectParsers {
+
     private ObjectParsers() {}
 
     private static Moshi moshiParser = new Moshi.Builder()
@@ -17,4 +18,5 @@ public final class ObjectParsers {
             .build();
 
     public static JsonAdapter<PoliformatEntity> ENTITY_PARSER = moshiParser.adapter(PoliformatEntity.class);
+
 }

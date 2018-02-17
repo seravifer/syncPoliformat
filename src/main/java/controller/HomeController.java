@@ -14,6 +14,7 @@ import utils.Utils;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -33,7 +34,6 @@ public class HomeController implements Initializable {
     private VBox listID;
 
     private User user;
-    private Poliformat poliformat;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -44,8 +44,8 @@ public class HomeController implements Initializable {
         this.user = user;
         nameID.setText(user.getNameUser() + " " + user.getLastNameUser());
         mailID.setText(user.getMailUser());
-        
-        poliformat = new Poliformat();
+
+        Poliformat poliformat = new Poliformat();
 
         poliformat.syncRemote();
         poliformat.syncLocal();
@@ -55,6 +55,7 @@ public class HomeController implements Initializable {
         }
     }
 
+    @FXML
     private void updateAll() {
         for (int i = 0; i < listID.getChildren().size(); i++) {
             ((SubjectComponent) listID.getChildren().get(i)).sync();
@@ -68,7 +69,7 @@ public class HomeController implements Initializable {
 
     @FXML
     private void openWeb(MouseEvent event) throws IOException, URISyntaxException {
-        Desktop.getDesktop().browse(new URL("https://poliformat.upv.es/portal").toURI());
+        Desktop.getDesktop().browse(new URI("https://poliformat.upv.es/portal"));
     }
 
 }
