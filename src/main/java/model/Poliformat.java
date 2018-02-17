@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 public class Poliformat {
 
+    public static final String HOST = "poliformat.upv.es";
+
     private ArrayList<Subject> subjects;
 
     public Poliformat() {
@@ -54,7 +56,7 @@ public class Poliformat {
             tempSubjects.add(new Subject(name, "GRA_" + id + "_" + course));
         }
 
-        JsonArray items = Json.parse(Utils.getJson("site.json")).asObject().get("site_collection").asArray();
+        JsonArray items = Json.parse(Utils.getJsonStream("site.json")).asObject().get("site_collection").asArray();
 
         for (JsonValue item : items) {
             String nameSubject = item.asObject().getString("htmlShortDescription", null);

@@ -69,7 +69,7 @@ public class User {
     private void saveCredentials(String username, String password) {}
 
     private void syncUserInfo() throws IOException {
-        JsonObject user = Json.parse(Utils.getJson("user/current.json")).asObject();
+        JsonObject user = Json.parse(Utils.getJsonStream("user/current.json")).asObject();
         nameUser = user.get("firstName").asString();
         lastNameUser = user.get("lastName").asString();
         mailUser = user.get("email").asString();

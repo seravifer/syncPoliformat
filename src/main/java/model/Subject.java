@@ -1,12 +1,6 @@
 package model;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-import network.SubjectRequester;
-import retrofit2.Response;
-import utils.FileType;
+import network.ObjectParsers;
 import utils.Tree;
 import utils.Utils;
 
@@ -14,9 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Subject {
 
@@ -24,7 +15,7 @@ public class Subject {
     private String name;
     private String shortName;
     private String lastUpdate;
-    private Tree<FileType> fileSystem;
+    private Tree<PoliformatFile> fileSystem;
 
     public Subject(String name, String id) {
         this.name = name;
@@ -62,7 +53,7 @@ public class Subject {
         Utils.updateSubject(this);
     }
 
-    public Tree<FileType> getFilesystem() {
+    public Tree<PoliformatFile> getFilesystem() {
         return fileSystem;
     }
 
@@ -73,77 +64,14 @@ public class Subject {
      */
     public void sync() throws IOException {
         if (lastUpdate == null || lastUpdate.isEmpty()) {
-            Response<PoliformatEntity> response =  SubjectRequester.POLIFORMAT_SERVICE.getSubject(id + ".json").execute();
-            if (response.isSuccessful()) {
-                fileSystem = response.body().toFileTree();
-                downloadSubject();
-            } else {
-                // Error de conexion
-            }
+            PoliformatEntity response =  ObjectParsers.ENTITY_PARSER.fromJson(Utils.getJson("content/site/" + id + ".json"));
+            fileSystem = response.toFileTree();
+            downloadSubject();
         } else {
             syncSubject();
         }
 
         saveChanges();
-    }
-
-    /**
-     * Convierte un archivo json en un arbol de archivos.
-     *
-     * @throws IOException
-     */
-    private void parser() throws IOException {
-        JsonArray items = Json.parse(Utils.getJson("content/site/" + id + ".json"))
-                .asObject().get("content_collection").asArray();
-
-        HashMap<String, Tree<FileType>> aux = new HashMap<>();
-
-        Pattern parentUrlPattern = Pattern.compile("/content.+(?=/.*/$)|/content.+/");
-        Pattern urlPattern = Pattern.compile("/content.+");
-
-        for (int i = 0; i < items.size(); i++) {
-            JsonValue item = items.get(i);
-            JsonObject object = item.asObject();
-
-            String url = object.getString("url", null);
-            String type = object.getString("type", null);
-            String title = object.getString("title", null);
-
-            Matcher matcherParent = parentUrlPattern.matcher(url);
-            String match = null;
-            String parentId = null;
-
-            if (matcherParent.find()) {
-                match = matcherParent.group();
-                parentId = match;
-
-                if (!match.endsWith("/")) {
-                    parentId = String.format("%s/",match);
-                }
-            }
-
-            Matcher matcherUrl = urlPattern.matcher(url);
-            String route = null;
-
-            if (matcherUrl.find()) {
-                route = matcherUrl.group();
-            }
-
-            if (i == 0) {
-                FileType root = new FileType(title, type, route, url);
-                fileSystem = new Tree<>(root);
-                aux.put(fileSystem.getData().getRoute(), fileSystem);
-            } else {
-                FileType file = new FileType(title, type, route, url);
-                Tree<FileType> fileNode = new Tree<>(file);
-                Tree<FileType> parentNode = aux.get(parentId);
-
-                if (parentNode != null) {
-                    parentNode.addChild(fileNode);
-                    aux.put(fileNode.getData().getRoute(), fileNode);
-                }
-            }
-        }
     }
 
     /**
@@ -155,8 +83,8 @@ public class Subject {
         System.out.printf("Download finished: %s\n", name);
     }
 
-    private void downloadTree(Tree<FileType> node, String parentPath) {
-        FileType data = node.getData();
+    private void downloadTree(Tree<PoliformatFile> node, String parentPath) {
+        PoliformatFile data = node.getData();
         Path path = Paths.get(parentPath, data.getTitle());
 
         if (data.getType().equals("collection")) {
@@ -172,7 +100,7 @@ public class Subject {
             }
         }
 
-        for (Tree<FileType> child : node.getChildren()) {
+        for (Tree<PoliformatFile> child : node.getChildren()) {
             downloadTree(child, path.toString());
         }
     }
@@ -181,7 +109,8 @@ public class Subject {
      * Compara los archivos locales con el remoto y descarga la diferencia.
      */
     private void syncSubject() throws IOException {
-        parser();
+        PoliformatEntity response =  ObjectParsers.ENTITY_PARSER.fromJson(Utils.getJson("content/site/" + id + ".json"));
+        fileSystem = response.toFileTree();
         downloadSubject();
     }
 

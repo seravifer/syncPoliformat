@@ -22,11 +22,32 @@ public class Utils {
 
     private static String separator = System.getProperty("file.separator");
 
-    public static InputStreamReader getJson(String url) throws IOException {
+    public static InputStreamReader getJsonStream(String url) throws IOException {
         URL link = new URL("https://poliformat.upv.es/direct/" + url);
         HttpsURLConnection conn = (HttpsURLConnection) link.openConnection();
 
         return new InputStreamReader(conn.getInputStream());
+    }
+
+    public static String getJson(String url) throws IOException {
+        URL link = new URL("https://poliformat.upv.es/direct/" + url);
+        HttpsURLConnection conn = (HttpsURLConnection) link.openConnection();
+
+        return inputStreamToString(conn.getInputStream());
+    }
+
+    private static String inputStreamToString(InputStream inputStream) {
+        try(ByteArrayOutputStream result = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                result.write(buffer, 0, length);
+            }
+
+            return result.toString("UTF-8");
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static String now() {
@@ -112,7 +133,7 @@ public class Utils {
      */
     public static void saveRemote(String id) throws IOException {
         URL url = new URL("https://poliformat.upv.es/direct/content/site/" + id + ".json");
-        Path path = Paths.get(appDirectory() + separator + id + ".json");
+        Path path = Paths.get(appDirectory(), id + ".json");
         try (InputStream in = url.openStream()) {
             Files.copy(in, path);
         }

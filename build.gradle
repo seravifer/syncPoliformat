@@ -17,8 +17,5 @@ dependencies {
     compile 'com.jfoenix:jfoenix:8.0.1'
     compile 'org.jsoup:jsoup:1.8.3'
     compile 'com.squareup.moshi:moshi:1.5.0'
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:converter-moshi:2.0.2'
     compile 'com.squareup.moshi:moshi-adapters:1.5.0'
-
 }
