@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class UrlAdapter {
+
     @ToJson String toJson(URL url) {
         return url.toString();
     }
@@ -19,4 +20,5 @@ public class UrlAdapter {
             return null;
         }
     }
+
 }

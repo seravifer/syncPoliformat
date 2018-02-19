@@ -1,6 +1,7 @@
 package model;
 
 import model.json.ObjectParsers;
+import utils.Settings;
 import utils.Tree;
 import utils.Utils;
 
@@ -21,7 +22,7 @@ public class SubjectManager {
 
     public void updateLastUpdate(String lastUpdate) {
         subjectInfo.setLastUpdate(lastUpdate);
-        Utils.updateSubject(subjectInfo);
+        Settings.updateSubject(subjectInfo);
     }
 
     public Tree<PoliformatFile> getFilesystem() {
@@ -51,7 +52,7 @@ public class SubjectManager {
      */
     private void downloadSubject() {
         System.out.printf("Download started: %s\n", subjectInfo.getName());
-        downloadTree(fileSystem, Utils.poliformatDirectory());
+        downloadTree(fileSystem, Settings.poliformatDirectory());
         System.out.printf("Download finished: %s\n", subjectInfo.getName());
     }
 
@@ -82,7 +83,7 @@ public class SubjectManager {
      *
      */
     private void syncSubject() throws IOException {
-        PoliformatContentEntity response = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(Utils.loadLocal(subjectInfo.getId()));
+        PoliformatContentEntity response = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(Settings.loadLocal(subjectInfo.getId()));
         Tree<PoliformatFile> localTree = response.toFileTree();
         List<PoliformatFile> files = fileSystem.merge(localTree);
         downloadMergeFiles(files);
@@ -97,6 +98,6 @@ public class SubjectManager {
      *
      */
     public void saveChanges() throws IOException {
-        Utils.saveRemote(subjectInfo.getId());
+        Settings.saveRemote(subjectInfo.getId());
     }
 }

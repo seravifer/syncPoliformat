@@ -6,6 +6,7 @@ import com.squareup.moshi.ToJson;
 import java.util.Date;
 
 public class PosixDateAdapter {
+
     public @FromJson @PosixDate Date fromJson(Long date) {
         return new Date(date);
     }
@@ -13,4 +14,5 @@ public class PosixDateAdapter {
     public @ToJson Long toJson(@PosixDate Date date) {
         return date.getTime();
     }
+
 }

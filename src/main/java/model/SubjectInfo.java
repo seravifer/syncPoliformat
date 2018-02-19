@@ -1,9 +1,10 @@
 package model;
 
-import java.util.Date;
-import java.util.List;
 import com.squareup.moshi.Json;
 import model.json.adapter.PosixDate;
+
+import java.util.Date;
+import java.util.List;
 
 public class SubjectInfo {
 

@@ -30,4 +30,5 @@ public class PoliformatContentEntity extends PoliformatEntity {
 
         return root;
     }
+    
 }

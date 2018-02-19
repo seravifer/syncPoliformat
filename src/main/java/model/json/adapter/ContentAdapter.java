@@ -18,4 +18,5 @@ public class ContentAdapter {
     Path fromJson(String path) {
         return Paths.get(clean.fromJson(path));
     }
+
 }

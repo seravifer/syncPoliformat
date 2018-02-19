@@ -57,7 +57,7 @@ public class SubjectComponent extends AnchorPane {
 
     private String formatLastUpdate(String lastUpdate) {
         try {
-            return lastUpdate.equals("") ?  new String("Todavía no ha sido sincronizado.".getBytes(), "UTF-8") : lastUpdate;
+            return lastUpdate.equals("") ? new String("Todavía no ha sido sincronizado.".getBytes(), "UTF-8") : lastUpdate;
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("UTF-8 no existe?", e);
         }

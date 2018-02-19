@@ -5,10 +5,15 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import utils.Settings;
 import utils.Utils;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Poliformat {
@@ -23,19 +28,18 @@ public class Poliformat {
         return subjects;
     }
 
-    private void initApp() throws IOException {
-        File folder = new File(Utils.poliformatDirectory());
-        File subjectsUpdate = Utils.getLastSubjectUpdateJsonPath().toFile();
-        File directory = new File(Utils.appDirectory());
+    private void initFolders() throws IOException {
+        File folder = new File(Settings.poliformatDirectory());
+        File subjectsUpdate = Settings.getSubjectsPath().toFile();
+        File directory = new File(Settings.appDirectory());
 
         folder.mkdir();
         directory.mkdir();
-        if (!subjectsUpdate.exists()) {
-            FileOutputStream out = new FileOutputStream(subjectsUpdate);
-            out.write("{}".getBytes("UTF-8"));
-            out.flush();
-            out.close();
-        }
+
+        FileOutputStream out = new FileOutputStream(subjectsUpdate);
+        out.write("{}".getBytes("UTF-8"));
+        out.flush();
+        out.close();
     }
 
     public void syncRemote() {
@@ -62,17 +66,20 @@ public class Poliformat {
             String completeId = inputElement.getElementsByTag("span").text();
             int firstComaIndex = completeId.indexOf(',');
             String id = completeId.substring(1, firstComaIndex);
-            subjects.get("GRA_" + id + "_" + course).setName(name);
+            SubjectInfo subjectInfo = subjects.get("GRA_" + id + "_" + course);
+            if (subjectInfo != null) {
+                subjectInfo.setName(name);
+            }
         }
     }
 
     public void syncLocal() throws IOException {
-        File file = Utils.getLastSubjectUpdateJsonPath().toFile();
+        File file = Settings.getSubjectsPath().toFile();
 
-        if (!file.exists()) initApp();
+        if (!file.exists()) initFolders();
 
         Map<String, String> jsonSubjects = ObjectParsers.LAST_SUBJECT_UPDATE_ADAPTER.fromJson(Utils.readFile(file));
-        for (SubjectInfo itemSubject: subjects.values()) {
+        for (SubjectInfo itemSubject : subjects.values()) {
             String lastUpdated = jsonSubjects.get(itemSubject.getId());
             if (lastUpdated == null) {
                 jsonSubjects.put(itemSubject.getId(), "");
@@ -85,4 +92,5 @@ public class Poliformat {
         out.write(ObjectParsers.LAST_SUBJECT_UPDATE_ADAPTER.toJson(jsonSubjects).getBytes("UTF-8"));
         out.close();
     }
+
 }

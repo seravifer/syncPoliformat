@@ -9,7 +9,7 @@ import javafx.scene.shape.SVGPath;
 import model.Poliformat;
 import model.SubjectInfo;
 import model.User;
-import utils.Utils;
+import utils.Settings;
 
 import java.awt.*;
 import java.io.File;
@@ -18,7 +18,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Comparator;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class HomeController implements Initializable {
@@ -38,9 +37,7 @@ public class HomeController implements Initializable {
     private User user;
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
-    }
+    public void initialize(URL location, ResourceBundle resources) {}
 
     public void init(User user) throws IOException {
         this.user = user;
@@ -72,7 +69,7 @@ public class HomeController implements Initializable {
 
     @FXML
     private void openFolder(MouseEvent event) throws IOException {
-        Desktop.getDesktop().open(new File(Utils.poliformatDirectory()));
+        Desktop.getDesktop().open(new File(Settings.poliformatDirectory()));
     }
 
     @FXML
