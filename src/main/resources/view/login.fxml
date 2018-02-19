@@ -22,7 +22,7 @@
          <font>
             <Font name="Roboto" size="12.0" />
          </font></JFXPasswordField>
-      <JFXCheckBox fx:id="rememberID" checkedColor="#c00000" disable="true" focusTraversable="false" layoutX="96.0" layoutY="261.0" prefWidth="83.0" text="Recordar" textFill="#656565" AnchorPane.leftAnchor="96.0" AnchorPane.rightAnchor="220.0">
+      <JFXCheckBox fx:id="rememberID" checkedColor="#c00000" focusTraversable="false" layoutX="96.0" layoutY="261.0" prefWidth="83.0" text="Recordar" textFill="#656565" AnchorPane.leftAnchor="96.0" AnchorPane.rightAnchor="220.0">
          <font>
             <Font name="Roboto" size="12.0" />
          </font></JFXCheckBox>

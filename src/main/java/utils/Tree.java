@@ -1,5 +1,7 @@
 package utils;
 
+import model.PoliformatFile;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,4 +46,9 @@ public class Tree<T> {
             children.get(children.size() - 1).print(prefix + (isTail ? "    " : "│   "), true);
         }
     }
+
+    public List<PoliformatFile> merge(Tree<PoliformatFile> localTree) {
+        return null;
+    }
+
 }

@@ -22,9 +22,6 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
-    private User user;
-    private int attemps = 3;
-
     @FXML
     private JFXPasswordField usernameID;
 
@@ -46,10 +43,10 @@ public class LoginController implements Initializable {
     @FXML
     private AnchorPane sceneID;
 
+    private User user = new User();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        user = new User();
-
         usernameID.textProperty().addListener((ov, oldValue, newValue) -> {
             if (usernameID.getText().length() > 8 || !usernameID.getText().matches("[0-9]*")) {
                 usernameID.setText(oldValue);
@@ -65,11 +62,13 @@ public class LoginController implements Initializable {
     private void login() {
         loginID.setDisable(true);
         loadingID.setVisible(true);
+
         new Thread(() -> {
             try {
                 user.login(usernameID.getText(), passwordID.getText(), rememberID.isSelected());
             } catch (Exception e) {
                 System.err.println("El usuario no tiene conexión a internet.");
+                e.printStackTrace();
             }
             Platform.runLater(() -> status(user.isLogged()));
         }).start();
@@ -97,14 +96,13 @@ public class LoginController implements Initializable {
             } else {
                 errorID.setVisible(true);
                 passwordID.setText("");
-                attemps--;
             }
 
             loginID.setDisable(false);
             loadingID.setVisible(false);
-            if (attemps == 0) loginID.setDisable(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }
