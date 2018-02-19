@@ -16,30 +16,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Poliformat {
+public class Subjects {
 
     private Map<String, SubjectInfo> subjects;
 
-    public Poliformat() {
+    public Subjects() {
         subjects = new HashMap<>();
     }
 
     public Map<String, SubjectInfo> getSubjects() {
         return subjects;
-    }
-
-    private void initFolders() throws IOException {
-        File folder = new File(Settings.poliformatDirectory());
-        File subjectsUpdate = Settings.getSubjectsPath().toFile();
-        File directory = new File(Settings.appDirectory());
-
-        folder.mkdir();
-        directory.mkdir();
-
-        FileOutputStream out = new FileOutputStream(subjectsUpdate);
-        out.write("{}".getBytes("UTF-8"));
-        out.flush();
-        out.close();
     }
 
     public void syncRemote() {
@@ -75,8 +61,6 @@ public class Poliformat {
 
     public void syncLocal() throws IOException {
         File file = Settings.getSubjectsPath().toFile();
-
-        if (!file.exists()) initFolders();
 
         Map<String, String> jsonSubjects = ObjectParsers.LAST_SUBJECT_UPDATE_ADAPTER.fromJson(Utils.readFile(file));
         for (SubjectInfo itemSubject : subjects.values()) {

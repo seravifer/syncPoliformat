@@ -63,7 +63,8 @@ public class User {
     }
 
     public void logout() {
-        CookieHandler.setDefault(new CookieManager());
+        manager = new CookieManager();
+        CookieHandler.setDefault(manager);
         CredentialsManager.deleteCredentials();
     }
 
@@ -107,20 +108,6 @@ public class User {
         nameUser = info.getFirstName();
         lastNameUser = info.getLastName();
         mailUser = info.getEmail();
-    }
-
-    private void printCokies() {
-        CookieStore cookieJar =  manager.getCookieStore();
-        List<HttpCookie> cookies = cookieJar.getCookies();
-        for (HttpCookie cookie: cookies) {
-            System.out.println(cookie.getValue() + " - " +
-                    cookie.getDomain() + " - " +
-                    cookie.getName() + " - " +
-                    cookie.getPath() + " - " +
-                    cookie.getSecure() + " - " +
-                    cookie.getMaxAge() + " - " +
-                    cookie.getVersion());
-        }
     }
 
 }

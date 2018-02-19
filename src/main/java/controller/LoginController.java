@@ -15,6 +15,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import model.User;
+import utils.Settings;
 
 import java.io.IOException;
 import java.net.URL;
@@ -47,6 +48,12 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        try {
+            Settings.initFolders();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         usernameID.textProperty().addListener((ov, oldValue, newValue) -> {
             if (usernameID.getText().length() > 8 || !usernameID.getText().matches("[0-9]*")) {
                 usernameID.setText(oldValue);
@@ -77,22 +84,7 @@ public class LoginController implements Initializable {
     private void status(Boolean isLogged) {
         try {
             if (isLogged) {
-                ((Stage) loginID.getScene().getWindow()).close();
-
-                Stage stage = new Stage();
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/home.fxml"));
-                Parent sceneMain = loader.load();
-
-                HomeController controller = loader.getController();
-                controller.init(user);
-
-                Scene scene = new Scene(sceneMain);
-                scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
-
-                stage.setScene(scene);
-                stage.setTitle("syncPoliformat");
-                stage.setResizable(false);
-                stage.show();
+                launchHome();
             } else {
                 errorID.setVisible(true);
                 passwordID.setText("");
@@ -103,6 +95,25 @@ public class LoginController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void launchHome() throws IOException {
+        ((Stage) loginID.getScene().getWindow()).close();
+
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/home.fxml"));
+        Parent sceneMain = loader.load();
+
+        HomeController controller = loader.getController();
+        controller.init(user);
+
+        Scene scene = new Scene(sceneMain);
+        scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
+
+        stage.setScene(scene);
+        stage.setTitle("syncPoliformat");
+        stage.setResizable(false);
+        stage.show();
     }
 
 }

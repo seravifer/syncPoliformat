@@ -6,8 +6,8 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
-import model.Poliformat;
 import model.SubjectInfo;
+import model.Subjects;
 import model.User;
 import utils.Settings;
 
@@ -34,17 +34,14 @@ public class HomeController implements Initializable {
     @FXML
     private VBox listID;
 
-    private User user;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {}
 
     public void init(User user) throws IOException {
-        this.user = user;
         nameID.setText(user.getNameUser() + " " + user.getLastNameUser());
         mailID.setText(user.getMailUser());
 
-        Poliformat poliformat = new Poliformat();
+        Subjects poliformat = new Subjects();
 
         poliformat.syncRemote();
         poliformat.syncLocal();

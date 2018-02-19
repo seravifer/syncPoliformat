@@ -21,6 +21,20 @@ public final class Settings {
         return Paths.get(appDirectory(), "subjects.json");
     }
 
+    public static void initFolders() throws IOException {
+        File folder = new File(poliformatDirectory());
+        File directory = new File(appDirectory());
+        File subjects = getSubjectsPath().toFile();
+
+        folder.mkdir();
+        directory.mkdir();
+
+        FileOutputStream out = new FileOutputStream(subjects);
+        out.write("{}".getBytes("UTF-8"));
+        out.flush();
+        out.close();
+    }
+
     public static String appDirectory() {
         String pathDirectory;
         String os = System.getProperty("os.name").toLowerCase();
