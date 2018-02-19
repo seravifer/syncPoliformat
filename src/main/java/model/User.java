@@ -1,7 +1,6 @@
 package model;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
+import model.json.ObjectParsers;
 import utils.Utils;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -69,9 +68,9 @@ public class User {
     private void saveCredentials(String username, String password) {}
 
     private void syncUserInfo() throws IOException {
-        JsonObject user = Json.parse(Utils.getJsonStream("user/current.json")).asObject();
-        nameUser = user.get("firstName").asString();
-        lastNameUser = user.get("lastName").asString();
-        mailUser = user.get("email").asString();
+        UserInfo info = ObjectParsers.USER_INFO_ADAPTER.fromJson(Utils.getJson("user/current.json"));
+        nameUser = info.getFirstName();
+        lastNameUser = info.getLastName();
+        mailUser = info.getEmail();
     }
 }

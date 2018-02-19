@@ -1,7 +1,7 @@
 package utils;
 
-import com.eclipsesource.json.*;
-import model.Subject;
+import model.SubjectInfo;
+import model.json.ObjectParsers;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -14,15 +14,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Utils {
+public final class Utils {
 
-    public static InputStreamReader getJsonStream(String url) throws IOException {
-        URL link = new URL("https://poliformat.upv.es/direct/" + url);
-        HttpsURLConnection conn = (HttpsURLConnection) link.openConnection();
+    private Utils() {}
 
-        return new InputStreamReader(conn.getInputStream());
+    public static Path getLastSubjectUpdateJsonPath() {
+        return Paths.get(Utils.appDirectory(), "lastSubjectUpdate.json");
     }
 
     public static String getJson(String url) throws IOException {
@@ -30,6 +30,11 @@ public class Utils {
         HttpsURLConnection conn = (HttpsURLConnection) link.openConnection();
 
         return inputStreamToString(conn.getInputStream());
+    }
+
+    public static String readFile(File file) throws IOException {
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        return new String(bytes, "UTF-8");
     }
 
     private static String inputStreamToString(InputStream inputStream) {
@@ -98,25 +103,15 @@ public class Utils {
         return Paths.get(System.getProperty("user.home"), "Poliformat").toString();
     }
 
-    public static void updateSubject(Subject subject) {
+    public static void updateSubject(SubjectInfo subjectInfo) {
+        File file = getLastSubjectUpdateJsonPath().toFile();
         try {
-            File file = new File(appDirectory(), "settings.json");
-            FileReader reader = new FileReader(file);
-            JsonObject settings = Json.parse(reader).asObject();
-            reader.close();
-            JsonArray jsonSubjects = settings.get("subjects").asArray();
+            Map<String, String> jsonSubjects = ObjectParsers.LAST_SUBJECT_UPDATE_ADAPTER.fromJson(Utils.readFile(file));
+            jsonSubjects.put(subjectInfo.getId(), subjectInfo.getLastUpdate());
 
-            for (JsonValue item : jsonSubjects) {
-                if (item.asObject().getString("id", null).equals(subject.getId())) {
-                    item.asObject().set("lastUpdate", subject.getLastUpdate());
-                    break;
-                }
-            }
-
-            settings.set("subjects", jsonSubjects);
-            PrintWriter printer = new PrintWriter(file, "UTF-8");
-            settings.writeTo(printer, PrettyPrint.PRETTY_PRINT);
-            printer.close();
+            FileOutputStream out = new FileOutputStream(file,false);
+            out.write(ObjectParsers.LAST_SUBJECT_UPDATE_ADAPTER.toJson(jsonSubjects).getBytes("UTF-8"));
+            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

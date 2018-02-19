@@ -1,101 +1,88 @@
 package model;
 
-import com.eclipsesource.json.*;
+import model.json.ObjectParsers;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import utils.Utils;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Poliformat {
 
-    private ArrayList<Subject> subjects;
+    private Map<String, SubjectInfo> subjects;
 
     public Poliformat() {
-        subjects = new ArrayList<>();
+        subjects = new HashMap<>();
     }
 
-    public ArrayList<Subject> getSubjects() {
+    public Map<String, SubjectInfo> getSubjects() {
         return subjects;
     }
 
     private void initApp() throws IOException {
         File folder = new File(Utils.poliformatDirectory());
-        File settings = new File(Utils.appDirectory(), "settings.json");
+        File subjectsUpdate = Utils.getLastSubjectUpdateJsonPath().toFile();
         File directory = new File(Utils.appDirectory());
 
         folder.mkdir();
         directory.mkdir();
-        settings.createNewFile();
-
-        JsonObject config = Json.object().add("subjects", Json.array());
-        PrintWriter printer = new PrintWriter(settings, "UTF-8");
-        config.writeTo(printer, PrettyPrint.PRETTY_PRINT);
-        printer.close();
+        if (!subjectsUpdate.exists()) {
+            FileOutputStream out = new FileOutputStream(subjectsUpdate);
+            out.write("{}".getBytes("UTF-8"));
+            out.flush();
+            out.close();
+        }
     }
 
-    public void syncRemote() throws IOException {
+    public void syncRemote() {
+        try {
+            String json = Utils.getJson("site.json");
+            PoliformatSiteEntity subjectsEntity = ObjectParsers.POLIFORMAT_ENTITY_SUBJECT_ADAPTER.fromJson(json);
+            subjects = Arrays.asList(subjectsEntity.getSiteCollection()).stream()
+                    .filter(SubjectInfo::isRealSubject)
+                    .collect(Collectors.toMap(SubjectInfo::getId, info -> info));
+            fetchRealSubjectNames();
+        } catch (IOException e) {
+            throw new RuntimeException("Error en la descarga del indice de asignaturas", e);
+        }
+    }
+
+    private void fetchRealSubjectNames() throws IOException {
         Document doc = Jsoup.connect("https://intranet.upv.es/pls/soalu/sic_asi.Lista_asig").get();
 
         Elements inputElements = doc.getElementsByClass("upv_enlace");
-        ArrayList<Subject> tempSubjects = new ArrayList<>();
 
         String course = Utils.getCurso();
         for (Element inputElement : inputElements) {
-            String oldName = inputElement.ownText();
-            String name = oldName.substring(0, oldName.length() - 2);
-            String id = inputElement.getElementsByTag("span").text().substring(1, 6);
-            tempSubjects.add(new Subject(name, "GRA_" + id + "_" + course));
-        }
-
-        JsonArray items = Json.parse(Utils.getJsonStream("site.json")).asObject().get("site_collection").asArray();
-
-        for (JsonValue item : items) {
-            String nameSubject = item.asObject().getString("htmlShortDescription", null);
-            String idSubject = item.asObject().getString("id", null);
-            for (Subject itemSubject : tempSubjects) {
-                if (itemSubject.getId().equals(idSubject)) {
-                    itemSubject.setShortName(nameSubject);
-                    subjects.add(itemSubject); break;
-                }
-            }
+            String name = inputElement.ownText().trim();
+            String completeId = inputElement.getElementsByTag("span").text();
+            int firstComaIndex = completeId.indexOf(',');
+            String id = completeId.substring(1, firstComaIndex);
+            subjects.get("GRA_" + id + "_" + course).setName(name);
         }
     }
 
     public void syncLocal() throws IOException {
-        File file = new File(Utils.appDirectory(), "settings.json");
+        File file = Utils.getLastSubjectUpdateJsonPath().toFile();
 
         if (!file.exists()) initApp();
 
-        FileReader reader = new FileReader(file);
-        JsonObject settings = Json.parse(reader).asObject();
-        reader.close();
-        JsonArray jsonSubjects = settings.get("subjects").asArray();
-
-        Boolean found = false;
-        for (Subject itemSubject : subjects) {
-            for (JsonValue item : jsonSubjects) {
-                if (item.asObject().getString("id", "").equals(itemSubject.getId())) {
-                    itemSubject.setLastUpdate(item.asObject().getString("lastUpdate", ""));
-                    found = true;
-                }
-            }
-            if (!found) {
-                jsonSubjects.add(Json.object().add("id", itemSubject.getId()).add("lastUpdate", ""));
+        Map<String, String> jsonSubjects = ObjectParsers.LAST_SUBJECT_UPDATE_ADAPTER.fromJson(Utils.readFile(file));
+        for (SubjectInfo itemSubject: subjects.values()) {
+            String lastUpdated = jsonSubjects.get(itemSubject.getId());
+            if (lastUpdated == null) {
+                jsonSubjects.put(itemSubject.getId(), "");
             } else {
-                found = false;
+                itemSubject.setLastUpdate(lastUpdated);
             }
         }
 
-        settings.set("subjects", jsonSubjects);
-        PrintWriter printer = new PrintWriter(file, "UTF-8");
-        settings.writeTo(printer, PrettyPrint.PRETTY_PRINT);
-        printer.close();
+        FileOutputStream out = new FileOutputStream(file, false);
+        out.write(ObjectParsers.LAST_SUBJECT_UPDATE_ADAPTER.toJson(jsonSubjects).getBytes("UTF-8"));
+        out.close();
     }
 }

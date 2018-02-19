@@ -10,48 +10,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class Subject {
+public class SubjectManager {
 
-    private String id;
-    private String name;
-    private String shortName;
-    private String lastUpdate;
+    private final SubjectInfo subjectInfo;
     private Tree<PoliformatFile> fileSystem;
 
-    public Subject(String name, String id) {
-        this.name = name;
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getShortName() {
-        return shortName;
-    }
-
-    public String getLastUpdate() {
-        if (lastUpdate == null || lastUpdate.isEmpty())
-            return "No ha sido sincronizada todavía.";
-        else return lastUpdate;
-    }
-
-    public void setShortName(String shortName) {
-        this.shortName = shortName.replaceAll("[^a-zA-Z]", "").substring(0, 3).toUpperCase();
-    }
-
-    public void setLastUpdate(String lastUpdate) {
-        this.lastUpdate = lastUpdate;
+    public SubjectManager(SubjectInfo subjectInfo) {
+        this.subjectInfo = subjectInfo;
     }
 
     public void updateLastUpdate(String lastUpdate) {
-        this.lastUpdate = lastUpdate;
-        Utils.updateSubject(this);
+        subjectInfo.setLastUpdate(lastUpdate);
+        Utils.updateSubject(subjectInfo);
     }
 
     public Tree<PoliformatFile> getFilesystem() {
@@ -63,9 +33,10 @@ public class Subject {
      *
      */
     public void sync() throws IOException {
-        PoliformatEntity response = ObjectParsers.ENTITY_PARSER.fromJson(Utils.getJson("content/site/" + id + ".json"));
-        fileSystem = response.toFileTree();
-        if (lastUpdate == null || lastUpdate.isEmpty()) {
+        String entityFilesJson = Utils.getJson("content/site/" + subjectInfo.getId() + ".json");
+        PoliformatContentEntity entity = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(entityFilesJson);
+        fileSystem = entity.toFileTree();
+        if (subjectInfo.getLastUpdate().isEmpty()) {
             downloadSubject();
         } else {
             syncSubject();
@@ -79,9 +50,9 @@ public class Subject {
      *
      */
     private void downloadSubject() {
-        System.out.printf("Download started: %s\n", name);
+        System.out.printf("Download started: %s\n", subjectInfo.getName());
         downloadTree(fileSystem, Utils.poliformatDirectory());
-        System.out.printf("Download finished: %s\n", name);
+        System.out.printf("Download finished: %s\n", subjectInfo.getName());
     }
 
     private void downloadTree(Tree<PoliformatFile> node, String parentPath) {
@@ -111,7 +82,7 @@ public class Subject {
      *
      */
     private void syncSubject() throws IOException {
-        PoliformatEntity response = ObjectParsers.ENTITY_PARSER.fromJson(Utils.loadLocal(id));
+        PoliformatContentEntity response = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(Utils.loadLocal(subjectInfo.getId()));
         Tree<PoliformatFile> localTree = response.toFileTree();
         List<PoliformatFile> files = fileSystem.merge(localTree);
         downloadMergeFiles(files);
@@ -126,6 +97,6 @@ public class Subject {
      *
      */
     public void saveChanges() throws IOException {
-        Utils.saveRemote(id);
+        Utils.saveRemote(subjectInfo.getId());
     }
 }

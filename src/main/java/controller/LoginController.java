@@ -68,6 +68,7 @@ public class LoginController implements Initializable {
                 user.login(usernameID.getText(), passwordID.getText(), rememberID.isSelected());
             } catch (Exception e) {
                 System.err.println("El usuario no tiene conexión a internet.");
+                e.printStackTrace();
             }
             Platform.runLater(() -> status(user.isLogged()));
         }).start();

@@ -7,7 +7,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import model.Poliformat;
-import model.Subject;
+import model.SubjectInfo;
 import model.User;
 import utils.Utils;
 
@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class HomeController implements Initializable {
@@ -50,9 +52,15 @@ public class HomeController implements Initializable {
         poliformat.syncRemote();
         poliformat.syncLocal();
 
-        for (Subject item : poliformat.getSubjects()) {
-            listID.getChildren().add(new SubjectComponent(item));
-        }
+        poliformat.getSubjects().values().stream()
+                .sorted(Comparator.comparing(SubjectInfo::getName))
+                .forEachOrdered(subjectInfo -> {
+                    try {
+                        listID.getChildren().add(new SubjectComponent(subjectInfo));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     @FXML
