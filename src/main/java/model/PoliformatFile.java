@@ -63,6 +63,8 @@ public class PoliformatFile {
         return url.toString().substring(0, index + 1);
     }
 
+    public boolean isFolder() { return type.equals("collection"); }
+
     public String getAuthor() {
         return author;
     }

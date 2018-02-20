@@ -57,7 +57,7 @@ public class SubjectManager {
         PoliformatFile data = node.getData();
         Path path = Paths.get(parentPath, data.getTitle());
 
-        if (data.getType().equals("collection")) {
+        if (data.isFolder()) {
             File directory = new File(path.toString());
             directory.mkdir();
             System.out.printf("Creating the folder: %s\n", path.toString());
