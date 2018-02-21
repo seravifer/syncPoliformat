@@ -17,7 +17,6 @@ import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
 import java.net.URL
-import java.util.Comparator
 import java.util.ResourceBundle
 
 class HomeController : Initializable {
@@ -34,31 +33,24 @@ class HomeController : Initializable {
     @FXML
     private lateinit var listID: VBox
 
-    private var user: User? = null
-
     @FXML
     override fun initialize(location: URL, resources: ResourceBundle?) {}
 
     @Throws(IOException::class)
     fun init(user: User) {
-        this.user = user
-        nameID.text = user.nameUser + " " + user.lastNameUser
-        mailID.text = user.mailUser
+        with(user) {
+            nameID.text = "$nameUser $lastNameUser"
+            mailID.text = mailUser
+        }
 
         val poliformat = Poliformat()
 
         poliformat.syncRemote()
         poliformat.syncLocal()
 
-        poliformat.subjects!!.values.stream()
-                .sorted(Comparator.comparing<SubjectInfo, String>(SubjectInfo::name))
-                .forEachOrdered { subjectInfo ->
-                    try {
-                        listID.children.add(SubjectComponent(subjectInfo))
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-                }
+        poliformat.subjects.values
+                .sortedBy(SubjectInfo::name)
+                .forEach { listID.children.add(SubjectComponent(it)) }
     }
 
     @FXML

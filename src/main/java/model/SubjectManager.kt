@@ -1,9 +1,11 @@
 package model
 
+import javafx.concurrent.Task
 import model.json.*
 import utils.Settings
 import utils.Tree
 import utils.Utils
+import utils.Utils.task
 
 import java.io.File
 import java.io.IOException
@@ -24,17 +26,18 @@ class SubjectManager(private val subjectInfo: SubjectInfo) {
      *
      */
     @Throws(IOException::class)
-    fun sync() {
+    fun syncFiles() = task<Unit> {
         val entityFilesJson = Utils.getJson("content/site/" + subjectInfo.id + ".json")
-        val entity = ContentEntityAdapter.fromJson(entityFilesJson)
-        filesystem = entity!!.toFileTree()
-        if (subjectInfo.lastUpdate.isEmpty()) {
-            downloadSubject()
-        } else {
-            syncSubject()
-        }
+        ContentEntityAdapter.fromJson(entityFilesJson)?.let { entity ->
+            filesystem = entity.toFileTree()
+            if (subjectInfo.lastUpdate.isEmpty()) {
+                downloadSubject()
+            } else {
+                syncSubject()
+            }
 
-        saveChanges()
+            saveChanges()
+        }
     }
 
     /**
@@ -51,13 +54,13 @@ class SubjectManager(private val subjectInfo: SubjectInfo) {
         val data = node.data
         val path = Paths.get(parentPath, data.title)
 
-        if (data.type == "collection") {
+        if (data.isFolder) {
             val directory = File(path.toString())
             directory.mkdir()
             System.out.printf("Creating the folder: %s\n", path.toString())
         } else {
             try {
-                Utils.downloadFile(data.url!!, path.toString())
+                Utils.downloadFile(data.url!!, path)
                 System.out.printf("Downloading the file: %s\n", path.toString())
             } catch (e: IOException) {
                 e.printStackTrace()

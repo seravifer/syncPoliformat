@@ -1,5 +1,6 @@
 package model.json
 
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -16,6 +17,6 @@ private val moshiParser = Moshi.Builder()
 
 val ContentEntityAdapter = moshiParser.adapter(ContentEntity::class.java)
 val SiteEntityAdapter = moshiParser.adapter(SiteEntity::class.java)
-val UserInfoAdapter = moshiParser.adapter(UserInfo::class.java)
+val UserInfoAdapter: JsonAdapter<UserInfo> = moshiParser.adapter(UserInfo::class.java)
 val LastSubjectUpdateAdapter = moshiParser.adapter<Map<String, String>>(
         Types.newParameterizedType(Map::class.java, String::class.java, String::class.java))

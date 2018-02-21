@@ -13,7 +13,6 @@ import model.SubjectInfo
 import utils.Utils
 
 import java.io.IOException
-import java.io.UnsupportedEncodingException
 
 class SubjectComponent @Throws(IOException::class)
 constructor(private val subject: SubjectInfo) : AnchorPane() {
@@ -48,16 +47,11 @@ constructor(private val subject: SubjectInfo) : AnchorPane() {
         dateID.text = formatLastUpdate(subject.lastUpdate)
         circleID.fill = Color.web(colors[Utils.random(1, colors.size - 1)])
 
-        donwloadID.setOnMouseClicked { e -> update() }
+        donwloadID.setOnMouseClicked { _ -> update() }
     }
 
     private fun formatLastUpdate(lastUpdate: String): String {
-        try {
-            return if (lastUpdate == "") String("Todavía no ha sido sincronizado.".toByteArray(), charset("UTF-8")) else lastUpdate
-        } catch (e: UnsupportedEncodingException) {
-            throw RuntimeException("UTF-8 no existe?", e)
-        }
-
+        return if (lastUpdate == "") String("Todavía no ha sido sincronizado.".toByteArray()) else lastUpdate
     }
 
     fun sync() {
@@ -69,18 +63,11 @@ constructor(private val subject: SubjectInfo) : AnchorPane() {
         loadingID.isVisible = true
         dateID.text = "Descargando asignatura..."
 
-        val myRunnable = {
-            try {
-                subject.manager.sync()
-            } catch (e: IOException) {
-                Platform.runLater { this.finish() }
-            }
-
-            Platform.runLater { this.finish() }
+        val task = subject.manager.syncFiles().apply {
+            setOnSucceeded { finish() }
+            setOnFailed { finish() }
         }
-
-        val thread = Thread(myRunnable)
-        thread.start()
+        Thread(task).apply { isDaemon = true }.start()
     }
 
     private fun finish() {

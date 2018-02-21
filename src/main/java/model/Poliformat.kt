@@ -12,7 +12,7 @@ import java.util.HashMap
 
 class Poliformat {
 
-    var subjects: Map<String, SubjectInfo>? = null
+    var subjects: Map<String, SubjectInfo>
         private set
 
     init {
@@ -40,7 +40,7 @@ class Poliformat {
             val subjectsEntity = SiteEntityAdapter.fromJson(json)
             subjects = subjectsEntity?.siteCollection
                     ?.filter(SubjectInfo::isRealSubject)
-                    ?.associateBy(SubjectInfo::id)
+                    ?.associateBy(SubjectInfo::id) ?: subjects
             fetchRealSubjectNames()
         } catch (e: IOException) {
             throw RuntimeException("Error en la descarga del indice de asignaturas", e)
@@ -73,9 +73,8 @@ class Poliformat {
 
         if (!file.exists()) initFolders()
 
-        val jsonSubjects: MutableMap<String, String> =
-                LastSubjectUpdateAdapter.fromJson(Utils.readFile(file)) as MutableMap<String, String>
-        for (itemSubject in subjects!!.values) {
+        val jsonSubjects = LastSubjectUpdateAdapter.fromJson(file.readText()) as MutableMap<String, String>
+        for (itemSubject in subjects.values) {
             val lastUpdated = jsonSubjects[itemSubject.id]
             if (lastUpdated == null) {
                 jsonSubjects[itemSubject.id] = ""
@@ -84,9 +83,7 @@ class Poliformat {
             }
         }
 
-        val out = FileOutputStream(file, false)
-        out.write(LastSubjectUpdateAdapter.toJson(jsonSubjects).toByteArray(charset("UTF-8")))
-        out.close()
+        file.writeText(LastSubjectUpdateAdapter.toJson(jsonSubjects))
     }
 
 }

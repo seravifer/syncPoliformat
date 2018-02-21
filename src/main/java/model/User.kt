@@ -3,6 +3,7 @@ package model
 import model.json.UserInfoAdapter
 import utils.CredentialsManager
 import utils.Utils
+import utils.Utils.task
 
 import javax.net.ssl.HttpsURLConnection
 import java.io.DataOutputStream
@@ -27,7 +28,7 @@ class User {
     }
 
     @Throws(IOException::class)
-    fun login(username: String, password: String, remember: Boolean?) {
+    fun login(username: String, password: String, remember: Boolean) = task<Boolean> {
         val param = "&id=c&estilo=500&vista=MSE&cua=sakai&dni=$username&clau=$password&=Entrar"
 
         val url = URL("https://www.upv.es/exp/aute_intranet")
@@ -40,13 +41,12 @@ class User {
         post.flush()
         post.close()
 
-        if (conn.getHeaderField("X-Sakai-Session") != null) {
-            isLogged = true
+        val loggedIn = conn.getHeaderField("X-Sakai-Session") != null
+        if (loggedIn) {
             syncUserInfo()
-            if (remember!!) saveCredentials()
-        } else {
-            isLogged = false
+            if (remember) saveCredentials()
         }
+        loggedIn
     }
 
     fun logout() {
@@ -62,20 +62,23 @@ class User {
     fun silentLogin() {
         val credentials = CredentialsManager.credentials
 
-        val cookieToken = HttpCookie("TDp", credentials.key)
-        cookieToken.path = "/"
-        cookieToken.version = 0
-        cookieToken.domain = "upv.es"
+        val cookieToken = HttpCookie("TDp", credentials.key).apply {
+            path = "/"
+            version = 0
+            domain = "upv.es"
+        }
 
-        val cookieDns = HttpCookie("JSESSIONID", credentials.value)
-        cookieDns.path = "/"
-        cookieDns.version = 0
-        cookieDns.domain = "poliformat.upv.es"
-        cookieDns.secure = true
+        val cookieDns = HttpCookie("JSESSIONID", credentials.value).apply {
+            path = "/"
+            version = 0
+            domain = "poliformat.upv.es"
+            secure = true
+        }
 
-        val cookieJar = manager.cookieStore
-        cookieJar.add(null, cookieToken)
-        cookieJar.add(null, cookieDns)
+        with(manager.cookieStore) {
+            add(null, cookieToken)
+            add(null, cookieDns)
+        }
 
         //printCokies();
 
@@ -93,23 +96,18 @@ class User {
 
     @Throws(IOException::class)
     private fun syncUserInfo() {
-        val info = UserInfoAdapter.fromJson(Utils.getJson("user/current.json"))
-        nameUser = info?.firstName
-        lastNameUser = info?.lastName
-        mailUser = info?.email
+        UserInfoAdapter.fromJson(Utils.getJson("user/current.json"))?.let { info ->
+            nameUser = info.firstName
+            lastNameUser = info.lastName
+            mailUser = info.email
+        }
     }
 
     private fun printCokies() {
-        val cookieJar = manager.cookieStore
-        val cookies = cookieJar.cookies
-        for (cookie in cookies) {
-            println(cookie.value + " - " +
-                    cookie.domain + " - " +
-                    cookie.name + " - " +
-                    cookie.path + " - " +
-                    cookie.secure + " - " +
-                    cookie.maxAge + " - " +
-                    cookie.version)
+        for (cookie in manager.cookieStore.cookies) {
+            with(cookie) {
+                println("$value - $domain - $name - $path - $secure - $maxAge - $version")
+            }
         }
     }
 

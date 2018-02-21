@@ -35,7 +35,7 @@ class PoliformatFile(
         @Json(name = "type")
         val type: String? = null,
         @Json(name = "url")
-        val url: URL? = null,
+        val url: URL,
         @Json(name = "usage")
         val usage: String? = null,
         @Json(name = "hidden")
@@ -50,16 +50,18 @@ class PoliformatFile(
         val entityTitle: String? = null
 ) {
     val parentUrl: String by lazy {
-            val urlString = url!!.toString()
+        val urlString = url.toString()
 
-            val index = if (urlString.endsWith("/")) {
-                urlString.substring(0, urlString.length - 1).lastIndexOf('/')
-            } else {
-                urlString.lastIndexOf('/')
-            }
-
-            url.toString().substring(0, index + 1)
+        val index = if (isFolder) {
+            urlString.substring(0, urlString.length - 1).lastIndexOf('/')
+        } else {
+            urlString.lastIndexOf('/')
         }
+
+        url.toString().substring(0, index + 1)
+    }
+
+    val isFolder = type == "collection"
 
 }
 

@@ -11,13 +11,9 @@ class ContentAdapter {
     private val clean = CleanAdapter()
 
     @ToJson
-    internal fun toJson(path: Path): String {
-        return path.toString()
-    }
+    internal fun toJson(path: Path): String = path.toString()
 
     @FromJson
-    internal fun fromJson(path: String): Path {
-        return Paths.get(clean.fromJson(path))
-    }
+    internal fun fromJson(path: String): Path = Paths.get(clean.fromJson(path))
 
 }

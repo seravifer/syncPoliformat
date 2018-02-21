@@ -1,22 +1,19 @@
 package utils
 
+import javafx.concurrent.Task
 import javax.net.ssl.HttpsURLConnection
-import java.io.ByteArrayOutputStream
-import java.io.File
 import java.io.IOException
-import java.io.InputStream
 import java.net.URL
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.ThreadLocalRandom
 
 object Utils {
+
+    val isWindowsHost by lazy { System.getProperty("os.name").contains("win", true) }
 
     val curso: String
         get() {
@@ -32,59 +29,33 @@ object Utils {
         }
 
     @Throws(IOException::class)
-    fun getJson(url: String): String? {
+    fun getJson(url: String): String {
         val link = URL("https://poliformat.upv.es/direct/" + url)
         val conn = link.openConnection() as HttpsURLConnection
 
-        return inputStreamToString(conn.inputStream)
+        return conn.inputStream.reader().readText()
     }
+
+    fun now(): String = SimpleDateFormat("dd/MM/yyyy HH:mm").format(Date())
+
+    fun random(min: Int, max: Int): Int = ThreadLocalRandom.current().nextInt(min, max + 1)
 
     @Throws(IOException::class)
-    fun readFile(file: File): String {
-        val bytes = Files.readAllBytes(file.toPath())
-        return String(bytes, charset("UTF-8"))
-    }
-
-    private fun inputStreamToString(inputStream: InputStream): String? {
-        try {
-            ByteArrayOutputStream().use { result ->
-                val buffer = ByteArray(1024)
-                var length = 0
-                while (inputStream.read(buffer).also { length = it } != -1) {
-                    result.write(buffer, 0, length)
-                }
-
-                return result.toString("UTF-8")
-            }
-        } catch (e: Exception) {
-            return null
+    fun downloadFile(url: URL, path: Path) {
+        val urlPath = Paths.get(url.path)
+        val localPath = path.changeExtension(urlPath.toFile().extension)
+        url.openStream().use { from ->
+            from.copyTo(localPath.toFile().outputStream())
         }
-
     }
 
-    fun now(): String {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm")
-        val date = Date()
-        return dateFormat.format(date)
+    private fun Path.changeExtension(ext: String): Path {
+        return parent.resolve(toFile().nameWithoutExtension + "." + ext)
     }
 
-    fun random(min: Int, max: Int): Int {
-        return ThreadLocalRandom.current().nextInt(min, max + 1)
-    }
-
-    @Throws(IOException::class)
-    fun downloadFile(url: URL, path: String) {
-        var path = path
-        val name = url.toString().substring(url.toString().lastIndexOf("/"))
-        val pos = name.lastIndexOf(".")
-
-        if (pos > 0) {
-            val extension = name.substring(pos)
-            if (!path.contains(extension)) path += extension
+    fun <T> task(block: Task<T>.() -> T): Task<T> = object : Task<T>() {
+        override fun call(): T {
+            return this.block()
         }
-
-        val to = Paths.get(path)
-        url.openStream().use { from -> Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING) }
     }
-
 }

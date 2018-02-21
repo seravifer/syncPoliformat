@@ -9,13 +9,11 @@ class PosixDateAdapter {
 
     @FromJson
     @PosixDate
-    fun fromJson(date: Long?): Date {
-        return Date(date!!)
-    }
+    fun fromJson(date: Long): Date = Date(date)
+
 
     @ToJson
-    fun toJson(@PosixDate date: Date): Long? {
-        return date.time
-    }
+    fun toJson(@PosixDate date: Date): Long = date.time
+
 
 }

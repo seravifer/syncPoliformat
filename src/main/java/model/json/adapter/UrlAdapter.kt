@@ -9,19 +9,12 @@ import java.net.URL
 class UrlAdapter {
 
     @ToJson
-    internal fun toJson(url: URL): String {
-        return url.toString()
-    }
+    internal fun toJson(url: URL): String = url.toString()
+
 
     @FromJson
-    internal fun fromJson(json: String): URL? {
-        try {
-            return URL(json)
-        } catch (e: MalformedURLException) {
-            e.printStackTrace()
-            return null
-        }
-
+    internal fun fromJson(json: String): URL {
+        return URL(json)
     }
 
 }
