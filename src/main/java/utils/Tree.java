@@ -63,7 +63,7 @@ public class Tree<T> {
             ptrA = dequeOld.getFirst();
             ptrB = dequeNew.getFirst();
 
-            if (ptrA.equals(ptrB)) {
+            if (ptrA.getData().equals(ptrB.getData())) {
                 dequeOld.removeFirst();
                 dequeNew.removeFirst();
 
