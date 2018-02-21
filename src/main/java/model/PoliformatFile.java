@@ -143,5 +143,19 @@ public class PoliformatFile {
         return entityTitle;
     }
 
-}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
 
+        PoliformatFile other = (PoliformatFile) obj;
+
+        if (this.getTitle().equals(other.getTitle())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+}

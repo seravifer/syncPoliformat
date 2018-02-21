@@ -4,6 +4,7 @@ import model.PoliformatFile;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Deque;
 
 public class Tree<T> {
 
@@ -47,8 +48,54 @@ public class Tree<T> {
         }
     }
 
-    public List<PoliformatFile> merge(Tree<PoliformatFile> localTree) {
-        return null;
+    public List<T> merge(Tree<T> localTree) {
+        List<T> newFiles = new LinkedList<>();
+        Deque<Tree<T>> dequeOld = new LinkedList<>();
+        Deque<Tree<T>> dequeNew = new LinkedList<>();
+
+        dequeOld.add(this);
+        dequeNew.add(localTree);
+
+        Tree<T> ptrA = null;
+        Tree<T> ptrB = null;
+
+        while (dequeOld.size() != 0) {
+            ptrA = dequeOld.getFirst();
+            ptrB = dequeNew.getFirst();
+
+            if (ptrA.equals(ptrB)) {
+                dequeOld.removeFirst();
+                dequeNew.removeFirst();
+
+                for (Tree<T> child : ptrA.getChildren()) {
+                    dequeOld.addFirst(child);
+                }
+
+                for (Tree<T> child : ptrB.getChildren()) {
+                    dequeNew.addFirst(child);
+                }
+
+            } else {
+                Tree<T> file = dequeNew.removeFirst();
+                newFiles.add(file.getData());
+
+                for (Tree<T> child : ptrB.getChildren()) {
+                    dequeNew.addFirst(child);
+                }
+            }
+        }
+
+        while (dequeNew.size() != 0) {
+            ptrB = dequeNew.removeFirst();
+
+            for (Tree<T> child : ptrB.getChildren()) {
+                dequeNew.addFirst(child);
+            }
+
+            newFiles.add(ptrB.getData());
+        }
+
+        return newFiles;
     }
 
 }
