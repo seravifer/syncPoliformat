@@ -32,7 +32,7 @@ public final class Utils {
         return new String(bytes, "UTF-8");
     }
 
-    private static String inputStreamToString(InputStream inputStream) {
+    public static String inputStreamToString(InputStream inputStream) {
         try(ByteArrayOutputStream result = new ByteArrayOutputStream()) {
             byte[] buffer = new byte[1024];
             int length;

@@ -145,17 +145,14 @@ public class PoliformatFile {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-
+        if (obj == null) return false;
         PoliformatFile other = (PoliformatFile) obj;
 
-        if (this.getTitle().equals(other.getTitle())) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.getTitle().equals(other.getTitle());
     }
 
+    @Override
+    public String toString() {
+        return title +  " - " + url;
+    }
 }
