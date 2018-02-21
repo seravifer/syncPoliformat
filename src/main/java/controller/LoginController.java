@@ -74,27 +74,27 @@ public class LoginController implements Initializable {
             try {
                 user.login(usernameID.getText(), passwordID.getText(), rememberID.isSelected());
             } catch (Exception e) {
-                System.err.println("El usuario no tiene conexión a internet.");
+                System.err.println("Ha ocurrido un fallo en la conexión con el servidor.");
                 e.printStackTrace();
             }
-            Platform.runLater(() -> status(user.isLogged()));
+            Platform.runLater(this::checkin);
         }).start();
     }
 
-    private void status(Boolean isLogged) {
-        try {
-            if (isLogged) {
+    private void checkin() {
+        if (user.isLogged()) {
+            try {
                 launchHome();
-            } else {
-                errorID.setVisible(true);
-                passwordID.setText("");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            loginID.setDisable(false);
-            loadingID.setVisible(false);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            errorID.setVisible(true);
+            passwordID.setText("");
         }
+
+        loginID.setDisable(false);
+        loadingID.setVisible(false);
     }
 
     private void launchHome() throws IOException {

@@ -1,10 +1,8 @@
 package utils;
 
-import model.PoliformatFile;
-
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Deque;
 
 public class Tree<T> {
 

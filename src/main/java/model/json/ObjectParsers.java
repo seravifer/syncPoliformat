@@ -3,8 +3,13 @@ package model.json;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import model.*;
-import model.json.adapter.*;
+import model.PoliformatContentEntity;
+import model.PoliformatSiteEntity;
+import model.UserInfo;
+import model.json.adapter.CleanAdapter;
+import model.json.adapter.ContentAdapter;
+import model.json.adapter.PosixDateAdapter;
+import model.json.adapter.UrlAdapter;
 
 import java.util.Map;
 

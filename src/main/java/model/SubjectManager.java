@@ -25,10 +25,6 @@ public class SubjectManager {
         Settings.updateSubject(subjectInfo);
     }
 
-    public Tree<PoliformatFile> getFilesystem() {
-        return fileSystem;
-    }
-
     /**
      * Método lanzadera que sincroniza los archivos de Poliformat.
      *
@@ -37,6 +33,7 @@ public class SubjectManager {
         String entityFilesJson = Utils.getJson("content/site/" + subjectInfo.getId() + ".json");
         PoliformatContentEntity entity = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(entityFilesJson);
         fileSystem = entity.toFileTree();
+
         if (subjectInfo.getLastUpdate().isEmpty()) {
             downloadSubject();
         } else {
@@ -85,19 +82,22 @@ public class SubjectManager {
     private void syncSubject() throws IOException {
         PoliformatContentEntity response = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(Settings.loadLocal(subjectInfo.getId()));
         Tree<PoliformatFile> localTree = response.toFileTree();
-        List<PoliformatFile> files = fileSystem.merge(localTree);
+        List<PoliformatFile> files = localTree.merge(fileSystem);
         downloadMergeFiles(files);
     }
 
-    private void downloadMergeFiles(List<PoliformatFile> files) {
-
+    // TODO: ccmpletar downloadMergeFiles
+    private void downloadMergeFiles(List<PoliformatFile> pendingFiles) {
+        for (PoliformatFile file : pendingFiles) {
+            System.out.println(file.toString());
+        }
     }
 
     /**
      * Guarda en local el archivo 'json' que ya ha sido sincronizado.
      *
      */
-    public void saveChanges() throws IOException {
+    private void saveChanges() throws IOException {
         Settings.saveRemote(subjectInfo.getId());
     }
 }

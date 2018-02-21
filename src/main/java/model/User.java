@@ -17,6 +17,7 @@ public class User {
     private String lastNameUser;
     private String mailUser;
     private Boolean isLogged = false;
+
     private CookieManager manager;
 
     public User() {
@@ -56,7 +57,7 @@ public class User {
         if (conn.getHeaderField("X-Sakai-Session") != null) {
             isLogged = true;
             syncUserInfo();
-            if (remember) saveCredentials();
+            if (remember) rememberCredentials();
         } else {
             isLogged = false;
         }
@@ -68,11 +69,11 @@ public class User {
         CredentialsManager.deleteCredentials();
     }
 
-    public boolean checkLogin() {
+    public boolean checkRememberLogin() {
         return CredentialsManager.credentialsFile().exists();
     }
 
-    public void silentLogin() throws IOException {
+    public void silenceLogin() throws IOException {
         Pair<String, String> credentials = CredentialsManager.getCredentials();
 
         HttpCookie cookieToken = new HttpCookie("TDp", credentials.getKey());
@@ -90,13 +91,14 @@ public class User {
         cookieJar.add(null, cookieToken);
         cookieJar.add(null, cookieDns);
 
-        //printCokies();
+        URL url1 = new URL("https://poliformat.upv.es/portal/login");
+        url1.openConnection().getInputStream();
 
         isLogged = true;
         syncUserInfo();
     }
 
-    private void saveCredentials() throws IOException {
+    private void rememberCredentials() {
         List<HttpCookie> cookies =  manager.getCookieStore().getCookies();
         HttpCookie token = cookies.get(0);
         HttpCookie dns = cookies.get(1);

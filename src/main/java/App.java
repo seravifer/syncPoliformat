@@ -7,7 +7,6 @@ import javafx.stage.Stage;
 import model.User;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 public class App extends Application {
 
@@ -18,36 +17,28 @@ public class App extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws IOException, URISyntaxException {
-        if (user.checkLogin()) {
-            user.silentLogin();
+    public void start(Stage primaryStage) throws IOException {
+        Parent root;
+
+        if (user.checkRememberLogin()) {
+            user.silenceLogin();
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/home.fxml"));
-            Parent sceneMain = loader.load();
+            root = loader.load();
 
-            HomeController controller = loader.getController();
-            controller.init(user);
-
-            Scene scene = new Scene(sceneMain);
-            scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
-
-            primaryStage.setScene(scene);
-            primaryStage.setTitle("syncPoliformat");
-            primaryStage.setResizable(false);
-            primaryStage.show();
+            ((HomeController)loader.getController()).init(user);
         } else {
-            Parent root = FXMLLoader.load(getClass().getResource("view/login.fxml"));
-
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
-
-            //Font.loadFont(getClass().getResource("/css/Roboto.ttf").toExternalForm(), 14);
-
-            primaryStage.setScene(scene);
-            primaryStage.setTitle("syncPoliformat");
-            primaryStage.setResizable(false);
-            primaryStage.show();
+            root = FXMLLoader.load(getClass().getResource("view/login.fxml"));
         }
+
+        //Font.loadFont(getClass().getResource("/css/Roboto.ttf").toExternalForm(), 14);
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
+
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("syncPoliformat");
+        primaryStage.setResizable(false);
+        primaryStage.show();
     }
 
 }

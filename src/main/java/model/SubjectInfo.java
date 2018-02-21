@@ -117,7 +117,7 @@ public class SubjectInfo {
     }
 
     public String getShortName() {
-        return shortName;
+        return shortName.toUpperCase().substring(0, 3);
     }
 
     public void setShortName(String shortName) {

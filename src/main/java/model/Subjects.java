@@ -28,6 +28,7 @@ public class Subjects {
         return subjects;
     }
 
+    // TODO: Eliminar asignaturas que no pertenezcan a ese año
     public void syncRemote() {
         try {
             String json = Utils.getJson("site.json");
