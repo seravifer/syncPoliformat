@@ -13,16 +13,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 object PoliformatServiceSpek : Spek({
-    given("a UpvService") {
-        val httpClient = OkHttpClient.Builder()
-                .cookieJar(NonPersistentCookieJar)
-                .build()
-        val upvRetrofit = Retrofit.Builder()
-                .baseUrl("https://www.upv.es/")
-                .client(httpClient)
-                .build()
-        val upvService = upvRetrofit.create(UpvService::class.java)
-
+    given("a UPV Service") {
+        val intranet : UpvService = Intranet
         on("login") {
             val dni = System.getProperty("dni") ?: System.getenv("dni")
             val clau = System.getProperty("clau") ?: System.getenv("clau")
@@ -35,7 +27,7 @@ object PoliformatServiceSpek : Spek({
                 assert(clau != null) { "The clau was null" }
             }
 
-            val call = upvService.login(mapOf(
+            val call = intranet.login(mapOf(
                     "cua" to "sakai",
                     "estilo" to "500",
                     "id" to "c",
@@ -57,22 +49,10 @@ object PoliformatServiceSpek : Spek({
             }
         }
 
-        val moshiParser = Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .add(ContentAdapter())
-                .add(UrlAdapter())
-                .add(CleanAdapter())
-                .add(PosixDateAdapter())
-                .build()
-        val poliformatRetrofit = Retrofit.Builder()
-                .baseUrl("https://poliformat.upv.es/")
-                .client(httpClient)
-                .addConverterFactory(MoshiConverterFactory.create(moshiParser))
-                .build()
-        val poliformatService = poliformatRetrofit.create(PoliformatService::class.java)
+        val poliformat: PoliformatService = Poliformat
         on ("subject resources request") {
             val subjectId = System.getProperty("subject.id") ?: System.getenv("subject.id") ?: "GRA_11571_2017"
-            val call = poliformatService.resources(subjectId)
+            val call = poliformat.resources(subjectId)
             val response = call.execute()
             it ("should be a successful connection") {
                 assert(response.isSuccessful) {
