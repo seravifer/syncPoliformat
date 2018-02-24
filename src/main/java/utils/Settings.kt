@@ -12,31 +12,30 @@ import java.nio.file.Paths
 object Settings {
 
     val subjectsPath: Path
-        get() = Paths.get(appDirectory(), "subjects.json")
+        get() = appDirectory.resolve("subjects.json")
 
-    fun appDirectory(): String {
-        val pathDirectory = if (Utils.isWindowsHost) {
-            System.getenv("APPDATA")
-        } else {
-            Paths.get(System.getProperty("user.home"), ".local", "share").toString()
+    val appDirectory: Path
+        get() {
+            val pathDirectory = if (Utils.isWindowsHost) {
+                Paths.get(System.getenv("APPDATA"))
+            } else {
+                Paths.get(System.getProperty("user.home"), ".local", "share")
+            }
+
+            return pathDirectory.resolve("syncPoliformat")
         }
 
-        return Paths.get(pathDirectory, "syncPoliformat").toString()
-    }
+    val poliformatDirectory by lazy { File(System.getProperty("user.home"), "Poliformat") }
 
-    fun poliformatDirectory(): String {
-        return Paths.get(System.getProperty("user.home"), "Poliformat").toString()
-    }
 
     @Throws(IOException::class)
-    fun loadLocal(id: String): String {
-        return File(appDirectory(), "$id.json").readText()
-    }
+    fun loadLocal(id: String) = appDirectory.resolve("$id.json").toFile().readText()
+
 
     @Throws(IOException::class)
     fun saveRemote(id: String) {
         val url = URL("https://poliformat.upv.es/direct/content/site/$id.json")
-        val to = File(appDirectory(), "$id.json")
+        val to = appDirectory.resolve("$id.json").toFile()
         url.openStream().use { from ->
             from.copyTo(to.outputStream())
         }
@@ -47,6 +46,16 @@ object Settings {
         val jsonSubjects = LastSubjectUpdateAdapter.fromJson(json) as MutableMap<String, String>
         jsonSubjects[subjectInfo.id] = subjectInfo.lastUpdate
         subjectsPath.toFile().writeText(LastSubjectUpdateAdapter.toJson(jsonSubjects))
+    }
+
+    @Throws(IOException::class)
+    fun initFolders() {
+        val subjectsUpdate = subjectsPath.toFile()
+        val directory = appDirectory.toFile()
+
+        if (!poliformatDirectory.exists()) poliformatDirectory.mkdir()
+        if (!directory.exists()) directory.mkdir()
+        if (!subjectsUpdate.exists()) subjectsUpdate.writeText("{}")
     }
 
 }

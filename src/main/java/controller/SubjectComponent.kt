@@ -63,11 +63,11 @@ constructor(private val subject: SubjectInfo) : AnchorPane() {
         loadingID.isVisible = true
         dateID.text = "Descargando asignatura..."
 
-        val task = subject.manager.syncFiles().apply {
-            setOnSucceeded { finish() }
-            setOnFailed { finish() }
-        }
-        Thread(task).apply { isDaemon = true }.start()
+        subject.manager
+                .syncFiles()
+                .onSucceeded { finish() }
+                .onFailed { finish() }
+                .toThread(name = "Sync-Download-Files-Thread").start()
     }
 
     private fun finish() {

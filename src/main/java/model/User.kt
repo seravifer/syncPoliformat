@@ -3,7 +3,7 @@ package model
 import model.json.UserInfoAdapter
 import utils.CredentialsManager
 import utils.Utils
-import utils.Utils.task
+import utils.task
 
 import javax.net.ssl.HttpsURLConnection
 import java.io.DataOutputStream
@@ -20,7 +20,7 @@ class User {
         private set
     var isLogged: Boolean? = false
         private set
-    private val manager: CookieManager
+    private var manager: CookieManager
 
     init {
         manager = CookieManager()
@@ -50,25 +50,26 @@ class User {
     }
 
     fun logout() {
-        CookieHandler.setDefault(CookieManager())
+        manager = CookieManager()
+        CookieHandler.setDefault(manager)
         CredentialsManager.deleteCredentials()
     }
 
     fun checkLogin(): Boolean {
-        return CredentialsManager.credentialsFile().exists()
+        return CredentialsManager.credentialsFile.exists()
     }
 
     @Throws(IOException::class)
     fun silentLogin() {
         val credentials = CredentialsManager.credentials
 
-        val cookieToken = HttpCookie("TDp", credentials.key).apply {
+        val cookieToken = HttpCookie("TDp", credentials.first).apply {
             path = "/"
             version = 0
             domain = "upv.es"
         }
 
-        val cookieDns = HttpCookie("JSESSIONID", credentials.value).apply {
+        val cookieDns = HttpCookie("JSESSIONID", credentials.second).apply {
             path = "/"
             version = 0
             domain = "poliformat.upv.es"
@@ -79,8 +80,6 @@ class User {
             add(null, cookieToken)
             add(null, cookieDns)
         }
-
-        //printCokies();
 
         isLogged = true
         syncUserInfo()
@@ -102,13 +101,4 @@ class User {
             mailUser = info.email
         }
     }
-
-    private fun printCokies() {
-        for (cookie in manager.cookieStore.cookies) {
-            with(cookie) {
-                println("$value - $domain - $name - $path - $secure - $maxAge - $version")
-            }
-        }
-    }
-
 }

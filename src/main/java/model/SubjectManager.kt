@@ -1,16 +1,14 @@
 package model
 
-import javafx.concurrent.Task
 import model.json.*
 import utils.Settings
 import utils.Tree
 import utils.Utils
-import utils.Utils.task
+import utils.task
 
 import java.io.File
 import java.io.IOException
 import java.nio.file.Path
-import java.nio.file.Paths
 
 class SubjectManager(private val subjectInfo: SubjectInfo) {
     var filesystem: Tree<PoliformatFile>? = null
@@ -27,7 +25,7 @@ class SubjectManager(private val subjectInfo: SubjectInfo) {
      */
     @Throws(IOException::class)
     fun syncFiles() = task<Unit> {
-        val entityFilesJson = Utils.getJson("content/site/" + subjectInfo.id + ".json")
+        val entityFilesJson = Utils.getJson("content/site/${subjectInfo.id}.json")
         ContentEntityAdapter.fromJson(entityFilesJson)?.let { entity ->
             filesystem = entity.toFileTree()
             if (subjectInfo.lastUpdate.isEmpty()) {
@@ -46,13 +44,13 @@ class SubjectManager(private val subjectInfo: SubjectInfo) {
      */
     private fun downloadSubject() {
         System.out.printf("Download started: %s\n", subjectInfo.name)
-        downloadTree(filesystem!!, Settings.poliformatDirectory())
+        downloadTree(filesystem!!, Settings.poliformatDirectory.toPath())
         System.out.printf("Download finished: %s\n", subjectInfo.name)
     }
 
-    private fun downloadTree(node: Tree<PoliformatFile>, parentPath: String) {
+    private fun downloadTree(node: Tree<PoliformatFile>, parentPath: Path) {
         val data = node.data
-        val path = Paths.get(parentPath, data.title)
+        val path = parentPath.resolve(data.title)
 
         if (data.isFolder) {
             val directory = File(path.toString())
@@ -60,7 +58,7 @@ class SubjectManager(private val subjectInfo: SubjectInfo) {
             System.out.printf("Creating the folder: %s\n", path.toString())
         } else {
             try {
-                Utils.downloadFile(data.url!!, path)
+                Utils.downloadFile(data.url, path)
                 System.out.printf("Downloading the file: %s\n", path.toString())
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -69,7 +67,7 @@ class SubjectManager(private val subjectInfo: SubjectInfo) {
         }
 
         for (child in node.getChildren()) {
-            downloadTree(child, path.toString())
+            downloadTree(child, path)
         }
     }
 

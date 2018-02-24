@@ -11,8 +11,7 @@ import model.SubjectInfo
 import model.User
 import utils.Settings
 
-import java.awt.*
-import java.io.File
+import java.awt.Desktop
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
@@ -45,12 +44,12 @@ class HomeController : Initializable {
 
         val poliformat = Poliformat()
 
-        poliformat.syncRemote()
-        poliformat.syncLocal()
-
-        poliformat.subjects.values
-                .sortedBy(SubjectInfo::name)
-                .forEach { listID.children.add(SubjectComponent(it)) }
+        poliformat.fetchSubjectsInfo().onSucceeded { subjects ->
+            poliformat.persistLastUpdateSubjectsDate(subjects).onSucceeded {
+                subjects.sortedBy(SubjectInfo::name)
+                        .forEach { listID.children.add(SubjectComponent(it)) }
+            }.toThread(name = "Persist-Subjects-Last-Update", isDaemon = false).start()
+        }.toThread(name = "Fetch-Subjects-Info").start()
     }
 
     @FXML
@@ -63,7 +62,7 @@ class HomeController : Initializable {
     @FXML
     @Throws(IOException::class)
     private fun openFolder(event: MouseEvent) {
-        Desktop.getDesktop().open(File(Settings.poliformatDirectory()))
+        Desktop.getDesktop().open(Settings.poliformatDirectory)
     }
 
     @FXML

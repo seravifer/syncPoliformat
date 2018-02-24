@@ -1,6 +1,5 @@
 package utils
 
-import javafx.concurrent.Task
 import javax.net.ssl.HttpsURLConnection
 import java.io.IOException
 import java.net.URL
@@ -15,14 +14,13 @@ object Utils {
 
     val isWindowsHost by lazy { System.getProperty("os.name").contains("win", true) }
 
-    val curso: String
-        get() {
+    val curso: String by lazy {
             val time = Calendar.getInstance()
 
             val year = time.get(Calendar.YEAR)
             val month = time.get(Calendar.MONTH)
 
-            return if (month < 9)
+            if (month < 9)
                 Integer.toString(year - 1)
             else
                 Integer.toString(year)
@@ -51,11 +49,5 @@ object Utils {
 
     private fun Path.changeExtension(ext: String): Path {
         return parent.resolve(toFile().nameWithoutExtension + "." + ext)
-    }
-
-    fun <T> task(block: Task<T>.() -> T): Task<T> = object : Task<T>() {
-        override fun call(): T {
-            return this.block()
-        }
     }
 }

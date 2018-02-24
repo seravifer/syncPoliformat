@@ -14,6 +14,7 @@ import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
 import javafx.stage.Stage
 import model.User
+import utils.Settings
 
 import java.net.URL
 import java.util.ResourceBundle
@@ -45,6 +46,8 @@ class LoginController : Initializable {
 
     @FXML
     override fun initialize(location: URL, resources: ResourceBundle?) {
+        Settings.initFolders()
+
         usernameID.textProperty().addListener { _, oldValue, _ ->
             if (usernameID.text.length > 8 || !usernameID.text.matches("[0-9]*".toRegex())) {
                 usernameID.text = oldValue
@@ -59,20 +62,19 @@ class LoginController : Initializable {
         loginID.isDisable = true
         loadingID.isVisible = true
 
-        val loginTask = user.login(usernameID.text, passwordID.text, rememberID.isSelected).apply {
-            setOnSucceeded {
-                if (value) showHome()
-                else {
-                    errorID.isVisible = true
-                    passwordID.text = ""
-                }
-                loginID.isDisable = false
-                loadingID.isVisible = false
-            }
-            setOnFailed { System.err.println("El usuario no tiene conexión a internet.") }
-        }
-
-        Thread(loginTask).apply { isDaemon = false }.start()
+        user.login(usernameID.text, passwordID.text, rememberID.isSelected)
+                .onSucceeded { loggedIn ->
+                    if (loggedIn) showHome()
+                    else {
+                        errorID.isVisible = true
+                        passwordID.text = ""
+                    }
+                    loginID.isDisable = false
+                    loadingID.isVisible = false
+                }.onFailed { e ->
+                    System.err.println("El usuario no tiene conexión a internet.")
+                    if (e is Exception) e.printStackTrace()
+                }.toThread(name = "Login-Thread").start()
     }
 
     private fun showHome() {

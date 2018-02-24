@@ -1,7 +1,5 @@
 package utils
 
-import javafx.util.Pair
-
 import java.io.*
 
 object CredentialsManager {
@@ -9,35 +7,28 @@ object CredentialsManager {
     val credentials: Pair<String, String>
         @Throws(IOException::class)
         get() {
-            val br = BufferedReader(FileReader(credentialsFile()))
-
-            val credentials = br.lines().toArray()
-            val token = credentials[0].toString()
-            val dns = credentials[1].toString()
-
-            return Pair(token, dns)
+            val credentials = credentialsFile.readLines()
+            val token = credentials[0]
+            val dns = credentials[1]
+            return token to dns
         }
 
-    fun credentialsFile(): File {
-        return File(Settings.appDirectory(), "credentials")
-    }
+    val credentialsFile: File
+        get() = Settings.appDirectory.resolve("credentials").toFile()
+
 
     fun saveCredentials(token: String, dns: String) {
-        try {
-            credentialsFile().createNewFile()
-
-            val printer = PrintWriter(credentialsFile(), "UTF-8")
-            printer.println(token)
-            printer.println(dns)
-            printer.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
+        with(credentialsFile) {
+            createNewFile()
+            printWriter().use {
+                it.println(token)
+                it.println(dns)
+            }
         }
-
     }
 
     fun deleteCredentials() {
-        credentialsFile().delete()
+        credentialsFile.delete()
     }
 
 }// TODO: Encriptar las credenciales
