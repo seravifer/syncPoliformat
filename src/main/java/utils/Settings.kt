@@ -15,6 +15,7 @@ object Settings {
         get() = appDirectory.resolve("subjects.json")
 
     val appDirectory: Path
+        @JvmStatic
         get() {
             val pathDirectory = if (Utils.isWindowsHost) {
                 Paths.get(System.getenv("APPDATA"))

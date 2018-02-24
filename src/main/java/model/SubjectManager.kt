@@ -1,6 +1,7 @@
 package model
 
 import model.json.*
+import mu.KLogging
 import utils.Settings
 import utils.Tree
 import utils.Utils
@@ -11,6 +12,9 @@ import java.io.IOException
 import java.nio.file.Path
 
 class SubjectManager(private val subjectInfo: SubjectInfo) {
+
+    companion object Logger : KLogging()
+
     var filesystem: Tree<PoliformatFile>? = null
         private set
 
@@ -43,9 +47,9 @@ class SubjectManager(private val subjectInfo: SubjectInfo) {
      *
      */
     private fun downloadSubject() {
-        System.out.printf("Download started: %s\n", subjectInfo.name)
+        logger.info { "Download started: ${subjectInfo.name}\n" }
         downloadTree(filesystem!!, Settings.poliformatDirectory.toPath())
-        System.out.printf("Download finished: %s\n", subjectInfo.name)
+        logger.info { "Download finished: ${subjectInfo.name}\n" }
     }
 
     private fun downloadTree(node: Tree<PoliformatFile>, parentPath: Path) {
@@ -53,17 +57,11 @@ class SubjectManager(private val subjectInfo: SubjectInfo) {
         val path = parentPath.resolve(data.title)
 
         if (data.isFolder) {
-            val directory = File(path.toString())
-            directory.mkdir()
-            System.out.printf("Creating the folder: %s\n", path.toString())
+            path.toFile().mkdir()
+            logger.info { "Creating the folder: $path\n" }
         } else {
-            try {
-                Utils.downloadFile(data.url, path)
-                System.out.printf("Downloading the file: %s\n", path.toString())
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-
+            Utils.downloadFile(data.url, path)
+            logger.info { "Downloading the file: $path\n" }
         }
 
         for (child in node.getChildren()) {

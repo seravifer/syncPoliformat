@@ -54,14 +54,16 @@ dependencies {
     }
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile 'io.github.microutils:kotlin-logging:1.5.3'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
 
-    testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    testCompile 'com.squareup.retrofit2:converter-moshi:2.3.0'
+    testCompile 'com.squareup.retrofit2:retrofit:2.3.0'
+
     testCompile ('org.jetbrains.spek:spek-api:1.1.5') {
         exclude group: 'org.jetbrains.kotlin'
     }
 
-    testCompile 'com.squareup.retrofit2:converter-moshi:2.3.0'
-    testCompile 'com.squareup.retrofit2:retrofit:2.3.0'
     testRuntime ('org.jetbrains.spek:spek-junit-platform-engine:1.1.5') {
         exclude group: 'org.junit.platform'
         exclude group: 'org.jetbrains.kotlin'
