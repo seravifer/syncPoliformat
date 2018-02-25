@@ -1,4 +1,5 @@
 import model.PoliformatContentEntity;
+import javafx.util.Pair;
 import model.PoliformatFile;
 import model.json.ObjectParsers;
 import utils.Tree;
@@ -15,9 +16,9 @@ public class TestMerge {
         Tree<PoliformatFile> treeLocal = getTreeFromJson("local.json");
         Tree<PoliformatFile> treeRemote = getTreeFromJson("remote.json");
 
-        List<PoliformatFile> merge = treeLocal.merge(treeRemote);
+        List<Pair<PoliformatFile, String>> merge = treeLocal.merge(treeRemote);
 
-        for (PoliformatFile poliformatFile : merge) {
+        for (Pair<PoliformatFile, String> poliformatFile : merge) {
             System.out.println(poliformatFile.toString());
         }
     }

@@ -3,6 +3,8 @@ package utils;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import javafx.util.Pair;
+import java.nio.file.Paths;
 
 public class Tree<T> {
 
@@ -46,22 +48,23 @@ public class Tree<T> {
         }
     }
 
-    public List<T> merge(Tree<T> localTree) {
-        List<T> newFiles = new LinkedList<>();
+    public List<Pair<T, String>> merge(Tree<T> localTree) {
+        String rootPath = Settings.poliformatDirectory();
+        List<Pair<T, String>> newFiles = new LinkedList<>();
         Deque<Tree<T>> dequeOld = new LinkedList<>();
-        Deque<Tree<T>> dequeNew = new LinkedList<>();
+        Deque<Pair<Tree<T>, String>> dequeNew = new LinkedList<>();
 
         dequeOld.add(this);
-        dequeNew.add(localTree);
+        dequeNew.add(new Pair(localTree, rootPath));
 
         Tree<T> ptrA = null;
-        Tree<T> ptrB = null;
+        Pair<Tree<T>, String> ptrB = null;
 
         while (dequeOld.size() != 0) {
             ptrA = dequeOld.getFirst();
             ptrB = dequeNew.getFirst();
 
-            if (ptrA.getData().equals(ptrB.getData())) {
+            if (ptrA.getData().equals(ptrB.getKey().getData())) {
                 dequeOld.removeFirst();
                 dequeNew.removeFirst();
 
@@ -69,16 +72,18 @@ public class Tree<T> {
                     dequeOld.addFirst(child);
                 }
 
-                for (Tree<T> child : ptrB.getChildren()) {
-                    dequeNew.addFirst(child);
+                for (Tree<T> child : ptrB.getKey().getChildren()) {
+                    String path = Paths.get(ptrB.getValue(), child.getData().toString()).toString();
+                    dequeNew.addFirst(new Pair(child, path));
                 }
 
             } else {
-                Tree<T> file = dequeNew.removeFirst();
-                newFiles.add(file.getData());
+                Pair<Tree<T>, String> file = dequeNew.removeFirst();
+                newFiles.add(new Pair(file.getKey().getData(), file.getValue()));
 
-                for (Tree<T> child : ptrB.getChildren()) {
-                    dequeNew.addFirst(child);
+                for (Tree<T> child : ptrB.getKey().getChildren()) {
+                    String path = Paths.get(ptrB.getValue(), child.getData().toString()).toString();
+                    dequeNew.addFirst(new Pair(child, path));
                 }
             }
         }
@@ -86,11 +91,12 @@ public class Tree<T> {
         while (dequeNew.size() != 0) {
             ptrB = dequeNew.removeFirst();
 
-            for (Tree<T> child : ptrB.getChildren()) {
-                dequeNew.addFirst(child);
+            for (Tree<T> child : ptrB.getKey().getChildren()) {
+                String path = Paths.get(ptrB.getValue(), child.getData().toString()).toString();
+                dequeNew.addFirst(new Pair(child, path));
             }
 
-            newFiles.add(ptrB.getData());
+            newFiles.add(new Pair(ptrB.getKey().getData(), ptrB.getValue()));
         }
 
         return newFiles;

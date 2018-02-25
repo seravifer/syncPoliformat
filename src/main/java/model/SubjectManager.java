@@ -1,5 +1,6 @@
 package model;
 
+import javafx.util.Pair;
 import model.json.ObjectParsers;
 import utils.Settings;
 import utils.Tree;
@@ -82,14 +83,26 @@ public class SubjectManager {
     private void syncSubject() throws IOException {
         PoliformatContentEntity response = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(Settings.loadLocal(subjectInfo.getId()));
         Tree<PoliformatFile> localTree = response.toFileTree();
-        List<PoliformatFile> files = localTree.merge(fileSystem);
+        List<Pair<PoliformatFile, String>> files = localTree.merge(fileSystem);
         downloadMergeFiles(files);
     }
 
     // TODO: ccmpletar downloadMergeFiles
-    private void downloadMergeFiles(List<PoliformatFile> pendingFiles) {
-        for (PoliformatFile file : pendingFiles) {
-            System.out.println(file.toString());
+    private void downloadMergeFiles(List<Pair<PoliformatFile, String>> pendingFiles) {
+        for (Pair<PoliformatFile, String> file : pendingFiles) {
+            if (file.getKey().isFolder()) {
+                File directory = new File(file.getValue());
+                directory.mkdir();
+                System.out.printf("Creating the folder: %s\n", file.getValue());
+            } else {
+                try {
+                    Utils.downloadFile(file.getKey().getUrl(), file.getValue());
+                    System.out.printf("Downloading the file: %s\n", file.getValue());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
     }
 

@@ -155,6 +155,6 @@ public class PoliformatFile {
 
     @Override
     public String toString() {
-        return title +  " - " + url;
+        return this.getTitle();
     }
 }
