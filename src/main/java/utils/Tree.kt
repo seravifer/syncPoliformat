@@ -1,7 +1,5 @@
 package utils
 
-import model.PoliformatFile
-
 import java.util.LinkedList
 
 class Tree<T>(val data: T) {
@@ -40,8 +38,54 @@ class Tree<T>(val data: T) {
         }
     }
 
-    fun merge(localTree: Tree<PoliformatFile>): List<PoliformatFile>? {
-        return null
+    fun merge(localTree: Tree<T>): List<T> {
+        val newFiles = LinkedList<T>()
+        val dequeOld = LinkedList<Tree<T>>()
+        val dequeNew = LinkedList<Tree<T>>()
+
+        dequeOld.add(this)
+        dequeNew.add(localTree)
+
+        var ptrA: Tree<T>
+        var ptrB: Tree<T>
+
+        while (dequeOld.size != 0) {
+            ptrA = dequeOld.first
+            ptrB = dequeNew.first
+
+            if (ptrA.data == ptrB.data) {
+                dequeOld.removeFirst()
+                dequeNew.removeFirst()
+
+                for (child in ptrA.getChildren()) {
+                    dequeOld.addFirst(child)
+                }
+
+                for (child in ptrB.getChildren()) {
+                    dequeNew.addFirst(child)
+                }
+
+            } else {
+                val file = dequeNew.removeFirst()
+                newFiles.add(file.data)
+
+                for (child in ptrB.getChildren()) {
+                    dequeNew.addFirst(child)
+                }
+            }
+        }
+
+        while (dequeNew.size != 0) {
+            ptrB = dequeNew.removeFirst()
+
+            for (child in ptrB.getChildren()) {
+                dequeNew.addFirst(child)
+            }
+
+            newFiles.add(ptrB.data)
+        }
+
+        return newFiles
     }
 
 }

@@ -63,5 +63,8 @@ class PoliformatFile(
 
     val isFolder = type == "collection"
 
+    override fun equals(other: Any?): Boolean = other is PoliformatFile && this.title == other.title
+
+    override fun toString() = title + " - " + url
 }
 
