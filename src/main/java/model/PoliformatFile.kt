@@ -31,7 +31,7 @@ class PoliformatFile(
         val size: Int? = null,
         @Clean
         @Json(name = "title")
-        val title: String? = null,
+        val title: String,
         @Json(name = "type")
         val type: String? = null,
         @Json(name = "url")
@@ -66,5 +66,7 @@ class PoliformatFile(
     override fun equals(other: Any?): Boolean = other is PoliformatFile && this.title == other.title
 
     override fun toString() = title + " - " + url
+
+    override fun hashCode(): Int = title.hashCode()
 }
 
