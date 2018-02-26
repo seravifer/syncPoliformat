@@ -17,7 +17,7 @@ public class SubjectManager {
     private final SubjectInfo subjectInfo;
     private Tree<PoliformatFile> fileSystem;
 
-    public SubjectManager(SubjectInfo subjectInfo) {
+    SubjectManager(SubjectInfo subjectInfo) {
         this.subjectInfo = subjectInfo;
     }
 
@@ -87,17 +87,18 @@ public class SubjectManager {
         downloadMergeFiles(files);
     }
 
-    // TODO: ccmpletar downloadMergeFiles
     private void downloadMergeFiles(List<Pair<PoliformatFile, String>> pendingFiles) {
+        String parentPath = Settings.poliformatDirectory();
         for (Pair<PoliformatFile, String> file : pendingFiles) {
+            Path path = Paths.get(parentPath, file.getValue());
             if (file.getKey().isFolder()) {
-                File directory = new File(file.getValue());
+                File directory = new File(path.toString());
                 directory.mkdir();
-                System.out.printf("Creating the folder: %s\n", file.getValue());
+                System.out.printf("Sync: Creating the folder: %s\n", path.toString());
             } else {
                 try {
-                    Utils.downloadFile(file.getKey().getUrl(), file.getValue());
-                    System.out.printf("Downloading the file: %s\n", file.getValue());
+                    Utils.downloadFile(file.getKey().getUrl(), path.toString());
+                    System.out.printf("Sync: Downloading the file: %s\n", path.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

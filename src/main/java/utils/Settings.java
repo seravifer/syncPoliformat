@@ -11,6 +11,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
 public final class Settings {
@@ -60,7 +61,7 @@ public final class Settings {
         URL url = new URL("https://poliformat.upv.es/direct/content/site/" + id + ".json");
         Path to = Paths.get(appDirectory(), id + ".json");
         try (InputStream from = url.openStream()) {
-            Files.copy(from, to);
+            Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 

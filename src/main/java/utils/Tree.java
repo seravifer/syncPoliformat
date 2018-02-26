@@ -1,10 +1,11 @@
 package utils;
 
+import javafx.util.Pair;
+
+import java.nio.file.Paths;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import javafx.util.Pair;
-import java.nio.file.Paths;
 
 public class Tree<T> {
 
@@ -49,13 +50,13 @@ public class Tree<T> {
     }
 
     public List<Pair<T, String>> merge(Tree<T> localTree) {
-        String rootPath = Settings.poliformatDirectory();
+        String rootPath = localTree.getData().toString();
         List<Pair<T, String>> newFiles = new LinkedList<>();
         Deque<Tree<T>> dequeOld = new LinkedList<>();
         Deque<Pair<Tree<T>, String>> dequeNew = new LinkedList<>();
 
         dequeOld.add(this);
-        dequeNew.add(new Pair(localTree, rootPath));
+        dequeNew.add(new Pair<>(localTree, rootPath));
 
         Tree<T> ptrA = null;
         Pair<Tree<T>, String> ptrB = null;
@@ -74,16 +75,16 @@ public class Tree<T> {
 
                 for (Tree<T> child : ptrB.getKey().getChildren()) {
                     String path = Paths.get(ptrB.getValue(), child.getData().toString()).toString();
-                    dequeNew.addFirst(new Pair(child, path));
+                    dequeNew.addFirst(new Pair<>(child, path));
                 }
 
             } else {
                 Pair<Tree<T>, String> file = dequeNew.removeFirst();
-                newFiles.add(new Pair(file.getKey().getData(), file.getValue()));
+                newFiles.add(new Pair<>(file.getKey().getData(), file.getValue()));
 
                 for (Tree<T> child : ptrB.getKey().getChildren()) {
                     String path = Paths.get(ptrB.getValue(), child.getData().toString()).toString();
-                    dequeNew.addFirst(new Pair(child, path));
+                    dequeNew.addFirst(new Pair<>(child, path));
                 }
             }
         }
@@ -93,10 +94,10 @@ public class Tree<T> {
 
             for (Tree<T> child : ptrB.getKey().getChildren()) {
                 String path = Paths.get(ptrB.getValue(), child.getData().toString()).toString();
-                dequeNew.addFirst(new Pair(child, path));
+                dequeNew.addFirst(new Pair<>(child, path));
             }
 
-            newFiles.add(new Pair(ptrB.getKey().getData(), ptrB.getValue()));
+            newFiles.add(new Pair<>(ptrB.getKey().getData(), ptrB.getValue()));
         }
 
         return newFiles;
