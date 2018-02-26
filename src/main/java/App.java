@@ -57,11 +57,22 @@ public class App extends Application {
 
         Image image = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/res/icon.png"));
 
+        final PopupMenu popup = new PopupMenu();
         final TrayIcon trayIcon = new TrayIcon(image);
         final SystemTray tray = SystemTray.getSystemTray();
 
-        trayIcon.addActionListener(event -> Platform.runLater(this::showStage));
+        MenuItem displayMenu = new MenuItem("Open");
+        MenuItem exitItem = new MenuItem("Exit");
 
+        popup.add(displayMenu);
+        popup.addSeparator();
+        popup.add(exitItem);
+
+        displayMenu.addActionListener(event -> Platform.runLater(this::showStage));
+        trayIcon.addActionListener(event -> Platform.runLater(this::showStage));
+        exitItem.addActionListener(event -> System.exit(0));
+
+        trayIcon.setPopupMenu(popup);
         try {
             tray.add(trayIcon);
         } catch (AWTException e) {

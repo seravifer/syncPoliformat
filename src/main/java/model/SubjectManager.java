@@ -26,10 +26,6 @@ public class SubjectManager {
         Settings.updateSubject(subjectInfo);
     }
 
-    /**
-     * Método lanzadera que sincroniza los archivos de Poliformat.
-     *
-     */
     public void sync() throws IOException {
         String entityFilesJson = Utils.getJson("content/site/" + subjectInfo.getId() + ".json");
         PoliformatContentEntity entity = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(entityFilesJson);
@@ -44,10 +40,6 @@ public class SubjectManager {
         saveChanges();
     }
 
-    /**
-     * Descarga la asignatura por primera vez.
-     *
-     */
     private void downloadSubject() {
         System.out.printf("Download started: %s\n", subjectInfo.getName());
         downloadTree(fileSystem, Settings.poliformatDirectory());
@@ -61,11 +53,11 @@ public class SubjectManager {
         if (data.isFolder()) {
             File directory = new File(path.toString());
             directory.mkdir();
-            System.out.printf("Creating the folder: %s\n", path.toString());
+            System.out.printf("Creating folder: %s\n", path.toString());
         } else {
             try {
                 Utils.downloadFile(data.getUrl(), path.toString());
-                System.out.printf("Downloading the file: %s\n", path.toString());
+                System.out.printf("Downloading file: %s\n", path.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -76,10 +68,6 @@ public class SubjectManager {
         }
     }
 
-    /**
-     * Compara los archivos locales con el remoto y descarga la diferencia.
-     *
-     */
     private void syncSubject() throws IOException {
         PoliformatContentEntity response = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(Settings.loadLocal(subjectInfo.getId()));
         Tree<PoliformatFile> localTree = response.toFileTree();
@@ -89,29 +77,26 @@ public class SubjectManager {
 
     private void downloadMergeFiles(List<Pair<PoliformatFile, String>> pendingFiles) {
         String parentPath = Settings.poliformatDirectory();
+
         for (Pair<PoliformatFile, String> file : pendingFiles) {
             Path path = Paths.get(parentPath, file.getValue());
             if (file.getKey().isFolder()) {
                 File directory = new File(path.toString());
                 directory.mkdir();
-                System.out.printf("Sync: Creating the folder: %s\n", path.toString());
+                System.out.printf("Sync: Creating folder: %s\n", path.toString());
             } else {
                 try {
                     Utils.downloadFile(file.getKey().getUrl(), path.toString());
-                    System.out.printf("Sync: Downloading the file: %s\n", path.toString());
+                    System.out.printf("Sync: Downloading file: %s\n", path.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-
         }
     }
 
-    /**
-     * Guarda en local el archivo 'json' que ya ha sido sincronizado.
-     *
-     */
     private void saveChanges() throws IOException {
         Settings.saveRemote(subjectInfo.getId());
     }
+
 }
