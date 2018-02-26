@@ -98,9 +98,9 @@ public class LoginController implements Initializable {
     }
 
     private void launchHome() throws IOException {
-        ((Stage) loginID.getScene().getWindow()).close();
+        Stage stage = ((Stage) loginID.getScene().getWindow());
+        stage.hide();
 
-        Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/home.fxml"));
         Parent sceneMain = loader.load();
 
@@ -111,8 +111,6 @@ public class LoginController implements Initializable {
         scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
 
         stage.setScene(scene);
-        stage.setTitle("syncPoliformat");
-        stage.setResizable(false);
         stage.show();
     }
 

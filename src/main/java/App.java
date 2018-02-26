@@ -1,16 +1,20 @@
 import controller.HomeController;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import model.User;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 
 public class App extends Application {
 
     private User user = new User();
+    private Stage stage;
 
     public static void main(String[] args) {
         launch(args);
@@ -18,6 +22,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        stage = primaryStage;
         Parent root;
 
         if (user.checkRememberLogin()) {
@@ -39,6 +44,34 @@ public class App extends Application {
         primaryStage.setTitle("syncPoliformat");
         primaryStage.setResizable(false);
         primaryStage.show();
+
+        Platform.setImplicitExit(false);
+        SwingUtilities.invokeLater(this::tryaicon);
+    }
+
+    private void tryaicon() {
+        if (!SystemTray.isSupported()) {
+            System.out.println("SystemTray is not supported");
+            return;
+        }
+
+        Image image = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/res/icon.png"));
+
+        final TrayIcon trayIcon = new TrayIcon(image);
+        final SystemTray tray = SystemTray.getSystemTray();
+
+        trayIcon.addActionListener(event -> Platform.runLater(this::showStage));
+
+        try {
+            tray.add(trayIcon);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showStage() {
+        stage.show();
+        stage.toFront();
     }
 
 }

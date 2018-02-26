@@ -13,9 +13,8 @@ import java.util.List;
 
 public class User {
 
-    private String nameUser;
-    private String lastNameUser;
-    private String mailUser;
+    private String displayName;
+    private String email;
     private Boolean isLogged = false;
 
     private CookieManager manager;
@@ -25,16 +24,12 @@ public class User {
         CookieHandler.setDefault(manager);
     }
 
-    public String getNameUser() {
-        return nameUser;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public String getLastNameUser() {
-        return lastNameUser;
-    }
-
-    public String getMailUser() {
-        return mailUser;
+    public String getEmail() {
+        return email;
     }
 
     public Boolean isLogged() {
@@ -91,8 +86,7 @@ public class User {
         cookieJar.add(null, cookieToken);
         cookieJar.add(null, cookieDns);
 
-        URL url1 = new URL("https://poliformat.upv.es/portal/login");
-        url1.openConnection().getInputStream();
+        new URL("https://poliformat.upv.es/portal/login").openConnection().getInputStream();
 
         isLogged = true;
         syncUserInfo();
@@ -107,9 +101,8 @@ public class User {
 
     private void syncUserInfo() throws IOException {
         UserInfo info = ObjectParsers.USER_INFO_ADAPTER.fromJson(Utils.getJson("user/current.json"));
-        nameUser = info.getFirstName();
-        lastNameUser = info.getLastName();
-        mailUser = info.getEmail();
+        displayName = info.getDisplayName();
+        email = info.getEmail();
     }
 
 }

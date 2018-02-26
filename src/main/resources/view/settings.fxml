@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="542.0" prefWidth="435.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <JFXButton layoutX="333.0" layoutY="489.0" prefHeight="32.0" prefWidth="81.0" style="-fx-background-color: #D32F2F;" text="GUARDAR" textFill="WHITE" AnchorPane.bottomAnchor="21.0" AnchorPane.rightAnchor="21.0" />
+      <JFXButton layoutX="237.0" layoutY="493.0" text="CANCELAR" textFill="#d32f2f" AnchorPane.bottomAnchor="24.0" AnchorPane.rightAnchor="123.0" />
+      <Label layoutX="32.0" layoutY="24.0" text="Has iniciado sesión como:" />
+      <Label layoutX="32.0" layoutY="43.0" text="Nombre Apellido1 Apellido2" />
+      <Line layoutX="266.0" layoutY="45.0" rotate="90.0" scaleY="0.5" startX="-30.0" stroke="#0000009a" />
+      <JFXButton layoutX="273.0" layoutY="32.0" text="CERRAR SESIÓN">
+         <font>
+            <Font name="Roboto" size="14.0" />
+         </font>
+      </JFXButton>
+      <JFXCheckBox checkedColor="#d32f2f" layoutX="32.0" layoutY="119.0" text="Abrir al inicio de sesión" />
+      <JFXCheckBox checkedColor="#d32f2f" layoutX="32.0" layoutY="155.0" selected="true" text="Sincronizar automaticamente" />
+      <JFXCheckBox checkedColor="#d32f2f" layoutX="32.0" layoutY="193.0" selected="true" text="Minimizar al cerrar" />
+      <AnchorPane layoutX="34.0" layoutY="265.0" prefHeight="169.0" prefWidth="363.0" style="-fx-border-color: #ccc;" AnchorPane.leftAnchor="34.0" AnchorPane.rightAnchor="38.0">
+         <children>
+            <JFXCheckBox checkedColor="#d32f2f" layoutX="14.0" layoutY="14.0" selected="true" text="Asignatura 1" />
+            <JFXCheckBox checkedColor="#d32f2f" layoutX="14.0" layoutY="44.0" selected="true" text="Asignatura 1" />
+            <JFXCheckBox checkedColor="#d32f2f" layoutX="14.0" layoutY="76.0" selected="true" text="Asignatura 1" />
+            <JFXCheckBox checkedColor="#d32f2f" layoutX="14.0" layoutY="107.0" text="Asignatura 1" />
+            <JFXCheckBox checkedColor="#d32f2f" layoutX="14.0" layoutY="138.0" text="Asignatura 1" />
+         </children>
+      </AnchorPane>
+      <Label layoutX="34.0" layoutY="238.0" text="Asignaturas para sincronizar:" />
+      <JFXButton layoutX="314.0" layoutY="234.0" ripplerFill="#e4e4e4" style="-fx-background-color: #e4e4e4;" text="Resinconizar" />
+      <Label layoutX="32.0" layoutY="79.0" text="Carpeta de descargas:" />
+      <Label layoutX="158.0" layoutY="80.0" text="C:\Users\User\Poliformat" textFill="#00000080" />
+   </children>
+</AnchorPane>
