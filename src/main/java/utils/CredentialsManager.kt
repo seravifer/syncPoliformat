@@ -2,6 +2,7 @@ package utils
 
 import java.io.*
 
+// TODO: Abstraer a una interfax e implementar en CookieJar O Credentials
 object CredentialsManager {
 
     val credentials: Pair<String, String>

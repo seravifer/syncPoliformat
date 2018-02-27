@@ -1,7 +1,8 @@
-package model
+package domain
 
 import com.squareup.moshi.Json
-import model.json.adapter.PosixDate
+import data.model.SubjectManager
+import domain.json.adapter.PosixDate
 
 import java.util.Date
 

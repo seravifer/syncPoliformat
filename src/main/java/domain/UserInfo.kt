@@ -1,7 +1,7 @@
-package model
+package domain
 
 import com.squareup.moshi.Json
-import model.json.adapter.PosixDate
+import domain.json.adapter.PosixDate
 
 import java.net.URL
 import java.util.Date

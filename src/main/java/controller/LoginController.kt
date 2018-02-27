@@ -13,7 +13,7 @@ import javafx.scene.control.Label
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
 import javafx.stage.Stage
-import model.User
+import data.model.User
 import utils.Settings
 
 import java.net.URL
@@ -62,6 +62,7 @@ class LoginController : Initializable {
         loginID.isDisable = true
         loadingID.isVisible = true
 
+        // TODO: Proveer del servicio autenticador a través del constructor
         user.login(usernameID.text, passwordID.text, rememberID.isSelected)
                 .onSucceeded { loggedIn ->
                     if (loggedIn) showHome()
@@ -84,6 +85,7 @@ class LoginController : Initializable {
         val loader = FXMLLoader(javaClass.getResource("/view/home.fxml"))
         val sceneMain = loader.load<Parent>()
 
+        // TODO: Dejar de delegar la construccion del controlador a JavaFx y instanciarlo mediante constructor
         val controller = loader.getController<HomeController>()
         controller.init(user)
 

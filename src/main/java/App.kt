@@ -4,7 +4,7 @@ import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.stage.Stage
-import model.User
+import data.model.User
 
 import java.io.IOException
 import java.net.URISyntaxException
@@ -21,6 +21,7 @@ class App : Application() {
             val loader = FXMLLoader(javaClass.getResource("/view/home.fxml"))
             val sceneMain = loader.load<Parent>()
 
+            // TODO: Dejar de delegar la construccion del controlador a JavaFx y instanciarlo mediante constructor
             val controller = loader.getController<HomeController>()
             controller.init(user)
 

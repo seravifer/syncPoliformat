@@ -1,7 +1,7 @@
 package utils
 
-import model.SubjectInfo
-import model.json.LastSubjectUpdateAdapter
+import domain.SubjectInfo
+import domain.json.LastSubjectUpdateAdapter
 import java.io.File
 
 import java.io.IOException
@@ -9,6 +9,7 @@ import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
 
+// TODO: Reevaluar esto
 object Settings {
 
     val subjectsPath: Path

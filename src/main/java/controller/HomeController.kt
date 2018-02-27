@@ -6,9 +6,9 @@ import javafx.scene.control.Label
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.VBox
 import javafx.scene.shape.SVGPath
-import model.Poliformat
-import model.SubjectInfo
-import model.User
+import data.model.PoliformatApi
+import domain.SubjectInfo
+import data.model.User
 import utils.Settings
 
 import java.awt.Desktop
@@ -42,7 +42,8 @@ class HomeController : Initializable {
             mailID.text = mailUser
         }
 
-        val poliformat = Poliformat()
+        // TODO: Proveer del servicio de asignaturas a través del constructor
+        val poliformat = PoliformatApi()
 
         poliformat.fetchSubjectsInfo().onSucceeded { subjects ->
             poliformat.persistLastUpdateSubjectsDate(subjects).onSucceeded {

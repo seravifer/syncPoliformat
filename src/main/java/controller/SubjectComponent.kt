@@ -1,7 +1,6 @@
 package controller
 
 import com.jfoenix.controls.JFXSpinner
-import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.scene.control.Label
@@ -9,7 +8,7 @@ import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import javafx.scene.shape.SVGPath
-import model.SubjectInfo
+import domain.SubjectInfo
 import utils.Utils
 
 import java.io.IOException

@@ -1,6 +1,6 @@
-package model
+package data.model
 
-import model.json.UserInfoAdapter
+import domain.json.UserInfoAdapter
 import utils.CredentialsManager
 import utils.Utils
 import utils.task
@@ -10,6 +10,7 @@ import java.io.DataOutputStream
 import java.io.IOException
 import java.net.*
 
+// TODO: Pasar funcionalidad a services
 class User {
 
     var nameUser: String? = null

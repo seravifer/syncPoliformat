@@ -1,9 +1,11 @@
+package data.network
+
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
-import model.json.adapter.CleanAdapter
-import model.json.adapter.ContentAdapter
-import model.json.adapter.PosixDateAdapter
-import model.json.adapter.UrlAdapter
+import domain.json.adapter.CleanAdapter
+import domain.json.adapter.ContentAdapter
+import domain.json.adapter.PosixDateAdapter
+import domain.json.adapter.UrlAdapter
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory

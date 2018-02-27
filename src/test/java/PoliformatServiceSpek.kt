@@ -1,16 +1,8 @@
-import com.squareup.moshi.KotlinJsonAdapterFactory
-import com.squareup.moshi.Moshi
-import model.json.adapter.CleanAdapter
-import model.json.adapter.ContentAdapter
-import model.json.adapter.PosixDateAdapter
-import model.json.adapter.UrlAdapter
-import okhttp3.OkHttpClient
+import data.network.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 
 object PoliformatServiceSpek : Spek({
     given("a UPV Service") {

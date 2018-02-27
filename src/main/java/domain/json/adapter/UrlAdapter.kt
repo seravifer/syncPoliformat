@@ -1,9 +1,8 @@
-package model.json.adapter
+package domain.json.adapter
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson
 
-import java.net.MalformedURLException
 import java.net.URL
 
 class UrlAdapter {

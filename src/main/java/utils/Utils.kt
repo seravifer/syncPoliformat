@@ -26,6 +26,7 @@ object Utils {
                 Integer.toString(year)
         }
 
+    // TODO: Sustituir por Retrofit
     @Throws(IOException::class)
     fun getJson(url: String): String {
         val link = URL("https://poliformat.upv.es/direct/" + url)
@@ -38,6 +39,7 @@ object Utils {
 
     fun random(min: Int, max: Int): Int = ThreadLocalRandom.current().nextInt(min, max + 1)
 
+    // TODO: Pasar funcionalidad a services
     @Throws(IOException::class)
     fun downloadFile(url: URL, path: Path) {
         val urlPath = Paths.get(url.path)

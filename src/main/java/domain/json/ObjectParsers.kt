@@ -1,11 +1,13 @@
-package model.json
+package domain.json
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import model.*
-import model.json.adapter.*
+import domain.json.adapter.*
+import domain.ContentEntity
+import domain.SiteEntity
+import domain.UserInfo
 
 private val moshiParser = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())

@@ -1,6 +1,7 @@
-package model
+package data.model
 
-import model.json.*
+import domain.json.*
+import domain.SubjectInfo
 import org.jsoup.Jsoup
 import utils.Settings
 import utils.Utils
@@ -9,7 +10,8 @@ import utils.task
 
 import java.io.IOException
 
-class Poliformat {
+// TODO: Pasar funcionalidad a services
+class PoliformatApi {
 
     fun fetchSubjectsInfo() = task<List<SubjectInfo>> {
         val json = Utils.getJson("site.json")

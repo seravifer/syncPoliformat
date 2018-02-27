@@ -1,16 +1,18 @@
-package model
+package data.model
 
-import model.json.*
+import domain.json.*
+import domain.PoliformatFile
+import domain.SubjectInfo
 import mu.KLogging
 import utils.Settings
 import utils.Tree
 import utils.Utils
 import utils.task
 
-import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 
+// TODO: Pasar funcionalidad a services
 class SubjectManager(private val subjectInfo: SubjectInfo) {
 
     companion object Logger : KLogging()

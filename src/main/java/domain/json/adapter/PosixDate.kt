@@ -1,4 +1,4 @@
-package model.json.adapter
+package domain.json.adapter
 
 import com.squareup.moshi.JsonQualifier
 

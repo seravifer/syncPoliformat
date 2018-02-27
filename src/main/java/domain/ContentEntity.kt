@@ -1,4 +1,4 @@
-package model
+package domain
 
 import com.squareup.moshi.Json
 import utils.Tree

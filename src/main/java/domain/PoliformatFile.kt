@@ -1,7 +1,7 @@
-package model
+package domain
 
 import com.squareup.moshi.Json
-import model.json.adapter.Clean
+import domain.json.adapter.Clean
 
 import java.net.URL
 import java.nio.file.Path
