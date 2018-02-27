@@ -15,7 +15,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import model.User;
-import utils.Settings;
 
 import java.io.IOException;
 import java.net.URL;
@@ -48,12 +47,6 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            Settings.initFolders();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         usernameID.textProperty().addListener((ov, oldValue, newValue) -> {
             if (usernameID.getText().length() > 8 || !usernameID.getText().matches("[0-9]*")) {
                 usernameID.setText(oldValue);

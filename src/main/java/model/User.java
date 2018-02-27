@@ -3,7 +3,7 @@ package model;
 import javafx.util.Pair;
 import model.json.ObjectParsers;
 import utils.CredentialsManager;
-import utils.Utils;
+import utils.PolifromatApi;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.DataOutputStream;
@@ -100,7 +100,7 @@ public class User {
     }
 
     private void syncUserInfo() throws IOException {
-        UserInfo info = ObjectParsers.USER_INFO_ADAPTER.fromJson(Utils.getJson("user/current.json"));
+        UserInfo info = ObjectParsers.USER_INFO_ADAPTER.fromJson(PolifromatApi.getUserInfo());
         displayName = info.getDisplayName();
         email = info.getEmail();
     }

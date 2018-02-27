@@ -1,10 +1,6 @@
 package utils;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,32 +14,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public final class Utils {
 
+    private static double version = 1.0;
+
     private Utils() {}
 
-    public static String getJson(String url) throws IOException {
-        URL link = new URL("https://poliformat.upv.es/direct/" + url);
-        HttpsURLConnection conn = (HttpsURLConnection) link.openConnection();
-
-        return inputStreamToString(conn.getInputStream());
-    }
-
-    public static String readFile(File file) throws IOException {
+    public static String fileToString(File file) throws IOException {
         byte[] bytes = Files.readAllBytes(file.toPath());
         return new String(bytes, "UTF-8");
-    }
-
-    public static String inputStreamToString(InputStream inputStream) {
-        try(ByteArrayOutputStream result = new ByteArrayOutputStream()) {
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) != -1) {
-                result.write(buffer, 0, length);
-            }
-
-            return result.toString("UTF-8");
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     public static String now() {
@@ -79,6 +56,22 @@ public final class Utils {
         try (InputStream from = url.openStream()) {
             Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
         }
+    }
+
+    public static boolean checkVersion() {
+        try {
+            URL url = new URL("http://sergiavila.com/version"); // Temporal
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+
+            double newVersion = Double.valueOf(in.readLine());
+            in.close();
+
+            return version < newVersion;
+        } catch (IOException e) {
+            System.err.println("Error al comprobar la versión de la aplicación.");
+        }
+
+        return false;
     }
 
 }

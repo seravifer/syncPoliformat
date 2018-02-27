@@ -41,10 +41,13 @@ public class HomeController implements Initializable {
     @FXML
     private VBox listID;
 
+    private User user;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {}
 
     public void init(User user) throws IOException {
+        this.user = user;
         nameID.setText(user.getDisplayName());
         mailID.setText(user.getEmail());
 
@@ -59,25 +62,26 @@ public class HomeController implements Initializable {
 
         final ContextMenu contextMenu = new ContextMenu();
 
-        MenuItem item1 = new MenuItem("About");
+        MenuItem item1 = new MenuItem("Sobre nosotros");
         item1.setOnAction(e -> launchAbout());
 
-        MenuItem item2 = new MenuItem("Preferences");
+        //MenuItem item2 = new MenuItem("Preferences");
+        MenuItem item2 = new MenuItem("Cerrar sesión");
         item2.setOnAction(e -> launchSettings());
 
-        MenuItem item3 = new MenuItem("Send feedback...");
+        MenuItem item3 = new MenuItem("Contactar");
         item3.setOnAction(e -> sendFeedbak());
 
-        MenuItem item4 = new MenuItem("Help");
+        MenuItem item4 = new MenuItem("Ayuda");
         item4.setOnAction(e -> help());
 
-        MenuItem item5 = new MenuItem("Update all");
+        MenuItem item5 = new MenuItem("Sincronizar");
         item5.setOnAction(e -> updateAll());
 
-        MenuItem item6 = new MenuItem("Exit");
+        MenuItem item6 = new MenuItem("Salir");
         item6.setOnAction(e -> System.exit(0));
 
-        contextMenu.getItems().addAll(item1, item4, item3, new SeparatorMenuItem(), item5, item2, new SeparatorMenuItem(), item6);
+        contextMenu.getItems().addAll(item1, item3, new SeparatorMenuItem(), item5, item2, new SeparatorMenuItem(), item6);
 
         settingsID.setOnMouseClicked((e) -> contextMenu.show(settingsID, Side.LEFT, 0 ,0));
     }
@@ -132,7 +136,8 @@ public class HomeController implements Initializable {
     }
 
     private void launchSettings() {
-
+        user.logout();
+        System.exit(0);
     }
 
 }

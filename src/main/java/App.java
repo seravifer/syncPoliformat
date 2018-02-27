@@ -4,8 +4,11 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import model.User;
+import utils.Settings;
+import utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,8 +24,14 @@ public class App extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
-        stage = primaryStage;
+    public void start(Stage stage) throws IOException {
+        try {
+            Settings.initFolders();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.stage = stage;
         Parent root;
 
         if (user.checkRememberLogin()) {
@@ -40,16 +49,25 @@ public class App extends Application {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
 
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("syncPoliformat");
-        primaryStage.setResizable(false);
-        primaryStage.show();
+        stage.setScene(scene);
+        stage.setTitle("syncPoliformat");
+        stage.setResizable(false);
+        stage.show();
 
         Platform.setImplicitExit(false);
-        SwingUtilities.invokeLater(this::tryaicon);
+        SwingUtilities.invokeLater(this::trayIcon);
+
+        if (Utils.checkVersion()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Nueva versión disponible");
+            alert.setHeaderText(null);
+            alert.setContentText("Hemos detectado que existe una nueva versión disponible de la aplicación. " +
+                    "Por favor descarguela de nuestra páguina web para poder garantizar su correcto funcionamiento.");
+            alert.showAndWait();
+        }
     }
 
-    private void tryaicon() {
+    private void trayIcon() {
         if (!SystemTray.isSupported()) {
             System.out.println("SystemTray is not supported");
             return;

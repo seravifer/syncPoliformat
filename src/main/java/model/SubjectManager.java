@@ -2,6 +2,7 @@ package model;
 
 import javafx.util.Pair;
 import model.json.ObjectParsers;
+import utils.PolifromatApi;
 import utils.Settings;
 import utils.Tree;
 import utils.Utils;
@@ -27,7 +28,7 @@ public class SubjectManager {
     }
 
     public void sync() throws IOException {
-        String entityFilesJson = Utils.getJson("content/site/" + subjectInfo.getId() + ".json");
+        String entityFilesJson = PolifromatApi.getSubject(subjectInfo.getId());
         PoliformatContentEntity entity = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(entityFilesJson);
         fileSystem = entity.toFileTree();
 

@@ -22,20 +22,6 @@ public final class Settings {
         return Paths.get(appDirectory(), "subjects.json");
     }
 
-    public static void initFolders() throws IOException {
-        File folder = new File(poliformatDirectory());
-        File directory = new File(appDirectory());
-        File subjects = getSubjectsPath().toFile();
-
-        folder.mkdir();
-        directory.mkdir();
-
-        FileOutputStream out = new FileOutputStream(subjects);
-        out.write("{}".getBytes("UTF-8"));
-        out.flush();
-        out.close();
-    }
-
     public static String appDirectory() {
         String pathDirectory;
         String os = System.getProperty("os.name").toLowerCase();
@@ -53,6 +39,21 @@ public final class Settings {
         return Paths.get(System.getProperty("user.home"), "Poliformat").toString();
     }
 
+    public static void initFolders() throws IOException {
+        File folder = new File(poliformatDirectory());
+        File directory = new File(appDirectory());
+        File subjects = getSubjectsPath().toFile();
+
+        if (!folder.exists()) folder.mkdir();
+        if (!directory.exists()) directory.mkdir();
+        if (!subjects.exists()) {
+            FileOutputStream out = new FileOutputStream(subjects);
+            out.write("{}".getBytes("UTF-8"));
+            out.flush();
+            out.close();
+        }
+    }
+
     public static String loadLocal(String id) throws IOException {
         return new String(Files.readAllBytes(Paths.get(appDirectory(), id + ".json")));
     }
@@ -68,7 +69,7 @@ public final class Settings {
     public static void updateSubject(SubjectInfo subjectInfo) {
         File file = getSubjectsPath().toFile();
         try {
-            Map<String, String> jsonSubjects = ObjectParsers.LAST_SUBJECT_UPDATE_ADAPTER.fromJson(Utils.readFile(file));
+            Map<String, String> jsonSubjects = ObjectParsers.LAST_SUBJECT_UPDATE_ADAPTER.fromJson(Utils.fileToString(file));
             jsonSubjects.put(subjectInfo.getId(), subjectInfo.getLastUpdate());
 
             FileOutputStream out = new FileOutputStream(file, false);

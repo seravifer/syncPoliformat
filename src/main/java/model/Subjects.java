@@ -5,6 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import utils.PolifromatApi;
 import utils.Settings;
 import utils.Utils;
 
@@ -31,7 +32,7 @@ public class Subjects {
     // TODO: Eliminar asignaturas que no pertenezcan a ese año
     public void syncRemote() {
         try {
-            String json = Utils.getJson("site.json");
+            String json = PolifromatApi.getSubjects();
             PoliformatSiteEntity subjectsEntity = ObjectParsers.POLIFORMAT_ENTITY_SUBJECT_ADAPTER.fromJson(json);
             subjects = Arrays.asList(subjectsEntity.getSiteCollection()).stream()
                     .filter(SubjectInfo::isRealSubject)
@@ -63,7 +64,7 @@ public class Subjects {
     public void syncLocal() throws IOException {
         File file = Settings.getSubjectsPath().toFile();
 
-        Map<String, String> jsonSubjects = ObjectParsers.LAST_SUBJECT_UPDATE_ADAPTER.fromJson(Utils.readFile(file));
+        Map<String, String> jsonSubjects = ObjectParsers.LAST_SUBJECT_UPDATE_ADAPTER.fromJson(Utils.fileToString(file));
         for (SubjectInfo itemSubject : subjects.values()) {
             String lastUpdated = jsonSubjects.get(itemSubject.getId());
             if (lastUpdated == null) {

@@ -1,9 +1,8 @@
-import model.PoliformatContentEntity;
 import javafx.util.Pair;
+import model.PoliformatContentEntity;
 import model.PoliformatFile;
 import model.json.ObjectParsers;
 import utils.Tree;
-import utils.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,7 +25,8 @@ public class TestMerge {
     private static Tree<PoliformatFile> getTreeFromJson(String id) throws IOException {
         File file = new File(TestMerge.class.getResource(id).getFile());
         FileInputStream fis = new FileInputStream(file);
-        PoliformatContentEntity entity = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(Utils.inputStreamToString(fis));
+        PoliformatContentEntity entity = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson("");
+        //PoliformatContentEntity entity = ObjectParsers.POLIFORMAT_ENTITY_FILES_ADAPTER.fromJson(PolifromatApi.inputStreamToString(fis));
         return entity.toFileTree();
     }
 
