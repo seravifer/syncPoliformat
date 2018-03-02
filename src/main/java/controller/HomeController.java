@@ -62,21 +62,18 @@ public class HomeController implements Initializable {
 
         final ContextMenu contextMenu = new ContextMenu();
 
-        MenuItem item1 = new MenuItem("Sobre nosotros");
+        MenuItem item1 = new MenuItem("Nosotros");
         item1.setOnAction(e -> launchAbout());
+
+        MenuItem item3 = new MenuItem("Reportar error");
+        item3.setOnAction(e -> sendFeedbak());
+
+        MenuItem item5 = new MenuItem("Sincronizar");
+        item5.setOnAction(e -> updateAll());
 
         //MenuItem item2 = new MenuItem("Preferences");
         MenuItem item2 = new MenuItem("Cerrar sesión");
         item2.setOnAction(e -> launchSettings());
-
-        MenuItem item3 = new MenuItem("Contactar");
-        item3.setOnAction(e -> sendFeedbak());
-
-        MenuItem item4 = new MenuItem("Ayuda");
-        item4.setOnAction(e -> help());
-
-        MenuItem item5 = new MenuItem("Sincronizar");
-        item5.setOnAction(e -> updateAll());
 
         MenuItem item6 = new MenuItem("Salir");
         item6.setOnAction(e -> System.exit(0));
@@ -102,21 +99,13 @@ public class HomeController implements Initializable {
     }
 
     private void sendFeedbak() {
-        try {
-            Desktop.getDesktop().browse(new URI("mailto:hola@sergiavila.com"));
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
+
     }
 
     private void updateAll() {
         for (int i = 0; i < listID.getChildren().size(); i++) {
             ((SubjectComponent) listID.getChildren().get(i)).sync();
         }
-    }
-
-    private void help() {
-
     }
 
     private void launchAbout() {

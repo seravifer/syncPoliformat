@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.User;
 import utils.Settings;
@@ -13,6 +14,9 @@ import utils.Utils;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URL;
 
 public class App extends Application {
 
@@ -45,9 +49,10 @@ public class App extends Application {
             root = FXMLLoader.load(getClass().getResource("view/login.fxml"));
         }
 
-        //Font.loadFont(getClass().getResource("/css/Roboto.ttf").toExternalForm(), 14);
+
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/css/style.css").toString());
+        loadFonts();
 
         stage.setScene(scene);
         stage.setTitle("syncPoliformat");
@@ -69,11 +74,11 @@ public class App extends Application {
 
     private void trayIcon() {
         if (!SystemTray.isSupported()) {
-            System.out.println("SystemTray is not supported");
+            System.err.println("SystemTray is not supported");
             return;
         }
 
-        Image image = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/res/icon.png"));
+        Image image = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/res/tray-icon.png"));
 
         final PopupMenu popup = new PopupMenu();
         final TrayIcon trayIcon = new TrayIcon(image);
@@ -94,6 +99,34 @@ public class App extends Application {
         try {
             tray.add(trayIcon);
         } catch (AWTException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadFonts() {
+        String[] fonts = {"Black", "Bold", "Light", "Medium", "Thin"};
+        for (String font : fonts) {
+            Font.loadFont(getClass().getResource("/css/fonts/Roboto-"+font+".ttf").toExternalForm(), 14);
+            Font.loadFont(getClass().getResource("/css/fonts/Roboto-"+font+"Italic.ttf").toExternalForm(), 14);
+        }
+
+        Font.loadFont(getClass().getResource("/css/fonts/Roboto-Regular.ttf").toExternalForm(), 14);
+        Font.loadFont(getClass().getResource("/css/fonts/Roboto-Italic.ttf").toExternalForm(), 14);
+    }
+
+
+    private void appleDockIcon() {
+        try {
+            Class util = Class.forName("com.apple.eawt.Application");
+            Method getApplication = util.getMethod("getApplication");
+            Object application = getApplication.invoke(util);
+            Class params[] = new Class[1];
+            params[0] = Image.class;
+            Method setDockIconImage = util.getMethod("setDockIconImage", params);
+            URL url = getClass().getResource("res/icon-1024.png");
+            Image image = Toolkit.getDefaultToolkit().getImage(url);
+            setDockIconImage.invoke(application, image);
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
