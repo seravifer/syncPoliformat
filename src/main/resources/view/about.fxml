@@ -5,17 +5,17 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-<AnchorPane prefHeight="268.0" prefWidth="392.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="261.0" prefWidth="392.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="96.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="96.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../res/logo-poliformat.png" />
          </image>
       </ImageView>
-      <Label layoutX="168.0" layoutY="76.0" text="v1.0-alpha" />
-      <Label layoutX="29.0" layoutY="225.0" text="Copyright 2003-2018 The Sakai Foundation. All rights reserved." />
-      <Label layoutX="84.0" layoutY="200.0" text="Universitat Politècnica de València © 2012" />
-      <Label layoutX="151.0" layoutY="106.0" text="Sergi Ávila&#10;Kevin López&#10;David Olmos" textAlignment="CENTER">
+      <Label layoutX="301.0" layoutY="58.0" text="v1.0" />
+      <Label layoutX="29.0" layoutY="224.0" text="Copyright 2003-2018 The Sakai Foundation. All rights reserved." />
+      <Label layoutX="84.0" layoutY="199.0" text="Universitat Politècnica de València © 2012" />
+      <Label layoutX="151.0" layoutY="99.0" text="Sergi Ávila&#10;Kevin López&#10;David Olmos" textAlignment="CENTER">
          <font>
             <Font size="16.0" />
          </font>
