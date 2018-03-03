@@ -1,8 +1,9 @@
 package service
 
-import domain.SubjectInfo
-import java.util.concurrent.Future
+import domain.PoliformatFile
+import utils.Tree
+import java.util.concurrent.CompletableFuture
 
 interface SubjectService {
-    fun subjectInfo(id: String): Future<List<SubjectInfo>>
+    fun subjectResources(id: String): CompletableFuture<Tree<PoliformatFile>>
 }

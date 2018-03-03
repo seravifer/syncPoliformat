@@ -1,8 +1,10 @@
 import data.network.*
+import domain.ContentEntity
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
+import retrofit2.HttpException
 
 object PoliformatServiceSpek : Spek({
     given("a UPV Service") {
@@ -44,16 +46,23 @@ object PoliformatServiceSpek : Spek({
         val poliformat: PoliformatService = Poliformat
         on ("subject resources request") {
             val subjectId = System.getProperty("subject.id") ?: System.getenv("subject.id") ?: "GRA_11571_2017"
-            val call = poliformat.resources(subjectId)
-            val response = call.execute()
+            val promise = poliformat.resources(subjectId)
+            val result: ContentEntity? = try { promise.join() } catch (e: Exception) { null }
             it ("should be a successful connection") {
-                assert(response.isSuccessful) {
-                    "Http error on login. Code: ${response.code()} (${response.errorBody()?.string()})"
+                assert(promise.isDone && !promise.isCompletedExceptionally) {
+                    try {
+                        promise.join() // It's is going to throw always at this point
+                        "Unreachable"
+                    } catch (e: HttpException) {
+                        "Http error on login. Code: ${e.code()} (${e.message()})"
+                    } catch (e: Exception) {
+                        "Unknown exception on connection: ${e.message}"
+                    }
                 }
             }
 
             it ("should contain folder or files") {
-                assert(response.body()?.collection?.isNotEmpty() == true) {
+                assert(result?.collection?.isNotEmpty() == true) {
                     "The psw was expected to contain files or folders but it was empty"
                 }
             }

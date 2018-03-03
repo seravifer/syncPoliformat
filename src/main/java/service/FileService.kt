@@ -1,8 +1,8 @@
 package service
 
-import domain.PoliformatFile
-import java.util.concurrent.Future
+import java.util.concurrent.CompletableFuture
+
 
 interface FileService {
-    fun downloadFile(file: PoliformatFile): Future<Unit>
+    fun syncSubjectFiles(subjectId: String): CompletableFuture<Unit>
 }

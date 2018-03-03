@@ -1,11 +1,10 @@
 package service.impl
 
-import domain.PoliformatFile
 import service.FileService
-import java.util.concurrent.Future
+import java.util.concurrent.CompletableFuture
 
 class FileServiceImpl : FileService {
-    override fun downloadFile(file: PoliformatFile): Future<Unit> {
+    override fun syncSubjectFiles(subjectId: String): CompletableFuture<Unit> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

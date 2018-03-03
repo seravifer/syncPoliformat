@@ -1,11 +1,13 @@
 package service.impl
 
-import domain.SubjectInfo
+import data.Repository
+import domain.PoliformatFile
 import service.SubjectService
-import java.util.concurrent.Future
+import utils.Tree
+import java.util.concurrent.CompletableFuture
 
-class SubjectServiceImpl : SubjectService {
-    override fun subjectInfo(id: String): Future<List<SubjectInfo>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+class SubjectServiceImpl(private val repo: Repository) : SubjectService {
+    override fun subjectResources(id: String): CompletableFuture<Tree<PoliformatFile>> {
+        return repo.getSubjectContent(id).thenApplyAsync { it.toFileTree() }
     }
 }

@@ -39,7 +39,7 @@ class SubjectInfo(
         @Json(name = "shortDescription")
         var shortDescription: String? = null,
         @Json(name = "title")
-        var title: String? = null,
+        var title: String,
         @Json(name = "type")
         var type: String? = null,
         @Json(name = "userRoles")
