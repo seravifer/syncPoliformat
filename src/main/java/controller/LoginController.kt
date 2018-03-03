@@ -46,8 +46,6 @@ class LoginController : Initializable {
 
     @FXML
     override fun initialize(location: URL, resources: ResourceBundle?) {
-        Settings.initFolders()
-
         usernameID.textProperty().addListener { _, oldValue, _ ->
             if (usernameID.text.length > 8 || !usernameID.text.matches("[0-9]*".toRegex())) {
                 usernameID.text = oldValue

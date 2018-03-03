@@ -8,9 +8,11 @@ import utils.Settings
 import utils.Tree
 import utils.Utils
 import utils.task
+import java.io.File
 
 import java.io.IOException
 import java.nio.file.Path
+import java.nio.file.Paths
 
 // TODO: Pasar funcionalidad a services
 class SubjectManager(private val subjectInfo: SubjectInfo) {
@@ -79,12 +81,29 @@ class SubjectManager(private val subjectInfo: SubjectInfo) {
     private fun syncSubject() {
         val response = ContentEntityAdapter.fromJson(Settings.loadLocal(subjectInfo.id))
         val localTree = response!!.toFileTree()
-        val files = filesystem!!.merge(localTree)
+        val files = localTree.merge(filesystem!!)
         downloadMergeFiles(files)
     }
 
-    private fun downloadMergeFiles(files: List<PoliformatFile>?) {
+    private fun downloadMergeFiles(pendingFiles: List<Pair<PoliformatFile, String>>) {
+        val parentPath = Settings.poliformatDirectory
 
+        for (file in pendingFiles) {
+            val path = Paths.get(parentPath.path, file.second)
+            if (file.first.isFolder) {
+                val directory = File(path.toString())
+                directory.mkdir()
+                logger.info {"Sync: Creating folder: $path" }
+            } else {
+                try {
+                    Utils.downloadFile(file.first.url, path)
+                    logger.info { "Sync: Downloading file: $path\n" }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+
+            }
+        }
     }
 
     /**

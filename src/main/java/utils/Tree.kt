@@ -1,14 +1,11 @@
 package utils
 
+import java.nio.file.Paths
 import java.util.LinkedList
 
 class Tree<T>(val data: T) {
 
-    private val children: MutableList<Tree<T>>
-
-    init {
-        this.children = LinkedList()
-    }
+    private val children: MutableList<Tree<T>> = LinkedList()
 
     fun addChild(child: Tree<T>): Boolean {
         return children.add(child)
@@ -38,22 +35,23 @@ class Tree<T>(val data: T) {
         }
     }
 
-    fun merge(localTree: Tree<T>): List<T> {
-        val newFiles = LinkedList<T>()
+    fun merge(localTree: Tree<T>): List<Pair<T, String>> {
+        val rootPath = localTree.data.toString()
+        val newFiles = LinkedList<Pair<T, String>>()
         val dequeOld = LinkedList<Tree<T>>()
-        val dequeNew = LinkedList<Tree<T>>()
+        val dequeNew = LinkedList<Pair<Tree<T>, String>>()
 
         dequeOld.add(this)
-        dequeNew.add(localTree)
+        dequeNew.add(localTree to rootPath)
 
         var ptrA: Tree<T>
-        var ptrB: Tree<T>
+        var ptrB: Pair<Tree<T>, String>
 
         while (dequeOld.size != 0) {
             ptrA = dequeOld.first
             ptrB = dequeNew.first
 
-            if (ptrA.data == ptrB.data) {
+            if (ptrA.data == ptrB.first.data) {
                 dequeOld.removeFirst()
                 dequeNew.removeFirst()
 
@@ -61,16 +59,18 @@ class Tree<T>(val data: T) {
                     dequeOld.addFirst(child)
                 }
 
-                for (child in ptrB.getChildren()) {
-                    dequeNew.addFirst(child)
+                for (child in ptrB.first.getChildren()) {
+                    val path = Paths.get(ptrB.second, child.data.toString()).toString()
+                    dequeNew.addFirst(child to path)
                 }
 
             } else {
                 val file = dequeNew.removeFirst()
-                newFiles.add(file.data)
+                newFiles.add(file.first.data to file.second)
 
-                for (child in ptrB.getChildren()) {
-                    dequeNew.addFirst(child)
+                for (child in ptrB.first.getChildren()) {
+                    val path = Paths.get(ptrB.second, child.data.toString()).toString()
+                    dequeNew.addFirst(child to path)
                 }
             }
         }
@@ -78,11 +78,12 @@ class Tree<T>(val data: T) {
         while (dequeNew.size != 0) {
             ptrB = dequeNew.removeFirst()
 
-            for (child in ptrB.getChildren()) {
-                dequeNew.addFirst(child)
+            for (child in ptrB.first.getChildren()) {
+                val path = Paths.get(ptrB.second, child.data.toString()).toString()
+                dequeNew.addFirst(child to path)
             }
 
-            newFiles.add(ptrB.data)
+            newFiles.add(ptrB.first.data to ptrB.second)
         }
 
         return newFiles
