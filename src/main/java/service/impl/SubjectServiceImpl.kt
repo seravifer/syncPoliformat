@@ -1,13 +1,12 @@
 package service.impl
 
 import data.Repository
-import domain.PoliformatFile
+import domain.ContentEntity
 import service.SubjectService
-import utils.Tree
 import java.util.concurrent.CompletableFuture
 
 class SubjectServiceImpl(private val repo: Repository) : SubjectService {
-    override fun subjectResources(id: String): CompletableFuture<Tree<PoliformatFile>> {
-        return repo.getSubjectContent(id).thenApplyAsync { it.toFileTree() }
+    override fun subjectContentResources(id: String): CompletableFuture<ContentEntity> {
+        return repo.getSubjectContent(id)
     }
 }

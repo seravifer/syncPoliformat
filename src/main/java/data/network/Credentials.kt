@@ -1,6 +1,5 @@
 package data.network
 
-import utils.IOExecutor
 import utils.Settings
 import java.io.File
 
@@ -32,7 +31,7 @@ class Credentials(token: String? = null, dns: String? = null, remember: Boolean 
         } else {
             this.token = token
             this.dns = dns
-            if (remember) IOExecutor.execute { saveCredentials(token, dns) }
+            if (remember) saveCredentials(token, dns)
         }
     }
 }

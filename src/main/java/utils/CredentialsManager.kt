@@ -17,19 +17,4 @@ object CredentialsManager {
     val credentialsFile: File
         get() = Settings.appDirectory.resolve("credentials").toFile()
 
-
-    fun saveCredentials(token: String, dns: String) {
-        with(credentialsFile) {
-            createNewFile()
-            printWriter().use {
-                it.println(token)
-                it.println(dns)
-            }
-        }
-    }
-
-    fun deleteCredentials() {
-        credentialsFile.delete()
-    }
-
 }// TODO: Encriptar las credenciales

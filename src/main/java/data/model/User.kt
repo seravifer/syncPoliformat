@@ -3,10 +3,7 @@ package data.model
 import domain.json.UserInfoAdapter
 import utils.CredentialsManager
 import utils.Utils
-import utils.task
 
-import javax.net.ssl.HttpsURLConnection
-import java.io.DataOutputStream
 import java.io.IOException
 import java.net.*
 
@@ -26,34 +23,6 @@ class User {
     init {
         manager = CookieManager()
         CookieHandler.setDefault(manager)
-    }
-
-    @Throws(IOException::class)
-    fun login(username: String, password: String, remember: Boolean) = task<Boolean> {
-        val param = "&id=c&estilo=500&vista=MSE&cua=sakai&dni=$username&clau=$password&=Entrar"
-
-        val url = URL("https://www.upv.es/exp/aute_intranet")
-
-        val conn = url.openConnection() as HttpsURLConnection
-        conn.doOutput = true
-
-        val post = DataOutputStream(conn.outputStream)
-        post.writeBytes(param)
-        post.flush()
-        post.close()
-
-        val loggedIn = conn.getHeaderField("X-Sakai-Session") != null
-        if (loggedIn) {
-            syncUserInfo()
-            if (remember) saveCredentials()
-        }
-        loggedIn
-    }
-
-    fun logout() {
-        manager = CookieManager()
-        CookieHandler.setDefault(manager)
-        CredentialsManager.deleteCredentials()
     }
 
     fun checkLogin(): Boolean {
@@ -84,14 +53,6 @@ class User {
 
         isLogged = true
         syncUserInfo()
-    }
-
-    @Throws(IOException::class)
-    private fun saveCredentials() {
-        val cookies = manager.cookieStore.cookies
-        val token = cookies[0]
-        val dns = cookies[1]
-        CredentialsManager.saveCredentials(token.value, dns.value)
     }
 
     @Throws(IOException::class)

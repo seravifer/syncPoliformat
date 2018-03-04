@@ -48,7 +48,7 @@ class PoliformatFile(
         val entityURL: String? = null,
         @Json(name = "entityTitle")
         val entityTitle: String? = null
-) {
+) : Resource {
     val parentUrl: String by lazy {
         val urlString = url.toString()
 
@@ -61,11 +61,15 @@ class PoliformatFile(
         url.toString().substring(0, index + 1)
     }
 
+    override lateinit var localPath: Path
+
+    override val name: String = title
+
     val isFolder = type == "collection"
 
     override fun equals(other: Any?): Boolean = other is PoliformatFile && this.title == other.title
 
-    override fun toString() = title + " - " + url
+    override fun toString() = title
 
     override fun hashCode(): Int = title.hashCode()
 }

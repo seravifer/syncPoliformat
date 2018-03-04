@@ -21,5 +21,5 @@ interface PoliformatService {
     fun siteInfo(): CompletableFuture<SiteEntity>
 
     @GET
-    fun downloadFile(@Url fileUrl: String): Call<ResponseBody>
+    fun downloadFile(@Url fileUrl: String): CompletableFuture<ResponseBody>
 }

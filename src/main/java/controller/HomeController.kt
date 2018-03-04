@@ -1,14 +1,15 @@
 package controller
 
+import data.DataRepository
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.Label
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.VBox
 import javafx.scene.shape.SVGPath
-import data.model.PoliformatApi
 import domain.SubjectInfo
 import data.model.User
+import data.network.Poliformat
 import javafx.fxml.FXMLLoader
 import javafx.geometry.Side
 import javafx.scene.Parent
@@ -17,17 +18,18 @@ import javafx.scene.control.ContextMenu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.SeparatorMenuItem
 import javafx.stage.Stage
+import service.SiteService
+import service.impl.SiteServiceImpl
 import utils.Settings
 
 import java.awt.Desktop
-import java.io.File
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
 import java.net.URL
 import java.util.ResourceBundle
 
-class HomeController : Initializable {
+class HomeController(private val siteService: SiteService = SiteServiceImpl(DataRepository(Poliformat))) : Initializable {
 
     @FXML
     private lateinit var nameID: Label
@@ -51,15 +53,14 @@ class HomeController : Initializable {
             mailID.text = mailUser
         }
 
-        // TODO: Proveer del servicio de asignaturas a través del constructor
-        val poliformat = PoliformatApi()
-
-        poliformat.fetchSubjectsInfo().onSucceeded { subjects ->
-            poliformat.persistLastUpdateSubjectsDate(subjects).onSucceeded {
+        siteService.getSubjects().handle { subjects, e ->
+            if (e == null) {
                 subjects.sortedBy(SubjectInfo::name)
                         .forEach { listID.children.add(SubjectComponent(it)) }
-            }.toThread(name = "Persist-Subjects-Last-Update", isDaemon = false).start()
-        }.toThread(name = "Fetch-Subjects-Info").start()
+            } else {
+
+            }
+        }
 
         val contextMenu = ContextMenu()
 

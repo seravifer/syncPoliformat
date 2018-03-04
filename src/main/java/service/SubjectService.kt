@@ -1,9 +1,10 @@
 package service
 
+import domain.ContentEntity
 import domain.PoliformatFile
-import utils.Tree
+import utils.ResourceTree
 import java.util.concurrent.CompletableFuture
 
 interface SubjectService {
-    fun subjectResources(id: String): CompletableFuture<Tree<PoliformatFile>>
+    fun subjectContentResources(id: String): CompletableFuture<ContentEntity>
 }

@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXCheckBox
 import com.jfoenix.controls.JFXPasswordField
 import com.jfoenix.controls.JFXProgressBar
+import data.DataRepository
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable
@@ -14,12 +15,16 @@ import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
 import javafx.stage.Stage
 import data.model.User
+import data.network.Intranet
+import data.network.Poliformat
+import service.AuthenticationService
+import service.impl.AuthenticationServiceImpl
 import utils.Settings
 
 import java.net.URL
 import java.util.ResourceBundle
 
-class LoginController : Initializable {
+class LoginController(private val authService: AuthenticationService = AuthenticationServiceImpl(DataRepository(Poliformat), Intranet)) : Initializable {
 
     @FXML
     private lateinit var usernameID: JFXPasswordField
@@ -60,20 +65,21 @@ class LoginController : Initializable {
         loginID.isDisable = true
         loadingID.isVisible = true
 
-        // TODO: Proveer del servicio autenticador a través del constructor
-        user.login(usernameID.text, passwordID.text, rememberID.isSelected)
-                .onSucceeded { loggedIn ->
-                    if (loggedIn) showHome()
-                    else {
-                        errorID.isVisible = true
-                        passwordID.text = ""
+        authService.login(usernameID.text, passwordID.text, rememberID.isSelected)
+                .handle { loggedIn, e ->
+                    if (e != null) {
+                        if (loggedIn) showHome()
+                        else {
+                            errorID.isVisible = true
+                            passwordID.text = ""
+                        }
+                        loginID.isDisable = false
+                        loadingID.isVisible = false
+                    } else {
+                        System.err.println("El usuario no tiene conexión a internet.")
+                        if (e is Exception) e.printStackTrace()
                     }
-                    loginID.isDisable = false
-                    loadingID.isVisible = false
-                }.onFailed { e ->
-                    System.err.println("El usuario no tiene conexión a internet.")
-                    if (e is Exception) e.printStackTrace()
-                }.toThread(name = "Login-Thread").start()
+                }
     }
 
     private fun showHome() {

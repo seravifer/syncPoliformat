@@ -1,7 +1,6 @@
 package domain
 
 import com.squareup.moshi.Json
-import data.model.SubjectManager
 import domain.json.adapter.PosixDate
 
 import java.util.Date
@@ -72,8 +71,6 @@ class SubjectInfo(
     var lastUpdate = ""
     @Transient
     var name = "non-fetched-name"
-    @Transient
-    val manager = SubjectManager(this)
 
     val isRealSubject: Boolean = maintainRole == "profesor" && type == "siteupv"
 }

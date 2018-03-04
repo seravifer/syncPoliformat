@@ -3,8 +3,6 @@ package utils
 import javax.net.ssl.HttpsURLConnection
 import java.io.IOException
 import java.net.URL
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -14,6 +12,7 @@ object Utils {
 
     val isWindowsHost by lazy { System.getProperty("os.name").contains("win", true) }
 
+    // Esto se usa al recoger los nombres reales de las asginaturas. NO BORRAR HASTA IMPLEMENTARLO.
     val curso: String by lazy {
             val time = Calendar.getInstance()
 
@@ -38,18 +37,4 @@ object Utils {
     fun now(): String = SimpleDateFormat("dd/MM/yyyy HH:mm").format(Date())
 
     fun random(min: Int, max: Int): Int = ThreadLocalRandom.current().nextInt(min, max + 1)
-
-    // TODO: Pasar funcionalidad a services
-    @Throws(IOException::class)
-    fun downloadFile(url: URL, path: Path) {
-        val urlPath = Paths.get(url.path)
-        val localPath = path.changeExtension(urlPath.toFile().extension)
-        url.openStream().use { from ->
-            from.copyTo(localPath.toFile().outputStream())
-        }
-    }
-
-    private fun Path.changeExtension(ext: String): Path {
-        return parent.resolve(toFile().nameWithoutExtension + "." + ext)
-    }
 }

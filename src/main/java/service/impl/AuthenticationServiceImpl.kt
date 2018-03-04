@@ -13,6 +13,7 @@ class AuthenticationServiceImpl(
 ) : AuthenticationService {
 
     override fun login(dni: String, password: String, remember: Boolean): CompletableFuture<Boolean> {
+        if (remember) TODO("Guardar credenciales")
         val loginParams = mapOf(
                 "cua" to "sakai",
                 "estilo" to "500",
@@ -27,6 +28,6 @@ class AuthenticationServiceImpl(
     override fun currentUser(): CompletableFuture<UserInfo> = repo.getCurrentUser()
 
     override fun logout(): CompletableFuture<Unit> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("Borrar credenciales")
     }
 }
