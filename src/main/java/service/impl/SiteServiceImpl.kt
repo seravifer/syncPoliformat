@@ -3,25 +3,22 @@ package service.impl
 import data.Repository
 import domain.SubjectInfo
 import domain.json.LastSubjectUpdateAdapter
+import mu.KLogging
 import service.SiteService
 import utils.Settings
 import java.util.concurrent.CompletableFuture
 
 class SiteServiceImpl(val repo: Repository) : SiteService {
     override fun getSubjects(): CompletableFuture<List<SubjectInfo>> {
-        return repo.getSiteSubjects().thenApplyAsync { subjectList ->
+        return repo.getSiteSubjects().thenCombineAsync(repo.getSiteSubjectNames()) { subjectList, nameMap ->
             subjectList.apply {
                 loadLastUpdateDate()
                 saveNewSubjectIds()
             }
+            logger.debug { "Subjects\n" }
+            subjectList.forEach { it.name = nameMap[it.id] ?: it.shortName }
+            subjectList
         }
-
-        /*
-        val subjects = repo.getSiteSubjects()
-        val subjectNames  = repo.getSiteSubjectNames()
-        return subjects.thenCombineAsync(subjectNames) { subjects, names ->
-            subjects.map { it.apply { name = names[id] ?: title } }
-        }*/
     }
 
     private fun List<SubjectInfo>.saveNewSubjectIds() {
@@ -54,4 +51,5 @@ class SiteServiceImpl(val repo: Repository) : SiteService {
 
         return subjects
     }*/
+    companion object : KLogging()
 }

@@ -21,7 +21,7 @@ class App : Application() {
         Settings.initFolders()
         stage = primaryStage
 
-        val authService = AuthenticationServiceImpl(DataRepository(Poliformat), Intranet)
+        val authService = AuthenticationServiceImpl(DataRepository(Poliformat, Intranet), Intranet)
 
         LoginController(authService, stage)
 

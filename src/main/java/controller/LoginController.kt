@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXCheckBox
 import com.jfoenix.controls.JFXPasswordField
 import com.jfoenix.controls.JFXProgressBar
 import data.DataRepository
+import data.network.Intranet
 import data.network.Poliformat
 import domain.UserInfo
 import javafx.fxml.FXML
@@ -98,7 +99,7 @@ class LoginController(private val authService: AuthenticationService, private va
     private fun showHome(user: UserInfo) {
         stage.hide()
 
-        val siteService = SiteServiceImpl(DataRepository(Poliformat))
+        val siteService = SiteServiceImpl(DataRepository(Poliformat, Intranet))
         HomeController(siteService, stage, user)
 
         stage.show()

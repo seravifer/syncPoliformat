@@ -2,6 +2,7 @@ package controller
 
 import com.jfoenix.controls.JFXSpinner
 import data.DataRepository
+import data.network.Intranet
 import data.network.Poliformat
 import domain.SubjectInfo
 import javafx.fxml.FXML
@@ -21,7 +22,7 @@ import java.io.IOException
 import java.util.function.BiFunction
 
 class SubjectComponent @Throws(IOException::class)
-constructor(private val subject: SubjectInfo, private val fileService: FileService = FileServiceImpl(DataRepository(Poliformat), SubjectServiceImpl(DataRepository(Poliformat)))) : AnchorPane() {
+constructor(private val subject: SubjectInfo, private val fileService: FileService = FileServiceImpl(DataRepository(Poliformat, Intranet), SubjectServiceImpl(DataRepository(Poliformat, Intranet)))) : AnchorPane() {
 
     @FXML
     private lateinit var longNameID: Label
@@ -49,7 +50,7 @@ constructor(private val subject: SubjectInfo, private val fileService: FileServi
         fxmlLoader.load<Any>()
 
         nameID.text = subject.shortName
-        longNameID.text = subject.description
+        longNameID.text = subject.name
         dateID.text = formatLastUpdate(subject.lastUpdate)
         circleID.fill = Color.web(colors[Utils.random(1, colors.size - 1)])
 

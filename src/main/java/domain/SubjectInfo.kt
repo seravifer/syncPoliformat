@@ -18,7 +18,7 @@ class SubjectInfo(
         @Json(name = "htmlDescription")
         var htmlDescription: String? = null,
         @Json(name = "htmlShortDescription")
-        var shortName: String? = null,
+        var shortName: String,
         @Json(name = "id")
         var id: String,
         @PosixDate

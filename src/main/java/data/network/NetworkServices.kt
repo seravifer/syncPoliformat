@@ -7,6 +7,7 @@ import domain.json.adapter.ContentAdapter
 import domain.json.adapter.PosixDateAdapter
 import domain.json.adapter.UrlAdapter
 import okhttp3.OkHttpClient
+import pl.droidsonroids.retrofit2.JspoonConverterFactory
 import retrofit2.Retrofit
 import retrofit2.adapter.java8.Java8CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -21,6 +22,8 @@ private val httpClient = OkHttpClient.Builder()
 private val upvRetrofit = Retrofit.Builder()
         .baseUrl("https://www.upv.es/")
         .client(httpClient)
+        .addConverterFactory(JspoonConverterFactory.create())
+        .addCallAdapterFactory(Java8CallAdapterFactory.create())
         .callbackExecutor(JavaFXExecutor)
         .build()
 

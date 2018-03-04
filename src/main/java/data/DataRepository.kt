@@ -1,6 +1,7 @@
 package data
 
 import data.network.PoliformatService
+import data.network.UpvService
 import domain.ContentEntity
 import domain.SubjectInfo
 import domain.UserInfo
@@ -12,12 +13,15 @@ import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
 
 class DataRepository(
-        private val poliformatService: PoliformatService
+        private val poliformatService: PoliformatService,
+        private val intranetService: UpvService
 ) : Repository {
     override fun getCurrentUser(): CompletableFuture<UserInfo> = poliformatService.currentUser()
 
     override fun getSiteSubjectNames(): CompletableFuture<Map<GradId, SubjectName>> {
-        TODO("La recuperación de los nombres reales de las asignaturas")
+        return intranetService.subjects().thenApplyAsync {
+            it.subjects.associate { subject -> subject.graId to subject.name }
+        }
     }
 
     override fun getSiteSubjects(): CompletableFuture<List<SubjectInfo>> {
