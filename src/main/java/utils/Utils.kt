@@ -1,12 +1,11 @@
 package utils
 
-import javax.net.ssl.HttpsURLConnection
 import java.io.IOException
 import java.net.URL
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
+import java.util.*
 import java.util.concurrent.ThreadLocalRandom
+import javax.net.ssl.HttpsURLConnection
 
 object Utils {
 
@@ -37,4 +36,5 @@ object Utils {
     fun now(): String = SimpleDateFormat("dd/MM/yyyy HH:mm").format(Date())
 
     fun random(min: Int, max: Int): Int = ThreadLocalRandom.current().nextInt(min, max + 1)
+
 }

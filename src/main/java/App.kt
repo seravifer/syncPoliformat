@@ -1,16 +1,15 @@
+import data.model.User
 import javafx.application.Application
+import javafx.application.Platform
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
-import javafx.stage.Stage
-import data.model.User
-import javafx.application.Platform
+import javafx.scene.control.Alert
+import javafx.scene.image.Image
 import javafx.scene.text.Font
+import javafx.stage.Stage
 import utils.Settings
 import java.awt.*
-
-import java.io.IOException
-import java.net.URISyntaxException
 import javax.swing.SwingUtilities
 
 class App : Application() {
@@ -18,7 +17,6 @@ class App : Application() {
     private val user = User()
     private lateinit var stage: Stage
 
-    @Throws(IOException::class, URISyntaxException::class)
     override fun start(primaryStage: Stage) {
         Settings.initFolders()
         stage = primaryStage
@@ -43,18 +41,20 @@ class App : Application() {
         primaryStage.scene = scene
         primaryStage.title = "syncPoliformat"
         primaryStage.isResizable = false
+        primaryStage.icons += Image(javaClass.getResource("/res/icon-64.png").toString())
         primaryStage.show()
 
         Platform.setImplicitExit(false)
         SwingUtilities.invokeLater { this.trayIcon() }
 
-        /*if (Utils.checkVersion()) {
+        if (Settings.checkVersion()) {
             val alert = Alert(Alert.AlertType.WARNING)
             alert.title = "Nueva versión disponible"
             alert.headerText = null
-            alert.contentText = "Hemos detectado que existe una nueva versión disponible de la aplicación. " + "Por favor descarguela de nuestra páguina web para poder garantizar su correcto funcionamiento."
+            alert.contentText = "Hemos detectado que existe una nueva versión disponible de la aplicación. " +
+                    "Por favor descarguela de nuestra páguina web para poder garantizar su correcto funcionamiento."
             alert.showAndWait()
-        }*/
+        }
     }
 
     private fun trayIcon() {
@@ -86,18 +86,14 @@ class App : Application() {
         } catch (e: AWTException) {
             e.printStackTrace()
         }
-
     }
 
     private fun loadFonts() {
-        val fonts = arrayOf("Black", "Bold", "Light", "Medium", "Thin")
+        val fonts = arrayOf("Black", "Bold", "Light", "Medium", "Regular", "Thin")
         for (font in fonts) {
             Font.loadFont(javaClass.getResource("/css/fonts/Roboto-$font.ttf").toExternalForm(), 14.0)
-            Font.loadFont(javaClass.getResource("/css/fonts/Roboto-" + font + "Italic.ttf").toExternalForm(), 14.0)
+            Font.loadFont(javaClass.getResource("/css/fonts/Roboto-${font}Italic.ttf").toExternalForm(), 14.0)
         }
-
-        Font.loadFont(javaClass.getResource("/css/fonts/Roboto-Regular.ttf").toExternalForm(), 14.0)
-        Font.loadFont(javaClass.getResource("/css/fonts/Roboto-Italic.ttf").toExternalForm(), 14.0)
     }
 
     private fun showStage() {

@@ -11,9 +11,11 @@ import retrofit2.Retrofit
 import retrofit2.adapter.java8.Java8CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import utils.JavaFXExecutor
+import java.util.concurrent.TimeUnit
 
 private val httpClient = OkHttpClient.Builder()
         .cookieJar(NonPersistentCookieJar)
+        .readTimeout(15, TimeUnit.MINUTES)
         .build()
 
 private val upvRetrofit = Retrofit.Builder()

@@ -1,8 +1,11 @@
 package utils
 
+import java.io.BufferedReader
 import java.io.File
 
 import java.io.IOException
+import java.io.InputStreamReader
+import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -38,6 +41,22 @@ object Settings {
         if (!poliformatDirectory.exists()) poliformatDirectory.mkdir()
         if (!directory.exists()) directory.mkdir()
         if (!subjectsUpdate.exists()) subjectsUpdate.writeText("{}")
+    }
+
+    fun checkVersion(): Boolean {
+        try {
+            val url = URL("http://sergiavila.com/version") // Temporal
+            val `in` = BufferedReader(InputStreamReader(url.openStream()))
+
+            val newVersion = java.lang.Double.valueOf(`in`.readLine())
+            `in`.close()
+
+            return 1.0 < newVersion
+        } catch (e: IOException) {
+            System.err.println("Error al comprobar la versión de la aplicación.")
+        }
+
+        return false
     }
 
 }
