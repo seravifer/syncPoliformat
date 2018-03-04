@@ -15,9 +15,11 @@ import mu.KLogging
 import service.FileService
 import service.impl.FileServiceImpl
 import service.impl.SubjectServiceImpl
+import utils.JavaFXExecutor
 import utils.Utils
 
 import java.io.IOException
+import java.util.function.BiFunction
 
 class SubjectComponent @Throws(IOException::class)
 constructor(private val subject: SubjectInfo, private val fileService: FileService = FileServiceImpl(DataRepository(Poliformat), SubjectServiceImpl(DataRepository(Poliformat)))) : AnchorPane() {
@@ -48,7 +50,7 @@ constructor(private val subject: SubjectInfo, private val fileService: FileServi
         fxmlLoader.load<Any>()
 
         nameID.text = subject.shortName
-        longNameID.text = subject.name
+        longNameID.text = subject.description
         dateID.text = formatLastUpdate(subject.lastUpdate)
         circleID.fill = Color.web(colors[Utils.random(1, colors.size - 1)])
 
@@ -71,11 +73,11 @@ constructor(private val subject: SubjectInfo, private val fileService: FileServi
         dateID.text = "Descargando asignatura..."
 
         fileService.syncSubjectFiles(subject)
-                .handle { now, e ->
+                .handleAsync(BiFunction<String, Throwable?, Unit> { now, e ->
                     if (e != null) logger.warn(e) { "Error al descargar los archivos\n" }
                     else subject.lastUpdate = now
                     finish()
-                }
+                }, JavaFXExecutor)
     }
 
     private fun finish() {

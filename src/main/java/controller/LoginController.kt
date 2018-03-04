@@ -14,15 +14,17 @@ import javafx.scene.control.Label
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
 import javafx.stage.Stage
-import data.model.User
 import data.network.Intranet
 import data.network.Poliformat
+import domain.UserInfo
+import mu.KLogging
 import service.AuthenticationService
 import service.impl.AuthenticationServiceImpl
-import utils.Settings
+import utils.JavaFXExecutor
 
 import java.net.URL
 import java.util.ResourceBundle
+import java.util.function.BiFunction
 
 class LoginController(private val authService: AuthenticationService = AuthenticationServiceImpl(DataRepository(Poliformat), Intranet)) : Initializable {
 
@@ -47,8 +49,6 @@ class LoginController(private val authService: AuthenticationService = Authentic
     @FXML
     private lateinit var sceneID: AnchorPane
 
-    private val user = User()
-
     @FXML
     override fun initialize(location: URL, resources: ResourceBundle?) {
         usernameID.textProperty().addListener { _, oldValue, _ ->
@@ -57,6 +57,7 @@ class LoginController(private val authService: AuthenticationService = Authentic
             }
         }
 
+        rememberID.isDisable = true
         sceneID.setOnKeyPressed { event -> if (event.code == KeyCode.ENTER) loginID.fire() }
     }
 
@@ -66,23 +67,26 @@ class LoginController(private val authService: AuthenticationService = Authentic
         loadingID.isVisible = true
 
         authService.login(usernameID.text, passwordID.text, rememberID.isSelected)
-                .handle { loggedIn, e ->
-                    if (e != null) {
-                        if (loggedIn) showHome()
-                        else {
-                            errorID.isVisible = true
-                            passwordID.text = ""
-                        }
-                        loginID.isDisable = false
-                        loadingID.isVisible = false
+                .thenCompose { loggedIn ->
+                    if (loggedIn) {
+                        logger.info { "Logged In" }
                     } else {
-                        System.err.println("El usuario no tiene conexión a internet.")
-                        if (e is Exception) e.printStackTrace()
+                        errorID.isVisible = true
+                        passwordID.text = ""
                     }
-                }
+                    loginID.isDisable = false
+                    loadingID.isVisible = false
+                    authService.currentUser()
+                }.handleAsync(BiFunction<UserInfo, Throwable?, Unit> { user, e ->
+                    if (e == null) {
+                        showHome(user)
+                    } else {
+                        logger.error(e) { "El usuario no tiene conexión a internet.\n" }
+                    }
+                }, JavaFXExecutor)
     }
 
-    private fun showHome() {
+    private fun showHome(user: UserInfo) {
         (loginID.scene.window as Stage).close()
 
         val stage = Stage()
@@ -101,4 +105,6 @@ class LoginController(private val authService: AuthenticationService = Authentic
         stage.isResizable = false
         stage.show()
     }
+
+    companion object : KLogging()
 }

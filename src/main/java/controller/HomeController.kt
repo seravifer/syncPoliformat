@@ -8,8 +8,8 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.layout.VBox
 import javafx.scene.shape.SVGPath
 import domain.SubjectInfo
-import data.model.User
 import data.network.Poliformat
+import domain.UserInfo
 import javafx.fxml.FXMLLoader
 import javafx.geometry.Side
 import javafx.scene.Parent
@@ -18,8 +18,10 @@ import javafx.scene.control.ContextMenu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.SeparatorMenuItem
 import javafx.stage.Stage
+import mu.KLogging
 import service.SiteService
 import service.impl.SiteServiceImpl
+import utils.JavaFXExecutor
 import utils.Settings
 
 import java.awt.Desktop
@@ -28,6 +30,7 @@ import java.net.URI
 import java.net.URISyntaxException
 import java.net.URL
 import java.util.ResourceBundle
+import java.util.function.BiFunction
 
 class HomeController(private val siteService: SiteService = SiteServiceImpl(DataRepository(Poliformat))) : Initializable {
 
@@ -47,20 +50,20 @@ class HomeController(private val siteService: SiteService = SiteServiceImpl(Data
     override fun initialize(location: URL, resources: ResourceBundle?) {}
 
     @Throws(IOException::class)
-    fun init(user: User) {
+    fun init(user: UserInfo) {
         with(user) {
-            nameID.text = "$nameUser $lastNameUser"
-            mailID.text = mailUser
+            nameID.text = "$firstName $lastName"
+            mailID.text = email
         }
 
-        siteService.getSubjects().handle { subjects, e ->
+        siteService.getSubjects().handleAsync(BiFunction<List<SubjectInfo>, Throwable?, Any> { subjects, e ->
             if (e == null) {
                 subjects.sortedBy(SubjectInfo::name)
                         .forEach { listID.children.add(SubjectComponent(it)) }
             } else {
-
+                logger.error(e) { "Error al recuperar las asignaturas.\n" }
             }
-        }
+        }, JavaFXExecutor)
 
         val contextMenu = ContextMenu()
 
@@ -134,4 +137,5 @@ class HomeController(private val siteService: SiteService = SiteServiceImpl(Data
         TODO("not implemented")
     }
 
+    companion object : KLogging()
 }

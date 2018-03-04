@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.java8.Java8CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
+import utils.JavaFXExecutor
 
 private val httpClient = OkHttpClient.Builder()
         .cookieJar(NonPersistentCookieJar)
@@ -18,6 +19,7 @@ private val httpClient = OkHttpClient.Builder()
 private val upvRetrofit = Retrofit.Builder()
         .baseUrl("https://www.upv.es/")
         .client(httpClient)
+        .callbackExecutor(JavaFXExecutor)
         .build()
 
 private val moshiParser = Moshi.Builder()
@@ -33,6 +35,7 @@ private val poliformatRetrofit = Retrofit.Builder()
         .client(httpClient)
         .addConverterFactory(MoshiConverterFactory.create(moshiParser))
         .addCallAdapterFactory(Java8CallAdapterFactory.create())
+        .callbackExecutor(JavaFXExecutor)
         .build()
 
 object Intranet : UpvService by upvRetrofit.create(UpvService::class.java)

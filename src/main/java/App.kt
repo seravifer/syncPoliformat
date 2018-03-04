@@ -1,4 +1,3 @@
-import controller.HomeController
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
@@ -31,7 +30,7 @@ class App : Application() {
             val parent = loader.load<Parent>()
 
             // TODO: Dejar de delegar la construccion del controlador a JavaFx y instanciarlo mediante constructor
-            loader.getController<HomeController>().init(user)
+            //loader.getController<HomeController>().init(user)
             parent
         } else {
             FXMLLoader.load<Parent>(javaClass.getResource("view/login.fxml"))

@@ -12,4 +12,4 @@ appender("STDOUT", ConsoleAppender) {
         pattern = "%date %level %logger{8} [%file:%line] %msg"
     }
 }
-root(INFO, ["STDOUT", "FILE"])
+root(DEBUG, ["STDOUT", "FILE"])

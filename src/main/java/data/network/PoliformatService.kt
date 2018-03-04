@@ -4,7 +4,6 @@ import domain.ContentEntity
 import domain.SiteEntity
 import domain.UserInfo
 import okhttp3.ResponseBody
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Url
@@ -17,7 +16,7 @@ interface PoliformatService {
     @GET("direct/user/current.json")
     fun currentUser(): CompletableFuture<UserInfo>
 
-    @GET("site.json")
+    @GET("direct/site.json")
     fun siteInfo(): CompletableFuture<SiteEntity>
 
     @GET
