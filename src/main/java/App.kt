@@ -1,7 +1,11 @@
+import controller.HomeController
 import controller.LoginController
 import data.DataRepository
+import data.network.CookieJarImpl
+import data.network.CredentialsStorageImpl
 import data.network.Intranet
 import data.network.Poliformat
+import domain.UserInfo
 import javafx.application.Application
 import javafx.application.Platform
 import javafx.scene.control.Alert
@@ -9,8 +13,11 @@ import javafx.scene.image.Image
 import javafx.scene.text.Font
 import javafx.stage.Stage
 import service.impl.AuthenticationServiceImpl
+import service.impl.SiteServiceImpl
+import utils.JavaFXExecutor
 import utils.Settings
 import java.awt.*
+import java.util.function.BiFunction
 import javax.swing.SwingUtilities
 
 class App : Application() {
@@ -21,9 +28,23 @@ class App : Application() {
         Settings.initFolders()
         stage = primaryStage
 
-        val authService = AuthenticationServiceImpl(DataRepository(Poliformat, Intranet), Intranet)
+        val authService = AuthenticationServiceImpl(DataRepository(Poliformat, Intranet), Intranet, CredentialsStorageImpl, CookieJarImpl)
 
-        LoginController(authService, stage)
+        if (authService.existSavedCredentials()) {
+            authService.login().thenCompose {
+                authService.currentUser()
+            }.handleAsync(BiFunction<UserInfo, Throwable?, Unit> { user, e ->
+                if (e == null) {
+                    val siteService = SiteServiceImpl(DataRepository(Poliformat, Intranet))
+                    HomeController(siteService, stage, user)
+                } else {
+                    authService.logout()
+                    LoginController(authService, stage)
+                }
+            }, JavaFXExecutor)
+        } else {
+            LoginController(authService, stage)
+        }
 
         loadFonts()
 

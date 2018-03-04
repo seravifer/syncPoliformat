@@ -67,7 +67,6 @@ class LoginController(private val authService: AuthenticationService, private va
             }
         }
 
-        rememberID.isDisable = true
         sceneID.setOnKeyPressed { event -> if (event.code == KeyCode.ENTER) loginID.fire() }
     }
 

@@ -15,7 +15,7 @@ import utils.JavaFXExecutor
 import java.util.concurrent.TimeUnit
 
 private val httpClient = OkHttpClient.Builder()
-        .cookieJar(NonPersistentCookieJar)
+        .cookieJar(CookieJarImpl)
         .readTimeout(15, TimeUnit.MINUTES)
         .build()
 

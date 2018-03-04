@@ -38,7 +38,7 @@ object PoliformatServiceSpek : Spek({
             }
 
             it("should save a token cookie") {
-                val cookies = NonPersistentCookieJar.loadForRequest(call.request().url())
+                val cookies = CookieJarImpl.loadForRequest(call.request().url())
                 assert(cookies.any { it.name() == "TDp" })
             }
         }

@@ -1,7 +1,7 @@
 package service.impl
 
 import data.Repository
-import data.network.UpvService
+import data.network.*
 import domain.UserInfo
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -13,40 +13,60 @@ import java.util.concurrent.CompletableFuture
 
 class AuthenticationServiceImpl(
         private val repo: Repository,
-        private val upvService: UpvService
+        private val upvService: UpvService,
+        private val credentialsStorage: CredentialsStorage,
+        private val credentialsHandler: CredentialsHandler
 ) : AuthenticationService {
 
+    // TODO: Abstraer mejor la conversion de Call<ResponseBody> a CompleatbleFuture<Boolean>
     override fun login(dni: String, password: String, remember: Boolean): CompletableFuture<Boolean> {
-        if (remember) TODO("Guardar credenciales")
-        val res = CompletableFuture<Boolean>()
-        val loginParams = mapOf(
-                "cua" to "sakai",
-                "estilo" to "500",
-                "id" to "c",
-                "vista" to "MSE",
-                "dni" to dni,
-                "clau" to password)
-        upvService.login(loginParams)
-                .enqueue(object : Callback<ResponseBody> {
-                    override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                        if (response?.isSuccessful == true) {
-                            val loggedIn = response.headers()["X-Sakai-Session"] != null
-                            res.complete(loggedIn)
-                        } else {
-                            res.completeExceptionally(HttpException(response))
+        return if (dni.isNotBlank() && password.isNotBlank()) {
+            val res = CompletableFuture<Boolean>()
+            val loginParams = mapOf(
+                    "cua" to "sakai",
+                    "estilo" to "500",
+                    "id" to "c",
+                    "vista" to "MSE",
+                    "dni" to dni,
+                    "clau" to password)
+            upvService.login(loginParams)
+                    .enqueue(object : Callback<ResponseBody> {
+                        override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+                            if (response?.isSuccessful == true) {
+                                val loggedIn = response.headers()["X-Sakai-Session"] != null
+                                val credentials = credentialsHandler.getCredentials()
+                                if (remember && loggedIn && credentials != null) {
+                                    credentialsStorage.persistCredentials(credentials)
+                                }
+                                res.complete(loggedIn)
+                            } else {
+                                res.completeExceptionally(HttpException(response))
+                            }
                         }
-                    }
 
-                    override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
-                        res.completeExceptionally(t)
-                    }
-                })
-        return res
+                        override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
+                            res.completeExceptionally(t)
+                        }
+                    })
+            res
+        } else if (existSavedCredentials()) {
+            credentialsStorage.retrieveCredentials().thenApplyAsync {
+                credentialsHandler.loadCredentials(it)
+                true
+            }
+        } else {
+            CompletableFuture.completedFuture(false)
+        }
+    }
+
+    override fun existSavedCredentials(): Boolean {
+        return Credentials.credentialsFile.exists()
     }
 
     override fun currentUser(): CompletableFuture<UserInfo> = repo.getCurrentUser()
 
     override fun logout(): CompletableFuture<Unit> {
-        TODO("Borrar credenciales")
+        credentialsHandler.cleanCredentials()
+        return credentialsStorage.removeCredentials()
     }
 }
