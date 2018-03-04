@@ -1,7 +1,7 @@
 package utils
 
 import domain.Resource
-import java.util.LinkedList
+import java.util.*
 
 class ResourceTree<T : Resource>(val data: T) {
 

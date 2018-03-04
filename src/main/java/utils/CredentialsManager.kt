@@ -1,6 +1,7 @@
 package utils
 
-import java.io.*
+import java.io.File
+import java.io.IOException
 
 // TODO: Abstraer a una interfax e implementar en CookieJar O Credentials
 object CredentialsManager {

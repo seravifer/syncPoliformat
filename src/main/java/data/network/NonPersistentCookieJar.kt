@@ -1,9 +1,8 @@
 package data.network
 import okhttp3.Cookie
-import java.util.ArrayList
-import okhttp3.HttpUrl
-import java.util.LinkedHashSet
 import okhttp3.CookieJar
+import okhttp3.HttpUrl
+import java.util.*
 
 // TODO: Reevaluar esto
 object NonPersistentCookieJar : CookieJar {

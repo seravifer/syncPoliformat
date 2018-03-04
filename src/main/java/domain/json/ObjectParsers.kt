@@ -4,10 +4,13 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import domain.json.adapter.*
 import domain.ContentEntity
 import domain.SiteEntity
 import domain.UserInfo
+import domain.json.adapter.CleanAdapter
+import domain.json.adapter.ContentAdapter
+import domain.json.adapter.PosixDateAdapter
+import domain.json.adapter.UrlAdapter
 
 private val moshiParser = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())

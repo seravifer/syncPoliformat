@@ -5,6 +5,8 @@ import com.jfoenix.controls.JFXCheckBox
 import com.jfoenix.controls.JFXPasswordField
 import com.jfoenix.controls.JFXProgressBar
 import data.DataRepository
+import data.network.Poliformat
+import domain.UserInfo
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable
@@ -14,19 +16,15 @@ import javafx.scene.control.Label
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
 import javafx.stage.Stage
-import data.network.Intranet
-import data.network.Poliformat
-import domain.UserInfo
 import mu.KLogging
 import service.AuthenticationService
-import service.impl.AuthenticationServiceImpl
+import service.impl.SiteServiceImpl
 import utils.JavaFXExecutor
-
 import java.net.URL
-import java.util.ResourceBundle
+import java.util.*
 import java.util.function.BiFunction
 
-class LoginController(private val authService: AuthenticationService = AuthenticationServiceImpl(DataRepository(Poliformat), Intranet)) : Initializable {
+class LoginController(private val authService: AuthenticationService, private val stage: Stage) : Initializable {
 
     @FXML
     private lateinit var usernameID: JFXPasswordField
@@ -48,6 +46,17 @@ class LoginController(private val authService: AuthenticationService = Authentic
 
     @FXML
     private lateinit var sceneID: AnchorPane
+
+    init {
+        val fxmlLoader = FXMLLoader(javaClass.getResource("/view/login.fxml"))
+        fxmlLoader.setController(this)
+        val parent = fxmlLoader.load<Parent>()
+
+        val scene = Scene(parent)
+        scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
+
+        stage.scene = scene
+    }
 
     @FXML
     override fun initialize(location: URL, resources: ResourceBundle?) {
@@ -87,22 +96,11 @@ class LoginController(private val authService: AuthenticationService = Authentic
     }
 
     private fun showHome(user: UserInfo) {
-        (loginID.scene.window as Stage).close()
+        stage.hide()
 
-        val stage = Stage()
-        val loader = FXMLLoader(javaClass.getResource("/view/home.fxml"))
-        val sceneMain = loader.load<Parent>()
+        val siteService = SiteServiceImpl(DataRepository(Poliformat))
+        HomeController(siteService, stage, user)
 
-        // TODO: Dejar de delegar la construccion del controlador a JavaFx y instanciarlo mediante constructor
-        val controller = loader.getController<HomeController>()
-        controller.init(user)
-
-        val scene = Scene(sceneMain)
-        scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
-
-        stage.scene = scene
-        stage.title = "syncPoliformat"
-        stage.isResizable = false
         stage.show()
     }
 

@@ -1,44 +1,32 @@
-import data.model.User
+import controller.LoginController
+import data.DataRepository
+import data.network.Intranet
+import data.network.Poliformat
 import javafx.application.Application
 import javafx.application.Platform
-import javafx.fxml.FXMLLoader
-import javafx.scene.Parent
-import javafx.scene.Scene
 import javafx.scene.control.Alert
 import javafx.scene.image.Image
 import javafx.scene.text.Font
 import javafx.stage.Stage
+import service.impl.AuthenticationServiceImpl
 import utils.Settings
 import java.awt.*
 import javax.swing.SwingUtilities
 
 class App : Application() {
 
-    private val user = User()
     private lateinit var stage: Stage
 
     override fun start(primaryStage: Stage) {
         Settings.initFolders()
         stage = primaryStage
 
-        val root: Parent = if (user.checkLogin()) {
-            user.silentLogin()
+        val authService = AuthenticationServiceImpl(DataRepository(Poliformat), Intranet)
 
-            val loader = FXMLLoader(javaClass.getResource("/view/home.fxml"))
-            val parent = loader.load<Parent>()
+        LoginController(authService, stage)
 
-            // TODO: Dejar de delegar la construccion del controlador a JavaFx y instanciarlo mediante constructor
-            //loader.getController<HomeController>().init(user)
-            parent
-        } else {
-            FXMLLoader.load<Parent>(javaClass.getResource("view/login.fxml"))
-        }
-
-        val scene = Scene(root)
-        scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
         loadFonts()
 
-        primaryStage.scene = scene
         primaryStage.title = "syncPoliformat"
         primaryStage.isResizable = false
         primaryStage.icons += Image(javaClass.getResource("/res/icon-64.png").toString())
@@ -76,9 +64,9 @@ class App : Application() {
         popup.addSeparator()
         popup.add(exitItem)
 
-        displayMenu.addActionListener { _ -> Platform.runLater { this.showStage() } }
-        trayIcon.addActionListener { _ -> Platform.runLater { this.showStage() } }
-        exitItem.addActionListener { _ -> System.exit(0) }
+        displayMenu.addActionListener { Platform.runLater { this.showStage() } }
+        trayIcon.addActionListener { Platform.runLater { this.showStage() } }
+        exitItem.addActionListener { System.exit(0) }
 
         trayIcon.popupMenu = popup
         try {
@@ -94,6 +82,16 @@ class App : Application() {
             Font.loadFont(javaClass.getResource("/css/fonts/Roboto-$font.ttf").toExternalForm(), 14.0)
             Font.loadFont(javaClass.getResource("/css/fonts/Roboto-${font}Italic.ttf").toExternalForm(), 14.0)
         }
+    }
+
+    private fun appleDockIcon() {
+        val util = Class.forName("com.apple.eawt.Application")
+        val getApplication = util.getMethod("getApplication")
+        val application = getApplication.invoke(util)
+        val setDockIconImage = util.getMethod("setDockIconImage", Image::class.java)
+        val url = javaClass.getResource("res/icon-1024.png")
+        val image = Toolkit.getDefaultToolkit().getImage(url)
+        setDockIconImage.invoke(application, image)
     }
 
     private fun showStage() {

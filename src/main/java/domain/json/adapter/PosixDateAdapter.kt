@@ -2,8 +2,7 @@ package domain.json.adapter
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson
-
-import java.util.Date
+import java.util.*
 
 class PosixDateAdapter {
 

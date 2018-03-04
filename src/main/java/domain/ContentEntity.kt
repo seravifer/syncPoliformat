@@ -3,8 +3,7 @@ package domain
 import com.squareup.moshi.Json
 import utils.ResourceTree
 import java.nio.file.Paths
-
-import java.util.HashMap
+import java.util.*
 
 class ContentEntity(
         @Json(name = "content_collection")

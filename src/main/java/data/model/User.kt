@@ -3,9 +3,10 @@ package data.model
 import domain.json.UserInfoAdapter
 import utils.CredentialsManager
 import utils.Utils
-
 import java.io.IOException
-import java.net.*
+import java.net.CookieHandler
+import java.net.CookieManager
+import java.net.HttpCookie
 
 // TODO: Pasar funcionalidad a services
 class User {

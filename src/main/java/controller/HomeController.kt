@@ -1,38 +1,32 @@
 package controller
 
-import data.DataRepository
-import javafx.fxml.FXML
-import javafx.fxml.Initializable
-import javafx.scene.control.Label
-import javafx.scene.input.MouseEvent
-import javafx.scene.layout.VBox
-import javafx.scene.shape.SVGPath
 import domain.SubjectInfo
-import data.network.Poliformat
 import domain.UserInfo
+import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
+import javafx.fxml.Initializable
 import javafx.geometry.Side
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.ContextMenu
+import javafx.scene.control.Label
 import javafx.scene.control.MenuItem
 import javafx.scene.control.SeparatorMenuItem
+import javafx.scene.layout.VBox
+import javafx.scene.shape.SVGPath
 import javafx.stage.Stage
 import mu.KLogging
 import service.SiteService
-import service.impl.SiteServiceImpl
 import utils.JavaFXExecutor
 import utils.Settings
-
 import java.awt.Desktop
 import java.io.IOException
 import java.net.URI
-import java.net.URISyntaxException
 import java.net.URL
-import java.util.ResourceBundle
+import java.util.*
 import java.util.function.BiFunction
 
-class HomeController(private val siteService: SiteService = SiteServiceImpl(DataRepository(Poliformat))) : Initializable {
+class HomeController(private val siteService: SiteService, private val stage: Stage, private val user: UserInfo) : Initializable {
 
     @FXML
     private lateinit var nameID: Label
@@ -46,11 +40,19 @@ class HomeController(private val siteService: SiteService = SiteServiceImpl(Data
     @FXML
     private lateinit var listID: VBox
 
-    @FXML
-    override fun initialize(location: URL, resources: ResourceBundle?) {}
+    init {
+        val fxmlLoader = FXMLLoader(javaClass.getResource("/view/home.fxml"))
+        fxmlLoader.setController(this)
+        val parent = fxmlLoader.load<Parent>()
 
-    @Throws(IOException::class)
-    fun init(user: UserInfo) {
+        val scene = Scene(parent)
+        scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
+
+        stage.scene = scene
+    }
+
+    @FXML
+    override fun initialize(location: URL, resources: ResourceBundle?) {
         with(user) {
             nameID.text = "$firstName $lastName"
             mailID.text = email
@@ -68,20 +70,20 @@ class HomeController(private val siteService: SiteService = SiteServiceImpl(Data
         val contextMenu = ContextMenu()
 
         val item1 = MenuItem("Nosotros")
-        item1.setOnAction { e -> launchAbout() }
+        item1.setOnAction { launchAbout() }
 
         val item3 = MenuItem("Reportar error")
-        item3.setOnAction { e -> sendFeedbak() }
+        item3.setOnAction { sendFeedbak() }
 
         val item5 = MenuItem("Sincronizar")
-        item5.setOnAction { e -> updateAll() }
+        item5.setOnAction { updateAll() }
 
         //MenuItem item2 = new MenuItem("Preferences");
         val item2 = MenuItem("Cerrar sesión")
-        item2.setOnAction { _ -> launchSettings() }
+        item2.setOnAction { launchSettings() }
 
         val item6 = MenuItem("Salir")
-        item6.setOnAction { _ -> System.exit(0) }
+        item6.setOnAction { System.exit(0) }
 
         contextMenu.items.addAll(item1, item3, SeparatorMenuItem(), item5, item2, SeparatorMenuItem(), item6)
 
@@ -89,15 +91,7 @@ class HomeController(private val siteService: SiteService = SiteServiceImpl(Data
     }
 
     @FXML
-    private fun updateAll() {
-        listID.children.asSequence()
-                .filterIsInstance(SubjectComponent::class.java)
-                .forEach { it.sync() }
-    }
-
-    @FXML
-    @Throws(IOException::class)
-    private fun openFolder(event: MouseEvent) {
+    private fun openFolder() {
         try {
             Desktop.getDesktop().open(Settings.poliformatDirectory)
         } catch (e: IOException) {
@@ -108,20 +102,13 @@ class HomeController(private val siteService: SiteService = SiteServiceImpl(Data
     }
 
     @FXML
-    @Throws(IOException::class, URISyntaxException::class)
-    private fun openWeb(event: MouseEvent) {
+    private fun openWeb() {
         Desktop.getDesktop().browse(URI("https://poliformat.upv.es/portal"))
     }
 
     private fun launchAbout() {
         val stage = Stage()
-        var root: Parent? = null
-        try {
-            root = FXMLLoader.load<Parent>(javaClass.getResource("/view/about.fxml"))
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
+        val root: Parent? = FXMLLoader.load<Parent>(javaClass.getResource("/view/about.fxml"))
         val scene = Scene(root!!)
         stage.scene = scene
         stage.title = "About"
@@ -135,6 +122,12 @@ class HomeController(private val siteService: SiteService = SiteServiceImpl(Data
 
     private fun sendFeedbak() {
         TODO("not implemented")
+    }
+
+    private fun updateAll() {
+        listID.children.asSequence()
+                .filterIsInstance(SubjectComponent::class.java)
+                .forEach { it.sync() }
     }
 
     companion object : KLogging()
