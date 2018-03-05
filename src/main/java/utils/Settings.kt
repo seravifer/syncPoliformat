@@ -18,7 +18,7 @@ object Settings {
     val appDirectory: Path
         @JvmStatic
         get() {
-            val pathDirectory = if (Utils.isWindowsHost) {
+            val pathDirectory = if (Utils.isWindows) {
                 Paths.get(System.getenv("APPDATA"))
             } else {
                 Paths.get(System.getProperty("user.home"), ".local", "share")

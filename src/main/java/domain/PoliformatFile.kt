@@ -67,10 +67,10 @@ class PoliformatFile(
 
     val isFolder = type == "collection"
 
-    override fun equals(other: Any?): Boolean = other is PoliformatFile && this.title == other.title
+    override fun equals(other: Any?): Boolean = other is PoliformatFile && this.localPath == other.localPath
 
     override fun toString() = title
 
-    override fun hashCode(): Int = title.hashCode()
+    override fun hashCode(): Int = localPath.hashCode()
 }
 

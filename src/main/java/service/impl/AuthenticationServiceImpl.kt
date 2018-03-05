@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture
 
 class AuthenticationServiceImpl(
         private val repo: Repository,
+        private val poliformatService: PoliformatService,
         private val upvService: UpvService,
         private val credentialsStorage: CredentialsStorage,
         private val credentialsHandler: CredentialsHandler
@@ -50,9 +51,9 @@ class AuthenticationServiceImpl(
                     })
             res
         } else if (existSavedCredentials()) {
-            credentialsStorage.retrieveCredentials().thenApplyAsync {
+            credentialsStorage.retrieveCredentials().thenComposeAsync {
                 credentialsHandler.loadCredentials(it)
-                true
+                poliformatService.login().thenApply { true }
             }
         } else {
             CompletableFuture.completedFuture(false)

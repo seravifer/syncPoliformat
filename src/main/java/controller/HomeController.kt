@@ -22,6 +22,7 @@ import service.SiteService
 import utils.JavaFXExecutor
 import utils.Settings
 import java.awt.Desktop
+import java.awt.SystemTray
 import java.net.URI
 import java.net.URL
 import java.util.*
@@ -86,7 +87,10 @@ class HomeController(
         item3.setOnAction { launchSettings() }
 
         val item4 = MenuItem("Salir")
-        item4.setOnAction { System.exit(0) }
+        item4.setOnAction {
+            SystemTray.getSystemTray().remove(SystemTray.getSystemTray().trayIcons[0])
+            System.exit(0)
+        }
 
         contextMenu.items.addAll(item1, item2, SeparatorMenuItem(), item3, item4)
 

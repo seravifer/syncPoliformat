@@ -7,7 +7,8 @@ import java.util.concurrent.ThreadLocalRandom
 object Utils {
 
     // TODO implementar enum con los sistemas operativos
-    val isWindowsHost by lazy { System.getProperty("os.name").contains("win", true) }
+    val isWindows by lazy { System.getProperty("os.name").contains("win", true) }
+    val isMac by lazy { System.getProperty("os.name").contains("mac", true) }
 
     val curso: String by lazy {
             val time = Calendar.getInstance()

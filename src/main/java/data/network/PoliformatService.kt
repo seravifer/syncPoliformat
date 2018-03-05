@@ -19,6 +19,9 @@ interface PoliformatService {
     @GET("direct/site.json")
     fun siteInfo(): CompletableFuture<SiteEntity>
 
+    @GET("portal/login")
+    fun login(): CompletableFuture<ResponseBody>
+
     @GET
     fun downloadFile(@Url fileUrl: String): CompletableFuture<ResponseBody>
 }

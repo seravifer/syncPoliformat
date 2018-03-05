@@ -13,7 +13,7 @@ class ContentEntity(
     init {
         val aux = HashMap<String, ResourceTree<PoliformatFile>>()
         var parent = ResourceTree(collection[0])
-        parent.data.localPath = Paths.get(parent.data.title)
+        parent.data.localPath = Paths.get(parent.data.title.toUpperCase().substring(0, 3))
         aux[parent.data.url.toString()] = parent
 
         for (i in 1 until collection.size) {

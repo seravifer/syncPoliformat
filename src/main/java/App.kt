@@ -17,6 +17,7 @@ import service.impl.AuthenticationServiceImpl
 import service.impl.SiteServiceImpl
 import utils.JavaFXExecutor
 import utils.Settings
+import utils.Utils
 import java.awt.*
 import java.util.function.BiFunction
 import javax.swing.SwingUtilities
@@ -29,7 +30,7 @@ class App : Application() {
         Settings.initFolders()
         stage = primaryStage
 
-        val authService = AuthenticationServiceImpl(DataRepository(Poliformat, Intranet), Intranet, CredentialsStorageImpl, CookieJarImpl)
+        val authService = AuthenticationServiceImpl(DataRepository(Poliformat, Intranet), Poliformat, Intranet, CredentialsStorageImpl, CookieJarImpl)
 
         if (authService.existSavedCredentials()) {
             authService.login().thenCompose {
@@ -52,6 +53,7 @@ class App : Application() {
         primaryStage.title = "syncPoliformat"
         primaryStage.isResizable = false
         primaryStage.icons += Image(javaClass.getResource("/res/icon-64.png").toString())
+        if (Utils.isMac) appleDockIcon()
 
         // TODO solo mantener abierta si estas en el HomeController
         Platform.setImplicitExit(false)
@@ -88,7 +90,10 @@ class App : Application() {
 
         displayMenu.addActionListener { Platform.runLater { showStage() } }
         trayIcon.addActionListener { Platform.runLater { showStage() } }
-        exitItem.addActionListener { System.exit(0) }
+        exitItem.addActionListener {
+            tray.remove(trayIcon)
+            System.exit(0)
+        }
 
         trayIcon.popupMenu = popup
         tray.add(trayIcon)
@@ -103,12 +108,10 @@ class App : Application() {
     }
 
     private fun appleDockIcon() {
-        val util = Class.forName("com.apple.eawt.Application")
-        val getApplication = util.getMethod("getApplication")
-        val application = getApplication.invoke(util)
-        val setDockIconImage = util.getMethod("setDockIconImage", Image::class.java)
-        val url = javaClass.getResource("res/icon-1024.png")
-        val image = Toolkit.getDefaultToolkit().getImage(url)
+        val appleLibrary = Class.forName("com.apple.eawt.Application")
+        val application = appleLibrary.getMethod("getApplication").invoke(appleLibrary)
+        val setDockIconImage = appleLibrary.getMethod("setDockIconImage", Image::class.java)
+        val image = Toolkit.getDefaultToolkit().getImage(javaClass.getResource("res/icon-1024.png"))
         setDockIconImage.invoke(application, image)
     }
 
