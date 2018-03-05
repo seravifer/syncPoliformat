@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.*?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="542.0" prefWidth="435.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="593.0" prefWidth="468.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <JFXButton layoutX="333.0" layoutY="489.0" prefHeight="32.0" prefWidth="81.0" style="-fx-background-color: #D32F2F;" text="GUARDAR" textFill="WHITE" AnchorPane.bottomAnchor="21.0" AnchorPane.rightAnchor="21.0">
          <font>
@@ -30,16 +30,16 @@
             <Font name="Roboto" size="14.0" />
          </font>
       </JFXButton>
-      <JFXCheckBox checkedColor="#d32f2f" layoutX="32.0" layoutY="119.0" text="Abrir al inicio de sesión" />
-      <JFXCheckBox checkedColor="#d32f2f" layoutX="32.0" layoutY="155.0" selected="true" text="Sincronizar automaticamente">
+      <JFXCheckBox checkedColor="#d32f2f" layoutX="21.0" layoutY="190.0" text="Abrir al inicio de sesión" />
+      <JFXCheckBox checkedColor="#d32f2f" layoutX="21.0" layoutY="226.0" selected="true" text="Sincronizar automaticamente">
          <font>
             <Font name="Roboto" size="12.0" />
          </font></JFXCheckBox>
-      <JFXCheckBox checkedColor="#d32f2f" layoutX="32.0" layoutY="193.0" selected="true" text="Minimizar al cerrar">
+      <JFXCheckBox checkedColor="#d32f2f" layoutX="21.0" layoutY="264.0" selected="true" text="Minimizar al cerrar">
          <font>
             <Font name="Roboto" size="12.0" />
          </font></JFXCheckBox>
-      <AnchorPane layoutX="34.0" layoutY="278.0" prefHeight="169.0" prefWidth="363.0" style="-fx-background-color: #fff;" AnchorPane.leftAnchor="34.0" AnchorPane.rightAnchor="38.0">
+      <AnchorPane layoutX="32.0" layoutY="341.0" prefHeight="169.0" prefWidth="415.0" style="-fx-background-color: #fff;" AnchorPane.leftAnchor="32.0" AnchorPane.rightAnchor="21.0">
          <children>
             <JFXCheckBox checkedColor="#d32f2f" layoutX="14.0" layoutY="14.0" selected="true" text="Asignatura 1" />
             <JFXCheckBox checkedColor="#d32f2f" layoutX="14.0" layoutY="44.0" selected="true" text="Asignatura 1" />
@@ -51,18 +51,25 @@
             <DropShadow color="#00000035" height="25.0" offsetX="2.0" offsetY="2.0" radius="12.0" width="25.0" />
          </effect>
       </AnchorPane>
-      <Label layoutX="34.0" layoutY="238.0" text="Asignaturas para sincronizar:">
+      <Label layoutX="29.0" layoutY="305.0" text="Asignaturas para sincronizar:">
          <font>
             <Font name="Roboto" size="12.0" />
          </font></Label>
-      <JFXButton layoutX="314.0" layoutY="234.0" ripplerFill="#e4e4e4" style="-fx-background-color: #e4e4e4;" text="Resinconizar" />
-      <Label layoutX="32.0" layoutY="79.0" text="Carpeta de descargas:">
+      <Label layoutX="32.0" layoutY="83.0" text="Carpeta de descargas:">
+         <font>
+            <Font name="Roboto Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label layoutX="32.0" layoutY="102.0" text="C:\Users\User\Poliformat" textFill="#000000cd">
          <font>
             <Font name="Roboto" size="12.0" />
-         </font></Label>
-      <Label layoutX="158.0" layoutY="80.0" text="C:\Users\User\Poliformat" textFill="#00000080">
+         </font>
+      </Label>
+      <Line layoutX="267.0" layoutY="100.0" rotate="90.0" startX="-30.0" stroke="#00000080" />
+      <JFXButton layoutX="295.0" layoutY="88.0" text="CAMBIAR" textFill="#d32f2f">
          <font>
-            <Font name="Roboto" size="12.0" />
-         </font></Label>
+            <Font name="Roboto" size="14.0" />
+         </font>
+      </JFXButton>
    </children>
 </AnchorPane>

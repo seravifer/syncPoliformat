@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.shape.SVGPath
 import javafx.stage.Stage
 import mu.KLogging
+import service.AuthenticationService
 import service.SiteService
 import utils.JavaFXExecutor
 import utils.Settings
@@ -26,7 +27,12 @@ import java.net.URL
 import java.util.*
 import java.util.function.BiFunction
 
-class HomeController(private val siteService: SiteService, private val stage: Stage, private val user: UserInfo) : Initializable {
+class HomeController(
+        private val siteService: SiteService,
+        private val authService: AuthenticationService,
+        private val stage: Stage,
+        private val user: UserInfo
+) : Initializable {
 
     @FXML
     private lateinit var nameID: Label
@@ -70,23 +76,19 @@ class HomeController(private val siteService: SiteService, private val stage: St
 
         val contextMenu = ContextMenu()
 
-        val item1 = MenuItem("Nosotros")
+        val item1 = MenuItem("Sobre nosotros")
         item1.setOnAction { launchAbout() }
 
-        val item3 = MenuItem("Reportar error")
-        item3.setOnAction { sendFeedbak() }
+        val item2 = MenuItem("Feedback...")
+        item2.setOnAction { sendFeedbak() }
 
-        val item5 = MenuItem("Sincronizar")
-        item5.setOnAction { updateAll() }
+        val item3 = MenuItem("Cerrar sesión")
+        item3.setOnAction { launchSettings() }
 
-        //MenuItem item2 = new MenuItem("Preferences");
-        val item2 = MenuItem("Cerrar sesión")
-        item2.setOnAction { launchSettings() }
+        val item4 = MenuItem("Salir")
+        item4.setOnAction { System.exit(0) }
 
-        val item6 = MenuItem("Salir")
-        item6.setOnAction { System.exit(0) }
-
-        contextMenu.items.addAll(item1, item3, SeparatorMenuItem(), item5, item2, SeparatorMenuItem(), item6)
+        contextMenu.items.addAll(item1, item2, SeparatorMenuItem(), item3, item4)
 
         settingsID.setOnMouseClicked { contextMenu.show(settingsID, Side.LEFT, 0.0, 0.0) }
     }
@@ -101,6 +103,13 @@ class HomeController(private val siteService: SiteService, private val stage: St
         Desktop.getDesktop().browse(URI("https://poliformat.upv.es/portal"))
     }
 
+    @FXML
+    private fun updateAll() {
+        listID.children.asSequence()
+                .filterIsInstance(SubjectComponent::class.java)
+                .forEach { it.sync() }
+    }
+
     private fun launchAbout() {
         val stage = Stage()
         val root: Parent? = FXMLLoader.load<Parent>(javaClass.getResource("/view/about.fxml"))
@@ -112,18 +121,15 @@ class HomeController(private val siteService: SiteService, private val stage: St
         stage.show()
     }
 
+    // TODO Prevenir cerrar sesión si existe alguna descarga en funcionamiento
     private fun launchSettings() {
-        TODO("not implemented")
+        stage.hide()
+        authService.logout()
+        LoginController(authService, stage)
     }
 
     private fun sendFeedbak() {
-        TODO("not implemented")
-    }
-
-    private fun updateAll() {
-        listID.children.asSequence()
-                .filterIsInstance(SubjectComponent::class.java)
-                .forEach { it.sync() }
+        Desktop.getDesktop().browse(URI("https://docs.google.com/forms/d/e/1FAIpQLSeusf0F2u98Vn28xH7OE3BF6BlMl7ZCKPEdxo2MTqvO-3LlMg/viewform"))
     }
 
     companion object : KLogging()

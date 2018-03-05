@@ -37,7 +37,7 @@ class App : Application() {
             }.handleAsync(BiFunction<UserInfo, Throwable?, Unit> { user, e ->
                 if (e == null) {
                     val siteService = SiteServiceImpl(DataRepository(Poliformat, Intranet))
-                    HomeController(siteService, stage, user)
+                    HomeController(siteService, authService, stage, user)
                 } else {
                     authService.logout()
                     LoginController(authService, stage)
@@ -53,6 +53,7 @@ class App : Application() {
         primaryStage.isResizable = false
         primaryStage.icons += Image(javaClass.getResource("/res/icon-64.png").toString())
 
+        // TODO solo mantener abierta si estas en el HomeController
         Platform.setImplicitExit(false)
         SwingUtilities.invokeLater { trayIcon() }
 

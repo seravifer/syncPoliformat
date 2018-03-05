@@ -27,7 +27,10 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.function.BiFunction
 
-class LoginController(private val authService: AuthenticationService, private val stage: Stage) : Initializable {
+class LoginController(
+        private val authService: AuthenticationService,
+        private val stage: Stage
+) : Initializable {
 
     @FXML
     private lateinit var usernameID: JFXPasswordField
@@ -106,7 +109,7 @@ class LoginController(private val authService: AuthenticationService, private va
         stage.hide()
 
         val siteService = SiteServiceImpl(DataRepository(Poliformat, Intranet))
-        HomeController(siteService, stage, user)
+        HomeController(siteService, authService, stage, user)
     }
 
     companion object : KLogging()

@@ -29,11 +29,8 @@ object Settings {
 
     val poliformatDirectory by lazy { File(System.getProperty("user.home"), "Poliformat") }
 
-
-    @Throws(IOException::class)
     fun loadLocal(id: String) = appDirectory.resolve("$id.json").toFile().readText()
 
-    @Throws(IOException::class)
     fun initFolders() {
         val subjectsUpdate = subjectsPath.toFile()
         val directory = appDirectory.toFile()
@@ -46,10 +43,10 @@ object Settings {
     fun checkVersion(): Boolean {
         try {
             val url = URL("http://sergiavila.com/version") // Temporal
-            val `in` = BufferedReader(InputStreamReader(url.openStream()))
+            val input = BufferedReader(InputStreamReader(url.openStream()))
 
-            val newVersion = java.lang.Double.valueOf(`in`.readLine())
-            `in`.close()
+            val newVersion = java.lang.Double.valueOf(input.readLine())
+            input.close()
 
             return 1.0 < newVersion
         } catch (e: IOException) {
