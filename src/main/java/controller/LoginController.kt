@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXCheckBox
 import com.jfoenix.controls.JFXPasswordField
 import com.jfoenix.controls.JFXProgressBar
 import data.DataRepository
+import data.network.BadCredentialsException
 import data.network.Intranet
 import data.network.Poliformat
 import domain.UserInfo
@@ -23,6 +24,7 @@ import service.impl.SiteServiceImpl
 import utils.JavaFXExecutor
 import java.net.URL
 import java.util.*
+import java.util.concurrent.CompletableFuture
 import java.util.function.BiFunction
 
 class LoginController(private val authService: AuthenticationService, private val stage: Stage) : Initializable {
@@ -78,20 +80,24 @@ class LoginController(private val authService: AuthenticationService, private va
 
         authService.login(usernameID.text, passwordID.text, rememberID.isSelected)
                 .thenCompose { loggedIn ->
-                    if (loggedIn) {
-                        logger.info { "Logged In" }
-                    } else {
-                        errorID.isVisible = true
-                        passwordID.text = ""
-                    }
                     loginID.isDisable = false
                     loadingID.isVisible = false
-                    authService.currentUser()
+                    if (loggedIn) authService.currentUser()
+                    else {
+                        errorID.isVisible = true
+                        passwordID.text = ""
+                        CompletableFuture<UserInfo>().apply {
+                            completeExceptionally(BadCredentialsException())
+                        }
+                    }
                 }.handleAsync(BiFunction<UserInfo, Throwable?, Unit> { user, e ->
                     if (e == null) {
-                        showHome(user) // TODO: Bug siempre se habre aunque no inicio sesión correctamente
+                        showHome(user)
                     } else {
-                        logger.error(e) { "El usuario no tiene conexión a internet.\n" }
+                        logger.error(e) {
+                            if (e is BadCredentialsException) e.message
+                            else "El usuario no tiene conexión a internet.\n"
+                        }
                     }
                 }, JavaFXExecutor)
     }
