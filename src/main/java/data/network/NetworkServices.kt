@@ -2,10 +2,7 @@ package data.network
 
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
-import domain.json.adapter.CleanAdapter
-import domain.json.adapter.ContentAdapter
-import domain.json.adapter.PosixDateAdapter
-import domain.json.adapter.UrlAdapter
+import domain.json.adapter.*
 import okhttp3.OkHttpClient
 import pl.droidsonroids.retrofit2.JspoonConverterFactory
 import retrofit2.Retrofit
@@ -33,6 +30,7 @@ private val moshiParser = Moshi.Builder()
         .add(UrlAdapter())
         .add(CleanAdapter())
         .add(PosixDateAdapter())
+        .add(ShortNameAdapter())
         .build()
 
 private val poliformatRetrofit = Retrofit.Builder()

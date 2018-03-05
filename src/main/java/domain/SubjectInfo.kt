@@ -2,8 +2,8 @@ package domain
 
 import com.squareup.moshi.Json
 import domain.json.adapter.PosixDate
-
-import java.util.Date
+import domain.json.adapter.ShortName
+import java.util.*
 
 class SubjectInfo(
         @Json(name = "contactEmail")
@@ -17,6 +17,7 @@ class SubjectInfo(
         var description: String? = null,
         @Json(name = "htmlDescription")
         var htmlDescription: String? = null,
+        @ShortName
         @Json(name = "htmlShortDescription")
         var shortName: String,
         @Json(name = "id")

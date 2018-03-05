@@ -7,10 +7,7 @@ import com.squareup.moshi.Types
 import domain.ContentEntity
 import domain.SiteEntity
 import domain.UserInfo
-import domain.json.adapter.CleanAdapter
-import domain.json.adapter.ContentAdapter
-import domain.json.adapter.PosixDateAdapter
-import domain.json.adapter.UrlAdapter
+import domain.json.adapter.*
 
 private val moshiParser = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
@@ -18,6 +15,7 @@ private val moshiParser = Moshi.Builder()
         .add(UrlAdapter())
         .add(CleanAdapter())
         .add(PosixDateAdapter())
+        .add(ShortNameAdapter())
         .build()
 
 val ContentEntityAdapter = moshiParser.adapter(ContentEntity::class.java)

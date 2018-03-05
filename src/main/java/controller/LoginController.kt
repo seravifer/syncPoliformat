@@ -57,6 +57,7 @@ class LoginController(private val authService: AuthenticationService, private va
         scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
 
         stage.scene = scene
+        stage.show()
     }
 
     @FXML
@@ -88,7 +89,7 @@ class LoginController(private val authService: AuthenticationService, private va
                     authService.currentUser()
                 }.handleAsync(BiFunction<UserInfo, Throwable?, Unit> { user, e ->
                     if (e == null) {
-                        showHome(user)
+                        showHome(user) // TODO: Bug siempre se habre aunque no inicio sesión correctamente
                     } else {
                         logger.error(e) { "El usuario no tiene conexión a internet.\n" }
                     }
@@ -100,8 +101,6 @@ class LoginController(private val authService: AuthenticationService, private va
 
         val siteService = SiteServiceImpl(DataRepository(Poliformat, Intranet))
         HomeController(siteService, stage, user)
-
-        stage.show()
     }
 
     companion object : KLogging()

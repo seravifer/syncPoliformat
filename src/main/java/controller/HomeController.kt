@@ -12,6 +12,7 @@ import javafx.scene.control.ContextMenu
 import javafx.scene.control.Label
 import javafx.scene.control.MenuItem
 import javafx.scene.control.SeparatorMenuItem
+import javafx.scene.image.Image
 import javafx.scene.layout.VBox
 import javafx.scene.shape.SVGPath
 import javafx.stage.Stage
@@ -20,7 +21,6 @@ import service.SiteService
 import utils.JavaFXExecutor
 import utils.Settings
 import java.awt.Desktop
-import java.io.IOException
 import java.net.URI
 import java.net.URL
 import java.util.*
@@ -49,12 +49,13 @@ class HomeController(private val siteService: SiteService, private val stage: St
         scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
 
         stage.scene = scene
+        stage.show()
     }
 
     @FXML
     override fun initialize(location: URL, resources: ResourceBundle?) {
         with(user) {
-            nameID.text = "$firstName $lastName"
+            nameID.text = displayName
             mailID.text = email
         }
 
@@ -87,18 +88,12 @@ class HomeController(private val siteService: SiteService, private val stage: St
 
         contextMenu.items.addAll(item1, item3, SeparatorMenuItem(), item5, item2, SeparatorMenuItem(), item6)
 
-        settingsID.setOnMouseClicked { e -> contextMenu.show(settingsID, Side.LEFT, 0.0, 0.0) }
+        settingsID.setOnMouseClicked { contextMenu.show(settingsID, Side.LEFT, 0.0, 0.0) }
     }
 
     @FXML
     private fun openFolder() {
-        try {
-            Desktop.getDesktop().open(Settings.poliformatDirectory)
-        } catch (e: IOException) {
-            System.err.println("No se ha encontrado ninguna carpeta.")
-            e.printStackTrace()
-        }
-
+        Desktop.getDesktop().open(Settings.poliformatDirectory)
     }
 
     @FXML
@@ -111,7 +106,8 @@ class HomeController(private val siteService: SiteService, private val stage: St
         val root: Parent? = FXMLLoader.load<Parent>(javaClass.getResource("/view/about.fxml"))
         val scene = Scene(root!!)
         stage.scene = scene
-        stage.title = "About"
+        stage.title = "About syncPoliformat"
+        stage.icons += Image(javaClass.getResource("/res/icon-64.png").toString())
         stage.isResizable = false
         stage.show()
     }

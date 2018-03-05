@@ -12,6 +12,7 @@ import javafx.scene.control.Alert
 import javafx.scene.image.Image
 import javafx.scene.text.Font
 import javafx.stage.Stage
+import mu.KLogging
 import service.impl.AuthenticationServiceImpl
 import service.impl.SiteServiceImpl
 import utils.JavaFXExecutor
@@ -51,10 +52,9 @@ class App : Application() {
         primaryStage.title = "syncPoliformat"
         primaryStage.isResizable = false
         primaryStage.icons += Image(javaClass.getResource("/res/icon-64.png").toString())
-        primaryStage.show()
 
         Platform.setImplicitExit(false)
-        SwingUtilities.invokeLater { this.trayIcon() }
+        SwingUtilities.invokeLater { trayIcon() }
 
         if (Settings.checkVersion()) {
             val alert = Alert(Alert.AlertType.WARNING)
@@ -68,7 +68,7 @@ class App : Application() {
 
     private fun trayIcon() {
         if (!SystemTray.isSupported()) {
-            System.err.println("SystemTray is not supported")
+            logger.warn { "SystemTray is not supported" }
             return
         }
 
@@ -85,16 +85,12 @@ class App : Application() {
         popup.addSeparator()
         popup.add(exitItem)
 
-        displayMenu.addActionListener { Platform.runLater { this.showStage() } }
-        trayIcon.addActionListener { Platform.runLater { this.showStage() } }
+        displayMenu.addActionListener { Platform.runLater { showStage() } }
+        trayIcon.addActionListener { Platform.runLater { showStage() } }
         exitItem.addActionListener { System.exit(0) }
 
         trayIcon.popupMenu = popup
-        try {
-            tray.add(trayIcon)
-        } catch (e: AWTException) {
-            e.printStackTrace()
-        }
+        tray.add(trayIcon)
     }
 
     private fun loadFonts() {
@@ -119,6 +115,8 @@ class App : Application() {
         stage.show()
         stage.toFront()
     }
+
+    companion object : KLogging()
 }
 
 fun main(args: Array<String>) {

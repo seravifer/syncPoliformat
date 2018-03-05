@@ -14,5 +14,4 @@ class PosixDateAdapter {
     @ToJson
     fun toJson(@PosixDate date: Date): Long = date.time
 
-
 }
