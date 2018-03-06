@@ -73,6 +73,7 @@ class SubjectComponent(
         return if (lastUpdate.isEmpty()) String("No ha sido sincronizada todavía.".toByteArray()) else lastUpdate
     }
 
+    @FXML
     private fun update() {
         syncID.isVisible = false
         downloadID.isVisible = false
