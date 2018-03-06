@@ -37,7 +37,7 @@ class App : Application() {
                 authService.currentUser()
             }.handleAsync(BiFunction<UserInfo, Throwable?, Unit> { user, e ->
                 if (e == null) {
-                    val siteService = SiteServiceImpl(DataRepository(Poliformat, Intranet))
+                    val siteService = SiteServiceImpl(DataRepository(Poliformat, Intranet), Settings.subjectsFile)
                     HomeController(siteService, authService, stage, user)
                 } else {
                     authService.logout()

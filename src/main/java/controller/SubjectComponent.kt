@@ -17,13 +17,13 @@ import service.FileService
 import service.impl.FileServiceImpl
 import service.impl.SubjectServiceImpl
 import utils.JavaFXExecutor
+import utils.Settings
 import utils.Utils
 import java.util.function.BiFunction
 
-class SubjectComponent
-constructor(
+class SubjectComponent(
         private val subject: SubjectInfo,
-        private val fileService: FileService = FileServiceImpl(DataRepository(Poliformat, Intranet), SubjectServiceImpl(DataRepository(Poliformat, Intranet)))
+        private val fileService: FileService = FileServiceImpl(DataRepository(Poliformat, Intranet), SubjectServiceImpl(DataRepository(Poliformat, Intranet)), Settings.subjectsFile)
 ) : AnchorPane() {
 
     @FXML

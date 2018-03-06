@@ -67,6 +67,7 @@ dependencies {
     testCompile ('org.jetbrains.spek:spek-api:1.1.5') {
         exclude group: 'org.jetbrains.kotlin'
     }
+    testCompile "com.nhaarman:mockito-kotlin:1.5.0"
 
     testRuntime ('org.jetbrains.spek:spek-junit-platform-engine:1.1.5') {
         exclude group: 'org.junit.platform'

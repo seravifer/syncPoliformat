@@ -1,10 +1,8 @@
 package utils
 
-import java.io.BufferedReader
 import java.io.File
 
 import java.io.IOException
-import java.io.InputStreamReader
 import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -12,10 +10,10 @@ import java.nio.file.Paths
 // TODO: Reevaluar esto
 object Settings {
 
-    val subjectsPath: Path
+    val subjectsFile: File
         get() = appDirectory.resolve("subjects.json")
 
-    val appDirectory: Path
+    val appDirectory: File
         @JvmStatic
         get() {
             val pathDirectory = if (Utils.isWindows) {
@@ -24,29 +22,25 @@ object Settings {
                 Paths.get(System.getProperty("user.home"), ".local", "share")
             }
 
-            return pathDirectory.resolve("syncPoliformat")
+            return pathDirectory.resolve("syncPoliformat").toFile()
         }
 
     val poliformatDirectory by lazy { File(System.getProperty("user.home"), "Poliformat") }
 
-    fun loadLocal(id: String) = appDirectory.resolve("$id.json").toFile().readText()
+    fun loadLocal(id: String) = appDirectory.resolve("$id.json").readText()
 
     fun initFolders() {
-        val subjectsUpdate = subjectsPath.toFile()
-        val directory = appDirectory.toFile()
-
         if (!poliformatDirectory.exists()) poliformatDirectory.mkdir()
-        if (!directory.exists()) directory.mkdir()
-        if (!subjectsUpdate.exists()) subjectsUpdate.writeText("{}")
+        if (!appDirectory.exists()) appDirectory.mkdir()
+        if (!subjectsFile.exists()) subjectsFile.writeText("{}")
     }
 
     fun checkVersion(): Boolean {
         try {
             val url = URL("http://sergiavila.com/version") // Temporal
-            val input = BufferedReader(InputStreamReader(url.openStream()))
-
-            val newVersion = java.lang.Double.valueOf(input.readLine())
-            input.close()
+            val newVersion: Double = url.openStream().bufferedReader().use {
+                it.readLine().toDouble()
+            }
 
             return 1.0 < newVersion
         } catch (e: IOException) {

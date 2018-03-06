@@ -11,13 +11,15 @@ import service.FileService
 import service.SubjectService
 import utils.Settings
 import utils.Utils
+import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 
 class FileServiceImpl(
         private val repo: Repository,
-        private val subjectService: SubjectService
+        private val subjectService: SubjectService,
+        private val subjectsFile: File
 ) : FileService {
 
     override fun syncSubjectFiles(subjectInfo: SubjectInfo): CompletableFuture<String> {
@@ -55,15 +57,15 @@ class FileServiceImpl(
     }
 
     private fun saveSubjectUpdateDate(subject: SubjectInfo, now: String) {
-        val map = LastSubjectUpdateAdapter.fromJson(Settings.subjectsPath.toFile().readText()) as MutableMap<String, String>
+        val map = LastSubjectUpdateAdapter.fromJson(subjectsFile.readText()) as MutableMap<String, String>
         map[subject.id] = now
         subject.lastUpdate = now
-        Settings.subjectsPath.toFile().writeText(LastSubjectUpdateAdapter.toJson(map))
+        Settings.subjectsFile.writeText(LastSubjectUpdateAdapter.toJson(map))
     }
 
     private fun saveContentInfo(subjectInfo: SubjectInfo, subjectContent: ContentEntity) {
         val json = ContentEntityAdapter.toJson(subjectContent)
-        Settings.appDirectory.resolve("${subjectInfo.id}.json").toFile().writeText(json)
+        Settings.appDirectory.resolve("${subjectInfo.id}.json").writeText(json)
     }
 
     companion object : KLogging()

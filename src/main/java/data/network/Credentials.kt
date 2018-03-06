@@ -6,6 +6,6 @@ import java.io.File
 data class Credentials(val token: String, val dns: String) {
     companion object {
         val credentialsFile: File
-            get() = Settings.appDirectory.resolve("credentials").toFile()
+            get() = Settings.appDirectory.resolve("credentials")
     }
 }
