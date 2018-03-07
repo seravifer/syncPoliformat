@@ -23,7 +23,7 @@ import java.util.function.BiFunction
 
 class SubjectComponent(
         private val subject: SubjectInfo,
-        private val fileService: FileService = FileServiceImpl(DataRepository(Poliformat, Intranet), SubjectServiceImpl(DataRepository(Poliformat, Intranet)), Settings.subjectsFile)
+        private val fileService: FileService
 ) : AnchorPane() {
 
     @FXML

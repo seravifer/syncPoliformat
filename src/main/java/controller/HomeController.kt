@@ -1,5 +1,8 @@
 package controller
 
+import appModule
+import com.github.salomonbrys.kodein.factory
+import com.github.salomonbrys.kodein.instance
 import domain.SubjectInfo
 import domain.UserInfo
 import javafx.fxml.FXML
@@ -68,8 +71,9 @@ class HomeController(
 
         siteService.getSubjects().handleAsync(BiFunction<List<SubjectInfo>, Throwable?, Any> { subjects, e ->
             if (e == null) {
+                val subjectComponentFactory: (SubjectInfo) -> SubjectComponent = appModule.factory()
                 subjects.sortedBy(SubjectInfo::name)
-                        .forEach { listID.children.add(SubjectComponent(it)) }
+                        .forEach { listID.children.add(subjectComponentFactory(it)) }
             } else {
                 logger.error(e) { "Error al recuperar las asignaturas.\n" }
             }
@@ -129,7 +133,7 @@ class HomeController(
     private fun launchSettings() {
         stage.hide()
         authService.logout()
-        LoginController(authService, stage)
+        appModule.instance<LoginController>()
     }
 
     private fun sendFeedbak() {

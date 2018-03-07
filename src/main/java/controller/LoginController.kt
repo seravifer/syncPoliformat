@@ -1,5 +1,8 @@
 package controller
 
+import appModule
+import com.github.salomonbrys.kodein.factory
+import com.github.salomonbrys.kodein.instance
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXCheckBox
 import com.jfoenix.controls.JFXPasswordField
@@ -20,6 +23,7 @@ import javafx.scene.layout.AnchorPane
 import javafx.stage.Stage
 import mu.KLogging
 import service.AuthenticationService
+import service.SiteService
 import service.impl.SiteServiceImpl
 import utils.JavaFXExecutor
 import utils.Settings
@@ -109,8 +113,8 @@ class LoginController(
     private fun showHome(user: UserInfo) {
         stage.hide()
 
-        val siteService = SiteServiceImpl(DataRepository(Poliformat, Intranet), Settings.subjectsFile)
-        HomeController(siteService, authService, stage, user)
+        val homeFactory: (UserInfo) -> HomeController = appModule.factory()
+        homeFactory(user)
     }
 
     companion object : KLogging()

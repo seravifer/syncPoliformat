@@ -1,10 +1,7 @@
+import com.github.salomonbrys.kodein.factory
+import com.github.salomonbrys.kodein.instance
 import controller.HomeController
 import controller.LoginController
-import data.DataRepository
-import data.network.CookieJarImpl
-import data.network.CredentialsStorageImpl
-import data.network.Intranet
-import data.network.Poliformat
 import domain.UserInfo
 import javafx.application.Application
 import javafx.application.Platform
@@ -13,8 +10,7 @@ import javafx.scene.image.Image
 import javafx.scene.text.Font
 import javafx.stage.Stage
 import mu.KLogging
-import service.impl.AuthenticationServiceImpl
-import service.impl.SiteServiceImpl
+import service.AuthenticationService
 import utils.JavaFXExecutor
 import utils.Settings
 import utils.Utils
@@ -27,25 +23,26 @@ class App : Application() {
     private lateinit var stage: Stage
 
     override fun start(primaryStage: Stage) {
+        appModule.addImport(controllerModule(primaryStage))
         Settings.initFolders()
         stage = primaryStage
 
-        val authService = AuthenticationServiceImpl(DataRepository(Poliformat, Intranet), Poliformat, Intranet, CredentialsStorageImpl, CookieJarImpl)
+        val authService = appModule.instance<AuthenticationService>()
 
         if (authService.existSavedCredentials()) {
             authService.login().thenCompose {
                 authService.currentUser()
             }.handleAsync(BiFunction<UserInfo, Throwable?, Unit> { user, e ->
                 if (e == null) {
-                    val siteService = SiteServiceImpl(DataRepository(Poliformat, Intranet), Settings.subjectsFile)
-                    HomeController(siteService, authService, stage, user)
+                    val homeFactory: (UserInfo) -> HomeController = appModule.factory()
+                    homeFactory(user)
                 } else {
                     authService.logout()
-                    LoginController(authService, stage)
+                    appModule.instance<LoginController>()
                 }
             }, JavaFXExecutor)
         } else {
-            LoginController(authService, stage)
+            appModule.instance<LoginController>()
         }
 
         loadFonts()
