@@ -119,8 +119,8 @@ class HomeController(
         val root: Parent? = FXMLLoader.load<Parent>(javaClass.getResource("/view/about.fxml"))
         val scene = Scene(root!!)
         stage.scene = scene
-        stage.title = "About syncPoliformat"
-        stage.icons += Image(javaClass.getResource("/res/icon-64.png").toString())
+        stage.title = "syncPoliformat"
+        stage.icons += Image(javaClass.getResource("/img/icon-64.png").toString())
         stage.isResizable = false
         stage.show()
     }

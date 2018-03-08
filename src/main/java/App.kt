@@ -52,7 +52,7 @@ class App : Application() {
 
         primaryStage.title = "syncPoliformat"
         primaryStage.isResizable = false
-        primaryStage.icons += Image(javaClass.getResource("/res/icon-64.png").toString())
+        primaryStage.icons += Image(javaClass.getResource("/img/icon-24.png").toString())
         if (Utils.isMac) appleDockIcon()
 
         // TODO solo mantener abierta si estas en el HomeController
@@ -75,7 +75,7 @@ class App : Application() {
             return
         }
 
-        val image = Toolkit.getDefaultToolkit().getImage(javaClass.getResource("/res/tray-icon.png"))
+        val image = Toolkit.getDefaultToolkit().getImage(javaClass.getResource("/img/tray-icon.png"))
 
         val popup = PopupMenu()
         val trayIcon = TrayIcon(image)
@@ -96,6 +96,7 @@ class App : Application() {
         }
 
         trayIcon.popupMenu = popup
+        trayIcon.isImageAutoSize = true
         tray.add(trayIcon)
     }
 
@@ -110,8 +111,8 @@ class App : Application() {
     private fun appleDockIcon() {
         val appleLibrary = Class.forName("com.apple.eawt.Application")
         val application = appleLibrary.getMethod("getApplication").invoke(appleLibrary)
-        val setDockIconImage = appleLibrary.getMethod("setDockIconImage", Image::class.java)
-        val image = Toolkit.getDefaultToolkit().getImage(javaClass.getResource("res/icon-1024.png"))
+        val setDockIconImage = appleLibrary.getMethod("setDockIconImage", java.awt.Image::class.java)
+        val image: java.awt.Image = Toolkit.getDefaultToolkit().getImage(javaClass.getResource("img/icon-128.png"))
         setDockIconImage.invoke(application, image)
     }
 

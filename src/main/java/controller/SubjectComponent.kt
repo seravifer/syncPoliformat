@@ -47,8 +47,8 @@ class SubjectComponent(
     @FXML
     private lateinit var circleID: Circle
 
-    private val colors = arrayOf("#ad1457", "#6a1b9a", "#4527a0", "#283593", "#1565c0", "#0277bd", "#00838f", "#00695c",
-            "#2e7d32", "#558b2f", "#9e9d24", "#f9a825", "#ff8f00", "#ef6c00", "#d84315")
+    private val colors = arrayOf("#F44336", "#E91E63", "#9C27B0", "#673AB", "#3F51B5", "#2196F3", "#03A9F4", "#00BCD4",
+            "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107", "#FF9800", "#FF5722", "#607D8B")
 
     init {
         val fxmlLoader = FXMLLoader(javaClass.getResource("/view/subject.fxml"))
@@ -59,7 +59,7 @@ class SubjectComponent(
         nameID.text = subject.shortName
         longNameID.text = subject.name
         dateID.text = formatLastUpdate(subject.lastUpdate)
-        circleID.fill = Color.web(colors[Utils.random(1, colors.size - 1)])
+        circleID.fill = Color.web(colors[Utils.random(colors.size)])
 
         syncID.setOnMouseClicked { update() }
 
