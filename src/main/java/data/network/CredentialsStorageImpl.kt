@@ -1,5 +1,6 @@
 package data.network
 
+import utils.Crypt
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ForkJoinPool
@@ -9,13 +10,14 @@ object CredentialsStorageImpl : CredentialsStorage {
         val res = CompletableFuture<Unit>()
         ForkJoinPool.commonPool().execute {
             try {
-                with(Credentials.credentialsFile) {
+                Crypt.encrypt("${credentials.token}\n${credentials.dns}")
+                /*with(Credentials.credentialsFile) {
                     createNewFile()
                     printWriter().use {
                         it.println(credentials.token)
                         it.println(credentials.dns)
                     }
-                }
+                }*/
             } catch (e: Exception) {
                 res.completeExceptionally(e)
             }
@@ -28,9 +30,10 @@ object CredentialsStorageImpl : CredentialsStorage {
         val res = CompletableFuture<Credentials>()
         ForkJoinPool.commonPool().execute {
             try {
-                val data = Credentials.credentialsFile.readLines()
+                res.complete(Crypt.decrypt())
+                /*val data = Credentials.credentialsFile.readLines()
                 val credentials = Credentials(data[0], data[1])
-                res.complete(credentials)
+                res.complete(credentials)*/
             } catch (e: Exception) {
                 res.completeExceptionally(e)
             }

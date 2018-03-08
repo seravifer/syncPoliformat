@@ -7,38 +7,41 @@ import java.security.Key
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
+object Crypt {
+    private const val ALGO = "AES/ECB/PKCS5Padding"
+    private val key = "ÑtF0fÓ*^7ü;$#".toByteArray()
+    private val fileCredentials = Credentials.credentialsFile
 
-private const val ALGO = "AES/ECB/PKCS5Padding"
-private val key = "ÑtF0fÓ*^7ü;$#".toByteArray()
-private val fileCredentials = Credentials.credentialsFile
+    fun encrypt(data: String) {
+        val key = generateKey()
+        val cipher = Cipher.getInstance(ALGO)
+        cipher.init(Cipher.ENCRYPT_MODE, key)
 
-fun encrypt(data: String) {
-    val key = generateKey()
-    val cipher = Cipher.getInstance(ALGO)
-    cipher.init(Cipher.ENCRYPT_MODE, key)
+        val outputBytes = cipher.doFinal(data.toByteArray())
 
-    val outputBytes = cipher.doFinal(data.toByteArray())
+        val outputStream = FileOutputStream(fileCredentials)
+        outputStream.write(outputBytes)
+        outputStream.flush()
+        outputStream.close()
+    }
 
-    val outputStream = FileOutputStream(fileCredentials)
-    outputStream.write(outputBytes)
-    outputStream.flush()
-    outputStream.close()
-}
+    fun decrypt(): Credentials {
+        val key = generateKey()
+        val cipher = Cipher.getInstance(ALGO)
+        cipher.init(Cipher.DECRYPT_MODE, key)
 
-fun decrypt(): String {
-    val key = generateKey()
-    val cipher = Cipher.getInstance(ALGO)
-    cipher.init(Cipher.DECRYPT_MODE, key)
+        val inputStream = FileInputStream(fileCredentials)
+        val inputBytes = ByteArray(fileCredentials.length().toInt())
+        inputStream.read(inputBytes)
 
-    val inputStream = FileInputStream(fileCredentials)
-    val inputBytes = ByteArray(fileCredentials.length().toInt())
-    inputStream.read(inputBytes)
+        val outputBytes = cipher.doFinal(inputBytes)
 
-    val outputBytes = cipher.doFinal(inputBytes)
+        val data = String(outputBytes).split("\n")
 
-    return String(outputBytes)
-}
+        return Credentials(data[0], data[1])
+    }
 
-private fun generateKey(): Key {
-    return SecretKeySpec(key, "AES")
+    private fun generateKey(): Key {
+        return SecretKeySpec(key, "AES")
+    }
 }
