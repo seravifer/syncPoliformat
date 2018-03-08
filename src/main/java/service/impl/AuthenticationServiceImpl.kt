@@ -1,7 +1,12 @@
 package service.impl
 
+import appModule
+import com.github.salomonbrys.kodein.instance
 import data.Repository
-import data.network.*
+import data.network.CredentialsHandler
+import data.network.CredentialsStorage
+import data.network.PoliformatService
+import data.network.UpvService
 import domain.UserInfo
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -9,6 +14,7 @@ import retrofit2.Callback
 import retrofit2.HttpException
 import retrofit2.Response
 import service.AuthenticationService
+import java.io.File
 import java.util.concurrent.CompletableFuture
 
 class AuthenticationServiceImpl(
@@ -61,7 +67,7 @@ class AuthenticationServiceImpl(
     }
 
     override fun existSavedCredentials(): Boolean {
-        return Credentials.credentialsFile.exists()
+        return appModule.instance<File>("credentials").exists()
     }
 
     override fun currentUser(): CompletableFuture<UserInfo> = repo.getCurrentUser()

@@ -1,3 +1,5 @@
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinAware
 import com.github.salomonbrys.kodein.factory
 import com.github.salomonbrys.kodein.instance
 import controller.HomeController
@@ -12,37 +14,40 @@ import javafx.stage.Stage
 import mu.KLogging
 import service.AuthenticationService
 import utils.JavaFXExecutor
+import utils.OS
 import utils.Settings
-import utils.Utils
 import java.awt.*
 import java.util.function.BiFunction
 import javax.swing.SwingUtilities
 
-class App : Application() {
+class App : Application(), KodeinAware {
+    override val kodein: Kodein by lazy { appModule }
 
     private lateinit var stage: Stage
 
     override fun start(primaryStage: Stage) {
         appModule.addImport(controllerModule(primaryStage))
-        Settings.initFolders()
+        Settings.initFolders(instance("app"),
+                instance("poliformat"),
+                instance("subjects"))
+
         stage = primaryStage
 
-        val authService = appModule.instance<AuthenticationService>()
+        val authService = instance<AuthenticationService>()
 
         if (authService.existSavedCredentials()) {
             authService.login().thenCompose {
                 authService.currentUser()
             }.handleAsync(BiFunction<UserInfo, Throwable?, Unit> { user, e ->
                 if (e == null) {
-                    val homeFactory: (UserInfo) -> HomeController = appModule.factory()
-                    homeFactory(user)
+                    factory<UserInfo,HomeController>()(user)
                 } else {
                     authService.logout()
-                    appModule.instance<LoginController>()
+                    instance<LoginController>()
                 }
             }, JavaFXExecutor)
         } else {
-            appModule.instance<LoginController>()
+            instance<LoginController>()
         }
 
         loadFonts()
@@ -50,7 +55,7 @@ class App : Application() {
         primaryStage.title = "syncPoliformat"
         primaryStage.isResizable = false
         primaryStage.icons += Image(javaClass.getResource("/res/icon-64.png").toString())
-        if (Utils.isMac) appleDockIcon()
+        if (instance<OS>() == OS.MAC) appleDockIcon()
 
         // TODO solo mantener abierta si estas en el HomeController
         Platform.setImplicitExit(false)

@@ -2,15 +2,11 @@ package controller
 
 import appModule
 import com.github.salomonbrys.kodein.factory
-import com.github.salomonbrys.kodein.instance
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXCheckBox
 import com.jfoenix.controls.JFXPasswordField
 import com.jfoenix.controls.JFXProgressBar
-import data.DataRepository
 import data.network.BadCredentialsException
-import data.network.Intranet
-import data.network.Poliformat
 import domain.UserInfo
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
@@ -23,10 +19,7 @@ import javafx.scene.layout.AnchorPane
 import javafx.stage.Stage
 import mu.KLogging
 import service.AuthenticationService
-import service.SiteService
-import service.impl.SiteServiceImpl
 import utils.JavaFXExecutor
-import utils.Settings
 import java.net.URL
 import java.util.*
 import java.util.concurrent.CompletableFuture

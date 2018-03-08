@@ -2,9 +2,8 @@ package domain
 
 import com.squareup.moshi.Json
 import domain.json.adapter.PosixDate
-
 import java.net.URL
-import java.util.Date
+import java.util.*
 
 class UserInfo(
         @PosixDate

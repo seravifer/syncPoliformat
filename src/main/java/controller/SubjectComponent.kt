@@ -1,9 +1,6 @@
 package controller
 
 import com.jfoenix.controls.JFXSpinner
-import data.DataRepository
-import data.network.Intranet
-import data.network.Poliformat
 import domain.SubjectInfo
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
@@ -14,10 +11,7 @@ import javafx.scene.shape.Circle
 import javafx.scene.shape.SVGPath
 import mu.KLogging
 import service.FileService
-import service.impl.FileServiceImpl
-import service.impl.SubjectServiceImpl
 import utils.JavaFXExecutor
-import utils.Settings
 import utils.Utils
 import java.util.function.BiFunction
 

@@ -5,11 +5,6 @@ import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
 object Utils {
-
-    // TODO implementar enum con los sistemas operativos
-    val isWindows by lazy { System.getProperty("os.name").contains("win", true) }
-    val isMac by lazy { System.getProperty("os.name").contains("mac", true) }
-
     val curso: String by lazy {
             val time = Calendar.getInstance()
 
@@ -25,5 +20,4 @@ object Utils {
     fun now(): String = SimpleDateFormat("dd/MM/yyyy HH:mm").format(Date())
 
     fun random(min: Int, max: Int): Int = ThreadLocalRandom.current().nextInt(min, max + 1)
-
 }

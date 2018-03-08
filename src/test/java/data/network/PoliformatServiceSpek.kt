@@ -1,5 +1,7 @@
 package data.network
 
+import appModule
+import com.github.salomonbrys.kodein.instance
 import domain.ContentEntity
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
@@ -9,7 +11,7 @@ import retrofit2.HttpException
 
 object PoliformatServiceSpek : Spek({
     given("a UPV Service") {
-        val intranet : UpvService = Intranet
+        val intranet : UpvService = appModule.instance()
         on("login") {
             val dni = System.getProperty("dni") ?: System.getenv("dni")
             val clau = System.getProperty("clau") ?: System.getenv("clau")
@@ -44,7 +46,7 @@ object PoliformatServiceSpek : Spek({
             }
         }
 
-        val poliformat: PoliformatService = Poliformat
+        val poliformat: PoliformatService = appModule.instance()
         on ("subject resources request") {
             val subjectId = System.getProperty("subject.id") ?: System.getenv("subject.id") ?: "GRA_11571_2017"
             val promise = poliformat.resources(subjectId)

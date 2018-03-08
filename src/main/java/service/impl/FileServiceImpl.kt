@@ -1,15 +1,16 @@
 package service.impl
 
+import appModule
+import build
+import com.github.salomonbrys.kodein.instance
+import com.squareup.moshi.JsonAdapter
 import data.Repository
 import domain.ContentEntity
 import domain.PoliformatFile
 import domain.SubjectInfo
-import domain.json.ContentEntityAdapter
-import domain.json.LastSubjectUpdateAdapter
 import mu.KLogging
 import service.FileService
 import service.SubjectService
-import utils.Settings
 import utils.Utils
 import java.io.File
 import java.nio.file.Path
@@ -29,7 +30,8 @@ class FileServiceImpl(
                     val filesToDownload = if (subjectInfo.lastUpdate.isEmpty()) {
                         filesFromPoliformat
                     } else {
-                        val oldFilesData = ContentEntityAdapter.fromJson(Settings.loadLocal(subjectInfo.id))
+                        val oldFilesJson = appModule.build<SubjectInfo, File>(subjectInfo).readText()
+                        val oldFilesData = appModule.instance<JsonAdapter<ContentEntity>>().fromJson(oldFilesJson)
                         filesFromPoliformat - oldFilesData!!.collection
                     }
                     downloadFiles(filesToDownload)
@@ -43,7 +45,7 @@ class FileServiceImpl(
     private fun downloadFiles(files: Sequence<PoliformatFile>) {
         files.filter { !it.isFolder }
                 .forEach {
-                    val path = Settings.poliformatDirectory.toPath()
+                    val path = appModule.instance<File>("poliformat").toPath()
                             .resolve(it.localPath)
                             .changeExtension(Paths.get(it.url.path).toFile().extension)
                     path.parent.toFile().mkdirs()
@@ -57,15 +59,15 @@ class FileServiceImpl(
     }
 
     private fun saveSubjectUpdateDate(subject: SubjectInfo, now: String) {
-        val map = LastSubjectUpdateAdapter.fromJson(subjectsFile.readText()) as MutableMap<String, String>
+        val map = appModule.instance<JsonAdapter<Map<String, String>>>().fromJson(subjectsFile.readText()) as MutableMap<String, String>
         map[subject.id] = now
         subject.lastUpdate = now
-        Settings.subjectsFile.writeText(LastSubjectUpdateAdapter.toJson(map))
+        subjectsFile.writeText(appModule.instance<JsonAdapter<Map<String, String>>>().toJson(map))
     }
 
     private fun saveContentInfo(subjectInfo: SubjectInfo, subjectContent: ContentEntity) {
-        val json = ContentEntityAdapter.toJson(subjectContent)
-        Settings.appDirectory.resolve("${subjectInfo.id}.json").writeText(json)
+        val json = appModule.instance<JsonAdapter<ContentEntity>>().toJson(subjectContent)
+        appModule.build<SubjectInfo, File>(subjectInfo).writeText(json)
     }
 
     companion object : KLogging()

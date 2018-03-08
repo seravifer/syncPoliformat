@@ -1,16 +1,18 @@
 package utils
 
-import data.network.Credentials
+import appModule
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
+import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.security.Key
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
-
 private const val ALGO = "AES/ECB/PKCS5Padding"
 private val key = "ÑtF0fÓ*^7ü;$#".toByteArray()
-private val fileCredentials = Credentials.credentialsFile
+private val fileCredentials by appModule.lazy.instance<File>("credentials")
 
 fun encrypt(data: String) {
     val key = generateKey()

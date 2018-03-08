@@ -1,7 +1,7 @@
 package controller
 
 import appModule
-import com.github.salomonbrys.kodein.factory
+import build
 import com.github.salomonbrys.kodein.instance
 import domain.SubjectInfo
 import domain.UserInfo
@@ -23,7 +23,6 @@ import mu.KLogging
 import service.AuthenticationService
 import service.SiteService
 import utils.JavaFXExecutor
-import utils.Settings
 import java.awt.Desktop
 import java.awt.SystemTray
 import java.net.URI
@@ -71,9 +70,8 @@ class HomeController(
 
         siteService.getSubjects().handleAsync(BiFunction<List<SubjectInfo>, Throwable?, Any> { subjects, e ->
             if (e == null) {
-                val subjectComponentFactory: (SubjectInfo) -> SubjectComponent = appModule.factory()
                 subjects.sortedBy(SubjectInfo::name)
-                        .forEach { listID.children.add(subjectComponentFactory(it)) }
+                        .forEach { listID.children.add(appModule.build<SubjectInfo, SubjectComponent>(it)) }
             } else {
                 logger.error(e) { "Error al recuperar las asignaturas.\n" }
             }
@@ -103,7 +101,7 @@ class HomeController(
 
     @FXML
     private fun openFolder() {
-        Desktop.getDesktop().open(Settings.poliformatDirectory)
+        Desktop.getDesktop().open(appModule.instance("poliformat"))
     }
 
     @FXML
