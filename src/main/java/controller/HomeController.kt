@@ -2,6 +2,8 @@ package controller
 
 import domain.SubjectInfo
 import domain.UserInfo
+import dorkbox.systemTray.SystemTray
+import dorkbox.util.Desktop
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable
@@ -21,9 +23,7 @@ import service.AuthenticationService
 import service.SiteService
 import utils.JavaFXExecutor
 import utils.Settings
-import java.awt.Desktop
-import java.awt.SystemTray
-import java.net.URI
+import utils.Utils
 import java.net.URL
 import java.util.*
 import java.util.function.BiFunction
@@ -88,7 +88,7 @@ class HomeController(
 
         val item4 = MenuItem("Salir")
         item4.setOnAction {
-            SystemTray.getSystemTray().remove(SystemTray.getSystemTray().trayIcons[0])
+            if (!Utils.isWindows) SystemTray.get().shutdown()
             System.exit(0)
         }
 
@@ -99,12 +99,12 @@ class HomeController(
 
     @FXML
     private fun openFolder() {
-        Desktop.getDesktop().open(Settings.poliformatDirectory)
+        Desktop.browseDirectory(Settings.poliformatDirectory.toString())
     }
 
     @FXML
     private fun openWeb() {
-        Desktop.getDesktop().browse(URI("https://poliformat.upv.es/portal"))
+        Desktop.browseURL("https://poliformat.upv.es/portal")
     }
 
     @FXML
@@ -133,7 +133,7 @@ class HomeController(
     }
 
     private fun sendFeedbak() {
-        Desktop.getDesktop().browse(URI("https://docs.google.com/forms/d/e/1FAIpQLSeusf0F2u98Vn28xH7OE3BF6BlMl7ZCKPEdxo2MTqvO-3LlMg/viewform"))
+        Desktop.browseURL("https://docs.google.com/forms/d/e/1FAIpQLSeusf0F2u98Vn28xH7OE3BF6BlMl7ZCKPEdxo2MTqvO-3LlMg/viewform")
     }
 
     companion object : KLogging()

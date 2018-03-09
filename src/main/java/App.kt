@@ -20,7 +20,7 @@ import utils.Settings
 import utils.Utils
 import java.awt.*
 import java.util.function.BiFunction
-import javax.swing.SwingUtilities
+
 
 class App : Application() {
 
@@ -53,11 +53,11 @@ class App : Application() {
         primaryStage.title = "syncPoliformat"
         primaryStage.isResizable = false
         primaryStage.icons += Image(javaClass.getResource("/img/icon-24.png").toString())
-        if (Utils.isMac) appleDockIcon()
 
         // TODO solo mantener abierta si estas en el HomeController
         Platform.setImplicitExit(false)
-        SwingUtilities.invokeLater { trayIcon() }
+        if (Utils.isWindows) trayIconWin() else trayIcon()
+        if (Utils.isMac) appleDockIcon()
 
         if (Settings.checkVersion()) {
             val alert = Alert(Alert.AlertType.WARNING)
@@ -69,11 +69,7 @@ class App : Application() {
         }
     }
 
-    private fun trayIcon() {
-        if (!SystemTray.isSupported()) {
-            logger.warn { "SystemTray is not supported" }
-            return
-        }
+    private fun trayIconWin() {
 
         val image = Toolkit.getDefaultToolkit().getImage(javaClass.getResource("/img/tray-icon.png"))
 
@@ -98,6 +94,20 @@ class App : Application() {
         trayIcon.popupMenu = popup
         trayIcon.isImageAutoSize = true
         tray.add(trayIcon)
+    }
+
+    private fun trayIcon() {
+        val systemTray = dorkbox.systemTray.SystemTray.get()
+        systemTray.setImage(javaClass.getResource("/img/tray-icon.png"))
+
+        systemTray.menu.add<dorkbox.systemTray.Entry>(dorkbox.systemTray.MenuItem("Abrir", {
+            Platform.runLater { showStage() }
+        }))
+
+        systemTray.menu.add<dorkbox.systemTray.Entry>(dorkbox.systemTray.MenuItem("Salir", {
+            systemTray.shutdown()
+            System.exit(0)
+        }))
     }
 
     private fun loadFonts() {

@@ -64,6 +64,8 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-java8:2.3.0'
     compile 'pl.droidsonroids.retrofit2:converter-jspoon:1.2.2'
 
+    compile 'com.dorkbox:SystemTray:3.12'
+
     testCompile ('org.jetbrains.spek:spek-api:1.1.5') {
         exclude group: 'org.jetbrains.kotlin'
     }
