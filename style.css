@@ -863,7 +863,7 @@ a.button--small {
     position: relative
 }
 
-@media screen and (max-width:352px) {
+@media screen and (max-width:500px) {
     .hero__image {
         padding: 0 16px
     }
@@ -926,7 +926,6 @@ a.button--small {
         margin-bottom: 5rem
     }
     .hero__image {
-        height: 300px;
         max-width: 500px;
         margin: 6rem auto 0
     }
