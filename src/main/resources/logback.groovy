@@ -9,7 +9,7 @@ appender("FILE", FileAppender) {
 }
 appender("STDOUT", ConsoleAppender) {
     encoder(PatternLayoutEncoder) {
-        pattern = "%date %level %logger{8} [%file:%line] %msg"
+        pattern = "%date %level %logger{8} [%file:%line] %msg%n"
     }
 }
 root(DEBUG, ["STDOUT", "FILE"])
