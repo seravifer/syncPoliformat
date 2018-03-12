@@ -4,6 +4,9 @@ import domain.SubjectInfo
 import domain.UserInfo
 import dorkbox.systemTray.SystemTray
 import dorkbox.util.Desktop
+import javafx.beans.binding.Bindings
+import javafx.beans.binding.BooleanBinding
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable
@@ -47,6 +50,8 @@ class HomeController(
     @FXML
     private lateinit var listID: VBox
 
+    var updating: BooleanBinding = Bindings.and(SimpleBooleanProperty(false), SimpleBooleanProperty(false))
+
     init {
         val fxmlLoader = FXMLLoader(javaClass.getResource("/view/home.fxml"))
         fxmlLoader.setController(this)
@@ -69,7 +74,11 @@ class HomeController(
         siteService.getSubjects().handleAsync(BiFunction<List<SubjectInfo>, Throwable?, Any> { subjects, e ->
             if (e == null) {
                 subjects.sortedBy(SubjectInfo::name)
-                        .forEach { listID.children.add(SubjectComponent(it)) }
+                        .forEach {
+                            val component = SubjectComponent(it)
+                            updating = updating.or(component.updating)
+                            listID.children.add(component)
+                        }
             } else {
                 logger.error(e) { "Error al recuperar las asignaturas.\n" }
             }
@@ -125,11 +134,15 @@ class HomeController(
         stage.show()
     }
 
-    // TODO Prevenir cerrar sesión si existe alguna descarga en funcionamiento
+    // TODO: Añadir dialogo de aviso de que se cerrará sesión al terminar de actualizar.
     private fun launchSettings() {
-        stage.hide()
-        authService.logout()
-        LoginController(authService, stage)
+        fun logout() {
+            stage.hide()
+            authService.logout()
+            LoginController(authService, stage)
+        }
+        if (updating.value) updating.addListener { _, _, updating -> if (!updating) logout() }
+        else logout()
     }
 
     private fun sendFeedbak() {
