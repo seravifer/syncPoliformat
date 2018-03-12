@@ -22,14 +22,7 @@ object PoliformatServiceSpek : Spek({
                 assert(clau != null) { "The clau was null" }
             }
 
-            val call = intranet.login(mapOf(
-                    "cua" to "sakai",
-                    "estilo" to "500",
-                    "id" to "c",
-                    "vista" to "MSE",
-                    "dni" to dni,
-                    "clau" to clau
-            ))
+            val call = intranet.login(dni, clau)
             val response = call.execute()
 
             it("should be a successful connection") {
