@@ -2,6 +2,7 @@ package controller
 
 import com.jfoenix.controls.JFXSpinner
 import domain.SubjectInfo
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.scene.control.Label
@@ -41,8 +42,10 @@ class SubjectComponent(
     @FXML
     private lateinit var circleID: Circle
 
-    private val colors = arrayOf("#ad1457", "#6a1b9a", "#4527a0", "#283593", "#1565c0", "#0277bd", "#00838f", "#00695c",
-            "#2e7d32", "#558b2f", "#9e9d24", "#f9a825", "#ff8f00", "#ef6c00", "#d84315")
+    private val colors = arrayOf("#f44336", "#e91e63", "#9c27b0", "#673ab7", "#3f51b5", "#2196f3", "#03a9f4", "#00bcd4",
+            "#009688", "#4caf50", "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107", "#ff9800", "#ff5722", "#607d8b")
+
+    val updating = SimpleBooleanProperty(false)
 
     init {
         val fxmlLoader = FXMLLoader(javaClass.getResource("/view/subject.fxml"))
@@ -53,9 +56,7 @@ class SubjectComponent(
         nameID.text = subject.shortName
         longNameID.text = subject.name
         dateID.text = formatLastUpdate(subject.lastUpdate)
-        circleID.fill = Color.web(colors[Utils.random(1, colors.size - 1)])
-
-        syncID.setOnMouseClicked { update() }
+        circleID.fill = Color.web(colors[Utils.random(colors.size)])
 
         if (subject.lastUpdate.isEmpty()) {
             syncID.isVisible = false
@@ -69,6 +70,7 @@ class SubjectComponent(
 
     @FXML
     private fun update() {
+        updating.value = true
         syncID.isVisible = false
         downloadID.isVisible = false
         loadingID.isVisible = true
@@ -86,6 +88,7 @@ class SubjectComponent(
         syncID.isVisible = true
         loadingID.isVisible = false
         dateID.text = formatLastUpdate(subject.lastUpdate)
+        updating.value = false
     }
 
     fun sync() {

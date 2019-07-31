@@ -3,6 +3,7 @@ package data.network
 import appModule
 import com.github.salomonbrys.kodein.instance
 import java.io.File
+import utils.Crypt
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ForkJoinPool
@@ -12,13 +13,14 @@ object CredentialsStorageImpl : CredentialsStorage {
         val res = CompletableFuture<Unit>()
         ForkJoinPool.commonPool().execute {
             try {
-                with(appModule.instance<File>("credentials")) {
+                Crypt.encrypt("${credentials.token}\n${credentials.dns}")
+                /*with(appModule.instance<File>("credentials")) {
                     createNewFile()
                     printWriter().use {
                         it.println(credentials.token)
                         it.println(credentials.dns)
                     }
-                }
+                }*/
             } catch (e: Exception) {
                 res.completeExceptionally(e)
             }
@@ -31,9 +33,10 @@ object CredentialsStorageImpl : CredentialsStorage {
         val res = CompletableFuture<Credentials>()
         ForkJoinPool.commonPool().execute {
             try {
-                val data = appModule.instance<File>("credentials").readLines()
+                res.complete(Crypt.decrypt())
+                /*val data = appModule.instance<File>("credentials").readLines()
                 val credentials = Credentials(data[0], data[1])
-                res.complete(credentials)
+                res.complete(credentials)*/
             } catch (e: Exception) {
                 res.completeExceptionally(e)
             }

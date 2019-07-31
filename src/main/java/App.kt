@@ -18,7 +18,7 @@ import utils.OS
 import utils.Settings
 import java.awt.*
 import java.util.function.BiFunction
-import javax.swing.SwingUtilities
+
 
 class App : Application(), KodeinAware {
     override val kodein: Kodein by lazy { appModule }
@@ -54,12 +54,13 @@ class App : Application(), KodeinAware {
 
         primaryStage.title = "syncPoliformat"
         primaryStage.isResizable = false
-        primaryStage.icons += Image(javaClass.getResource("/res/icon-64.png").toString())
+        primaryStage.icons += Image(javaClass.getResource("/img/icon-24.png").toString())
         if (instance<OS>() == OS.MAC) appleDockIcon()
 
         // TODO solo mantener abierta si estas en el HomeController
         Platform.setImplicitExit(false)
-        SwingUtilities.invokeLater { trayIcon() }
+        if (Utils.isWindows) trayIconWin() else trayIcon()
+        if (Utils.isMac) appleDockIcon()
 
         if (Settings.checkVersion()) {
             val alert = Alert(Alert.AlertType.WARNING)
@@ -71,13 +72,9 @@ class App : Application(), KodeinAware {
         }
     }
 
-    private fun trayIcon() {
-        if (!SystemTray.isSupported()) {
-            logger.warn { "SystemTray is not supported" }
-            return
-        }
+    private fun trayIconWin() {
 
-        val image = Toolkit.getDefaultToolkit().getImage(javaClass.getResource("/res/tray-icon.png"))
+        val image = Toolkit.getDefaultToolkit().getImage(javaClass.getResource("/img/tray-icon.png"))
 
         val popup = PopupMenu()
         val trayIcon = TrayIcon(image)
@@ -98,7 +95,22 @@ class App : Application(), KodeinAware {
         }
 
         trayIcon.popupMenu = popup
+        trayIcon.isImageAutoSize = true
         tray.add(trayIcon)
+    }
+
+    private fun trayIcon() {
+        val systemTray = dorkbox.systemTray.SystemTray.get()
+        systemTray.setImage(javaClass.getResource("/img/tray-icon.png"))
+
+        systemTray.menu.add<dorkbox.systemTray.Entry>(dorkbox.systemTray.MenuItem("Abrir", {
+            Platform.runLater { showStage() }
+        }))
+
+        systemTray.menu.add<dorkbox.systemTray.Entry>(dorkbox.systemTray.MenuItem("Salir", {
+            systemTray.shutdown()
+            System.exit(0)
+        }))
     }
 
     private fun loadFonts() {
@@ -112,8 +124,8 @@ class App : Application(), KodeinAware {
     private fun appleDockIcon() {
         val appleLibrary = Class.forName("com.apple.eawt.Application")
         val application = appleLibrary.getMethod("getApplication").invoke(appleLibrary)
-        val setDockIconImage = appleLibrary.getMethod("setDockIconImage", Image::class.java)
-        val image = Toolkit.getDefaultToolkit().getImage(javaClass.getResource("res/icon-1024.png"))
+        val setDockIconImage = appleLibrary.getMethod("setDockIconImage", java.awt.Image::class.java)
+        val image: java.awt.Image = Toolkit.getDefaultToolkit().getImage(javaClass.getResource("img/icon-128.png"))
         setDockIconImage.invoke(application, image)
     }
 

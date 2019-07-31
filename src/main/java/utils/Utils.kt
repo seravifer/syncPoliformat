@@ -11,13 +11,11 @@ object Utils {
             val year = time.get(Calendar.YEAR)
             val month = time.get(Calendar.MONTH)
 
-            if (month < 9)
-                Integer.toString(year - 1)
-            else
-                Integer.toString(year)
+            if (month < 9) Integer.toString(year - 1)
+            else Integer.toString(year)
         }
 
     fun now(): String = SimpleDateFormat("dd/MM/yyyy HH:mm").format(Date())
 
-    fun random(min: Int, max: Int): Int = ThreadLocalRandom.current().nextInt(min, max + 1)
+    fun random(max: Int): Int = (Math.random() * max - 1).toInt()
 }

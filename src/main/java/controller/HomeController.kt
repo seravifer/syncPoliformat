@@ -5,6 +5,11 @@ import build
 import com.github.salomonbrys.kodein.instance
 import domain.SubjectInfo
 import domain.UserInfo
+import dorkbox.systemTray.SystemTray
+import dorkbox.util.Desktop
+import javafx.beans.binding.Bindings
+import javafx.beans.binding.BooleanBinding
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable
@@ -23,9 +28,7 @@ import mu.KLogging
 import service.AuthenticationService
 import service.SiteService
 import utils.JavaFXExecutor
-import java.awt.Desktop
-import java.awt.SystemTray
-import java.net.URI
+import utils.Utils
 import java.net.URL
 import java.util.*
 import java.util.function.BiFunction
@@ -49,6 +52,8 @@ class HomeController(
     @FXML
     private lateinit var listID: VBox
 
+    var updating: BooleanBinding = Bindings.and(SimpleBooleanProperty(false), SimpleBooleanProperty(false))
+
     init {
         val fxmlLoader = FXMLLoader(javaClass.getResource("/view/home.fxml"))
         fxmlLoader.setController(this)
@@ -71,7 +76,11 @@ class HomeController(
         siteService.getSubjects().handleAsync(BiFunction<List<SubjectInfo>, Throwable?, Any> { subjects, e ->
             if (e == null) {
                 subjects.sortedBy(SubjectInfo::name)
-                        .forEach { listID.children.add(appModule.build<SubjectInfo, SubjectComponent>(it)) }
+                        .forEach {
+                            val component = appModule.build<SubjectInfo, SubjectComponent>(it)
+                            updating = updating.or(component.updating)
+                            listID.children.add(component)
+                        }
             } else {
                 logger.error(e) { "Error al recuperar las asignaturas.\n" }
             }
@@ -90,7 +99,7 @@ class HomeController(
 
         val item4 = MenuItem("Salir")
         item4.setOnAction {
-            SystemTray.getSystemTray().remove(SystemTray.getSystemTray().trayIcons[0])
+            if (!Utils.isWindows) SystemTray.get().shutdown()
             System.exit(0)
         }
 
@@ -101,12 +110,12 @@ class HomeController(
 
     @FXML
     private fun openFolder() {
-        Desktop.getDesktop().open(appModule.instance("poliformat"))
+        Desktop.browseDirectory(appModule.instance("poliformat").toString())
     }
 
     @FXML
     private fun openWeb() {
-        Desktop.getDesktop().browse(URI("https://poliformat.upv.es/portal"))
+        Desktop.browseURL("https://poliformat.upv.es/portal")
     }
 
     @FXML
@@ -121,21 +130,25 @@ class HomeController(
         val root: Parent? = FXMLLoader.load<Parent>(javaClass.getResource("/view/about.fxml"))
         val scene = Scene(root!!)
         stage.scene = scene
-        stage.title = "About syncPoliformat"
-        stage.icons += Image(javaClass.getResource("/res/icon-64.png").toString())
+        stage.title = "syncPoliformat"
+        stage.icons += Image(javaClass.getResource("/img/icon-64.png").toString())
         stage.isResizable = false
         stage.show()
     }
 
-    // TODO Prevenir cerrar sesión si existe alguna descarga en funcionamiento
+    // TODO: Añadir dialogo de aviso de que se cerrará sesión al terminar de actualizar.
     private fun launchSettings() {
-        stage.hide()
-        authService.logout()
-        appModule.instance<LoginController>()
+        fun logout() {
+            stage.hide()
+            authService.logout()
+            appModule.instance<LoginController>()
+        }
+        if (updating.value) updating.addListener { _, _, updating -> if (!updating) logout() }
+        else logout()
     }
 
     private fun sendFeedbak() {
-        Desktop.getDesktop().browse(URI("https://docs.google.com/forms/d/e/1FAIpQLSeusf0F2u98Vn28xH7OE3BF6BlMl7ZCKPEdxo2MTqvO-3LlMg/viewform"))
+        Desktop.browseURL("https://docs.google.com/forms/d/e/1FAIpQLSeusf0F2u98Vn28xH7OE3BF6BlMl7ZCKPEdxo2MTqvO-3LlMg/viewform")
     }
 
     companion object : KLogging()

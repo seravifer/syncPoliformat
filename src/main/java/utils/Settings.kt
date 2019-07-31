@@ -1,9 +1,9 @@
 package utils
 
 import java.io.File
-
 import java.io.IOException
 import java.net.URL
+import java.nio.file.Paths
 
 // TODO: Reevaluar esto
 object Settings {
@@ -20,7 +20,7 @@ object Settings {
 
     fun checkVersion(): Boolean {
         try {
-            val url = URL("http://sergiavila.com/version") // Temporal
+            val url = URL("https://seravifer.github.io/syncPoliformat/version")
             val newVersion: Double = url.openStream().bufferedReader().use {
                 it.readLine().toDouble()
             }

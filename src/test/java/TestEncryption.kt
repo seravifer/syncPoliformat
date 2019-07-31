@@ -1,5 +1,5 @@
-import utils.decrypt
-import utils.encrypt
+import utils.Crypt.decrypt
+import utils.Crypt.encrypt
 
 object TestEncryption {
 

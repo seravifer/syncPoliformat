@@ -11,7 +11,7 @@
    <children>
       <ImageView cache="true" fitHeight="118.0" fitWidth="273.0" layoutX="64.0" layoutY="63.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="64.0" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="63.0">
          <image>
-            <Image url="@../res/logo-poliformat.png" />
+            <Image url="@../img/logo-poliformat.png" />
          </image>
       </ImageView>
       <JFXPasswordField fx:id="usernameID" focusColor="#c00000" labelFloat="true" layoutX="96.0" layoutY="171.0" prefHeight="25.0" prefWidth="206.0" promptText="DNI" unFocusColor="#0000001e" AnchorPane.leftAnchor="96.0" AnchorPane.rightAnchor="96.0">
