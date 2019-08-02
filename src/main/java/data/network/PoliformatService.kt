@@ -7,21 +7,20 @@ import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Url
-import java.util.concurrent.CompletableFuture
 
 interface PoliformatService {
     @GET("direct/content/site/{id}.json")
-    fun resources(@Path("id") id: String): CompletableFuture<ContentEntity>
+    suspend fun resources(@Path("id") id: String): ContentEntity
 
     @GET("direct/user/current.json")
-    fun currentUser(): CompletableFuture<UserInfo>
+    suspend fun currentUser(): UserInfo
 
     @GET("direct/site.json")
-    fun siteInfo(): CompletableFuture<SiteEntity>
+    suspend fun siteInfo(): SiteEntity
 
     @GET("portal/login")
-    fun login(): CompletableFuture<ResponseBody>
+    suspend fun login(): ResponseBody
 
     @GET
-    fun downloadFile(@Url fileUrl: String): CompletableFuture<ResponseBody>
+    suspend fun downloadFile(@Url fileUrl: String): ResponseBody
 }

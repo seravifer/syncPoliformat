@@ -8,7 +8,7 @@ enum class OS(private val matcher: String) {
         @JvmStatic
         fun host(): OS {
             val osName = System.getProperty("os.name")
-            return OS.values().find { osName.contains(it.matcher, true) } ?: LINUX
+            return values().find { osName.contains(it.matcher, true) } ?: LINUX
         }
     }
 }

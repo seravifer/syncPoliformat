@@ -1,7 +1,5 @@
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinAware
-import com.github.salomonbrys.kodein.factory
-import com.github.salomonbrys.kodein.instance
+@file:JvmName("App")
+
 import controller.HomeController
 import controller.LoginController
 import domain.UserInfo
@@ -11,64 +9,80 @@ import javafx.scene.control.Alert
 import javafx.scene.image.Image
 import javafx.scene.text.Font
 import javafx.stage.Stage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import mu.KLogging
+import org.kodein.di.Kodein
+import org.kodein.di.KodeinAware
+import org.kodein.di.Multi2
+import org.kodein.di.direct
+import org.kodein.di.generic.M
+import org.kodein.di.generic.instance
 import service.AuthenticationService
-import utils.JavaFXExecutor
 import utils.OS
 import utils.Settings
 import java.awt.*
-import java.util.function.BiFunction
+import java.io.File
+import kotlin.coroutines.CoroutineContext
+import kotlin.system.exitProcess
 
 
-class App : Application(), KodeinAware {
-    override val kodein: Kodein by lazy { appModule }
+class App : Application(), KodeinAware, CoroutineScope {
+    override val kodein: Kodein by lazy { appComponent }
+
+    private val parentJob = Job()
+    override val coroutineContext: CoroutineContext = parentJob + Dispatchers.Main
 
     private lateinit var stage: Stage
+    private val os: OS by instance()
+
+    private val appFolder: File by instance("app")
+    private val poliformatFolder: File by instance("poliformat")
+    private val subjectsFolder: File by instance("subjects")
+
+    private val authService by instance<AuthenticationService>()
 
     override fun start(primaryStage: Stage) {
-        appModule.addImport(controllerModule(primaryStage))
-        Settings.initFolders(instance("app"),
-                instance("poliformat"),
-                instance("subjects"))
-
+        Settings.initFolders(appFolder, poliformatFolder, subjectsFolder)
+        logger.debug { "Initializing app" }
         stage = primaryStage
 
-        val authService = instance<AuthenticationService>()
-
-        if (authService.existSavedCredentials()) {
-            authService.login().thenCompose {
-                authService.currentUser()
-            }.handleAsync(BiFunction<UserInfo, Throwable?, Unit> { user, e ->
-                if (e == null) {
-                    factory<UserInfo,HomeController>()(user)
-                } else {
+        launch {
+            if (authService.existSavedCredentials()) {
+                try {
+                    authService.login()
+                    val user = authService.currentUser()
+                    direct.instance<Multi2<Stage, UserInfo>, HomeController>(arg = M(stage, user))
+                } catch (e: Exception) {
                     authService.logout()
-                    instance<LoginController>()
+                    direct.instance<Stage, LoginController>(arg = stage)
                 }
-            }, JavaFXExecutor)
-        } else {
-            instance<LoginController>()
-        }
+            } else {
+                direct.instance<Stage, LoginController>(arg = stage)
+            }
 
-        loadFonts()
+            loadFonts()
 
-        primaryStage.title = "syncPoliformat"
-        primaryStage.isResizable = false
-        primaryStage.icons += Image(javaClass.getResource("/img/icon-24.png").toString())
-        if (instance<OS>() == OS.MAC) appleDockIcon()
+            primaryStage.title = "syncPoliformat"
+            primaryStage.isResizable = false
+            primaryStage.icons += Image(javaClass.getResource("/img/icon-24.png").toString())
+            if (os === OS.MAC) appleDockIcon()
 
-        // TODO solo mantener abierta si estas en el HomeController
-        Platform.setImplicitExit(false)
-        if (Utils.isWindows) trayIconWin() else trayIcon()
-        if (Utils.isMac) appleDockIcon()
+            // TODO solo mantener abierta si estas en el HomeController
+            Platform.setImplicitExit(false)
+            if (os === OS.WINDOWS) trayIconWin() else trayIcon()
+            if (os === OS.MAC) appleDockIcon()
 
-        if (Settings.checkVersion()) {
-            val alert = Alert(Alert.AlertType.WARNING)
-            alert.title = "Nueva versión disponible"
-            alert.headerText = null
-            alert.contentText = "Hemos detectado que existe una nueva versión disponible de la aplicación. " +
-                    "Por favor descarguela de nuestra páguina web para poder garantizar su correcto funcionamiento."
-            alert.showAndWait()
+            if (Settings.checkVersion()) {
+                val alert = Alert(Alert.AlertType.WARNING)
+                alert.title = "Nueva versión disponible"
+                alert.headerText = null
+                alert.contentText = "Hemos detectado que existe una nueva versión disponible de la aplicación. " +
+                        "Por favor descarguela de nuestra páguina web para poder garantizar su correcto funcionamiento."
+                alert.showAndWait()
+            }
         }
     }
 
@@ -91,7 +105,7 @@ class App : Application(), KodeinAware {
         trayIcon.addActionListener { Platform.runLater { showStage() } }
         exitItem.addActionListener {
             tray.remove(trayIcon)
-            System.exit(0)
+            exitProcess(0)
         }
 
         trayIcon.popupMenu = popup
@@ -103,14 +117,14 @@ class App : Application(), KodeinAware {
         val systemTray = dorkbox.systemTray.SystemTray.get()
         systemTray.setImage(javaClass.getResource("/img/tray-icon.png"))
 
-        systemTray.menu.add<dorkbox.systemTray.Entry>(dorkbox.systemTray.MenuItem("Abrir", {
+        systemTray.menu.add<dorkbox.systemTray.Entry>(dorkbox.systemTray.MenuItem("Abrir") {
             Platform.runLater { showStage() }
-        }))
+        })
 
-        systemTray.menu.add<dorkbox.systemTray.Entry>(dorkbox.systemTray.MenuItem("Salir", {
+        systemTray.menu.add<dorkbox.systemTray.Entry>(dorkbox.systemTray.MenuItem("Salir") {
             systemTray.shutdown()
-            System.exit(0)
-        }))
+            exitProcess(0)
+        })
     }
 
     private fun loadFonts() {
@@ -134,9 +148,10 @@ class App : Application(), KodeinAware {
         stage.toFront()
     }
 
-    companion object : KLogging()
-}
-
-fun main(args: Array<String>) {
-    Application.launch(App::class.java, *args)
+    companion object : KLogging() {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            launch(App::class.java, *args)
+        }
+    }
 }

@@ -10,16 +10,19 @@ import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import javafx.scene.shape.SVGPath
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import mu.KLogging
 import service.FileService
-import utils.JavaFXExecutor
 import utils.Utils
-import java.util.function.BiFunction
+import kotlin.coroutines.CoroutineContext
 
 class SubjectComponent(
         private val subject: SubjectInfo,
         private val fileService: FileService
-) : AnchorPane() {
+) : AnchorPane(), CoroutineScope {
 
     @FXML
     private lateinit var longNameID: Label
@@ -44,6 +47,9 @@ class SubjectComponent(
 
     private val colors = arrayOf("#f44336", "#e91e63", "#9c27b0", "#673ab7", "#3f51b5", "#2196f3", "#03a9f4", "#00bcd4",
             "#009688", "#4caf50", "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107", "#ff9800", "#ff5722", "#607d8b")
+
+    private val parentJob = Job()
+    override val coroutineContext: CoroutineContext = parentJob + Dispatchers.Main
 
     val updating = SimpleBooleanProperty(false)
 
@@ -76,19 +82,19 @@ class SubjectComponent(
         loadingID.isVisible = true
         dateID.text = "Descargando asignatura..."
 
-        fileService.syncSubjectFiles(subject)
-                .handleAsync(BiFunction<String, Throwable?, Unit> { now, e ->
-                    if (e != null) logger.warn(e) { "Error al descargar los archivos\n" }
-                    else subject.lastUpdate = now
-                    finish()
-                }, JavaFXExecutor)
-    }
-
-    private fun finish() {
-        syncID.isVisible = true
-        loadingID.isVisible = false
-        dateID.text = formatLastUpdate(subject.lastUpdate)
-        updating.value = false
+        launch {
+            try {
+                val now = fileService.syncSubjectFiles(subject)
+                subject.lastUpdate = now
+            } catch (e: Exception) {
+                logger.warn(e) { "Error al descargar los archivos\n" }
+            } finally {
+                syncID.isVisible = true
+                loadingID.isVisible = false
+                dateID.text = formatLastUpdate(subject.lastUpdate)
+                updating.value = false
+            }
+        }
     }
 
     fun sync() {

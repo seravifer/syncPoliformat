@@ -1,7 +1,6 @@
 package controller
 
-import appModule
-import com.github.salomonbrys.kodein.factory
+import appComponent
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXCheckBox
 import com.jfoenix.controls.JFXPasswordField
@@ -17,18 +16,24 @@ import javafx.scene.control.Label
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
 import javafx.stage.Stage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import mu.KLogging
+import org.kodein.di.Multi2
+import org.kodein.di.direct
+import org.kodein.di.generic.M
+import org.kodein.di.generic.instance
 import service.AuthenticationService
-import utils.JavaFXExecutor
 import java.net.URL
 import java.util.*
-import java.util.concurrent.CompletableFuture
-import java.util.function.BiFunction
+import kotlin.coroutines.CoroutineContext
 
 class LoginController(
         private val authService: AuthenticationService,
         private val stage: Stage
-) : Initializable {
+) : Initializable, CoroutineScope {
 
     @FXML
     private lateinit var usernameID: JFXPasswordField
@@ -50,6 +55,9 @@ class LoginController(
 
     @FXML
     private lateinit var sceneID: AnchorPane
+
+    private val parentJob = Job()
+    override val coroutineContext: CoroutineContext = parentJob + Dispatchers.Main
 
     init {
         val fxmlLoader = FXMLLoader(javaClass.getResource("/view/login.fxml"))
@@ -79,35 +87,28 @@ class LoginController(
         loginID.isDisable = true
         loadingID.isVisible = true
 
-        authService.login(usernameID.text, passwordID.text, rememberID.isSelected)
-                .thenCompose { loggedIn ->
-                    loginID.isDisable = false
-                    loadingID.isVisible = false
-                    if (loggedIn) authService.currentUser()
-                    else {
-                        errorID.isVisible = true
-                        passwordID.text = ""
-                        CompletableFuture<UserInfo>().apply {
-                            completeExceptionally(BadCredentialsException())
-                        }
-                    }
-                }.handleAsync(BiFunction<UserInfo, Throwable?, Unit> { user, e ->
-                    if (e == null) {
-                        showHome(user)
-                    } else {
-                        logger.error(e) {
-                            if (e is BadCredentialsException) e.message
-                            else "El usuario no tiene conexión a internet.\n"
-                        }
-                    }
-                }, JavaFXExecutor)
-    }
-
-    private fun showHome(user: UserInfo) {
-        stage.hide()
-
-        val homeFactory: (UserInfo) -> HomeController = appModule.factory()
-        homeFactory(user)
+        launch {
+            try {
+                val loggedIn = authService.login(usernameID.text, passwordID.text, rememberID.isSelected)
+                loginID.isDisable = false
+                loadingID.isVisible = false
+                if (loggedIn) {
+                    logger.debug { "Signed in!" }
+                    val user = authService.currentUser()
+                    stage.hide()
+                    appComponent.direct.instance<Multi2<Stage, UserInfo>, HomeController>(arg = M(stage, user))
+                } else {
+                    errorID.isVisible = true
+                    passwordID.text = ""
+                    throw BadCredentialsException()
+                }
+            } catch (e: Exception) {
+                logger.error(e) {
+                    if (e is BadCredentialsException) e.message
+                    else "El usuario no tiene conexión a internet.\n"
+                }
+            }
+        }
     }
 
     companion object : KLogging()

@@ -1,8 +1,5 @@
 package controller
 
-import appModule
-import build
-import com.github.salomonbrys.kodein.instance
 import domain.SubjectInfo
 import domain.UserInfo
 import dorkbox.systemTray.SystemTray
@@ -24,21 +21,30 @@ import javafx.scene.image.Image
 import javafx.scene.layout.VBox
 import javafx.scene.shape.SVGPath
 import javafx.stage.Stage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import mu.KLogging
 import service.AuthenticationService
 import service.SiteService
-import utils.JavaFXExecutor
-import utils.Utils
+import utils.OS
+import java.io.File
 import java.net.URL
 import java.util.*
-import java.util.function.BiFunction
+import kotlin.coroutines.CoroutineContext
+import kotlin.system.exitProcess
 
 class HomeController(
         private val siteService: SiteService,
         private val authService: AuthenticationService,
         private val stage: Stage,
-        private val user: UserInfo
-) : Initializable {
+        private val user: UserInfo,
+        private val subjectComponentFactory: (SubjectInfo) -> SubjectComponent,
+        private val loginControllerFactory: (Stage) -> LoginController,
+        private val os: OS,
+        private val poliformatFolder: File
+) : Initializable, CoroutineScope {
 
     @FXML
     private lateinit var nameID: Label
@@ -51,6 +57,9 @@ class HomeController(
 
     @FXML
     private lateinit var listID: VBox
+
+    private val parentJob = Job()
+    override val coroutineContext: CoroutineContext = parentJob + Dispatchers.Main
 
     var updating: BooleanBinding = Bindings.and(SimpleBooleanProperty(false), SimpleBooleanProperty(false))
 
@@ -73,18 +82,19 @@ class HomeController(
             mailID.text = email
         }
 
-        siteService.getSubjects().handleAsync(BiFunction<List<SubjectInfo>, Throwable?, Any> { subjects, e ->
-            if (e == null) {
+        launch {
+            try {
+                val subjects = siteService.getSubjects()
                 subjects.sortedBy(SubjectInfo::name)
                         .forEach {
-                            val component = appModule.build<SubjectInfo, SubjectComponent>(it)
+                            val component = subjectComponentFactory(it)
                             updating = updating.or(component.updating)
                             listID.children.add(component)
                         }
-            } else {
+            } catch (e: Exception) {
                 logger.error(e) { "Error al recuperar las asignaturas.\n" }
             }
-        }, JavaFXExecutor)
+        }
 
         val contextMenu = ContextMenu()
 
@@ -99,8 +109,8 @@ class HomeController(
 
         val item4 = MenuItem("Salir")
         item4.setOnAction {
-            if (!Utils.isWindows) SystemTray.get().shutdown()
-            System.exit(0)
+            if (os !== OS.WINDOWS) SystemTray.get().shutdown()
+            exitProcess(0)
         }
 
         contextMenu.items.addAll(item1, item2, SeparatorMenuItem(), item3, item4)
@@ -110,7 +120,7 @@ class HomeController(
 
     @FXML
     private fun openFolder() {
-        Desktop.browseDirectory(appModule.instance("poliformat").toString())
+        Desktop.browseDirectory(poliformatFolder.toString())
     }
 
     @FXML
@@ -127,8 +137,8 @@ class HomeController(
 
     private fun launchAbout() {
         val stage = Stage()
-        val root: Parent? = FXMLLoader.load<Parent>(javaClass.getResource("/view/about.fxml"))
-        val scene = Scene(root!!)
+        val root: Parent = FXMLLoader.load(javaClass.getResource("/view/about.fxml"))
+        val scene = Scene(root)
         stage.scene = scene
         stage.title = "syncPoliformat"
         stage.icons += Image(javaClass.getResource("/img/icon-64.png").toString())
@@ -137,14 +147,16 @@ class HomeController(
     }
 
     // TODO: Añadir dialogo de aviso de que se cerrará sesión al terminar de actualizar.
-    private fun launchSettings() {
-        fun logout() {
-            stage.hide()
+    private fun launchSettings() = launch {
+        fun logout() = launch {
             authService.logout()
-            appModule.instance<LoginController>()
+            stage.hide()
+            loginControllerFactory(stage)
         }
-        if (updating.value) updating.addListener { _, _, updating -> if (!updating) logout() }
-        else logout()
+        if (updating.value) {
+            updating.addListener { _, _, updating -> if (!updating) logout() }
+        } else logout()
+
     }
 
     private fun sendFeedbak() {

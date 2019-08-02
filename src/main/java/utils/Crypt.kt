@@ -1,8 +1,6 @@
 package utils
 
-import appModule
-import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.lazy
+import data.network.Credentials
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -10,11 +8,10 @@ import java.security.Key
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
-object Crypt {
-    private const val ALGO = "AES/ECB/PKCS5Padding"
-    private val key = "ÑtF0fÓ*^7ü;$#".toByteArray()
-    private val fileCredentials by appModule.lazy.instance<File>("credentials")
+private const val ALGO = "AES/ECB/PKCS5Padding"
+private val key = "ÑtF0fÓ*^7ü;$#".toByteArray()
 
+class EncryptedStorage(private val fileCredentials: File) {
     fun encrypt(data: String) {
         val key = generateKey()
         val cipher = Cipher.getInstance(ALGO)

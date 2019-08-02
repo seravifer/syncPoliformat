@@ -1,17 +1,17 @@
 package service.impl
 
-import appModule
-import com.github.salomonbrys.kodein.instance
 import data.Repository
 import data.network.CredentialsHandler
 import data.network.CredentialsStorage
 import data.network.PoliformatService
 import data.network.UpvService
 import domain.UserInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
 import service.AuthenticationService
-import utils.toCompletableFuture
-import java.io.File
-import java.util.concurrent.CompletableFuture
+import kotlin.coroutines.CoroutineContext
 
 class AuthenticationServiceImpl(
         private val repo: Repository,
@@ -19,36 +19,39 @@ class AuthenticationServiceImpl(
         private val upvService: UpvService,
         private val credentialsStorage: CredentialsStorage,
         private val credentialsHandler: CredentialsHandler
-) : AuthenticationService {
+) : AuthenticationService, CoroutineScope {
+    private val parentJob = Job()
+    override val coroutineContext: CoroutineContext = parentJob + Dispatchers.IO
 
-    override fun login(dni: String, password: String, remember: Boolean): CompletableFuture<Boolean> {
-        return if (dni.isNotBlank() && password.isNotBlank()) {
-            upvService.login(dni, password).toCompletableFuture { response ->
-                val loggedIn = response.headers()["X-Sakai-Session"] != null
-                val credentials = credentialsHandler.getCredentials()
-                if (remember && loggedIn && credentials != null) {
-                    credentialsStorage.persistCredentials(credentials)
-                }
-                loggedIn
+    override suspend fun login(dni: String, password: String, remember: Boolean): Boolean = withContext(coroutineContext) {
+        if (dni.isNotBlank() && password.isNotBlank()) {
+            val response = upvService.login(dni, password)
+            val loggedIn = response.headers()["X-Sakai-Session"] != null
+            val credentials = credentialsHandler.getCredentials()
+            if (remember && loggedIn && credentials != null) {
+                credentialsStorage.persistCredentials(credentials)
             }
+            loggedIn
         } else if (existSavedCredentials()) {
-            credentialsStorage.retrieveCredentials().thenComposeAsync {
-                credentialsHandler.loadCredentials(it)
-                poliformatService.login().thenApply { true }
-            }
+            val credentials = credentialsStorage.retrieveCredentials()
+            credentialsHandler.loadCredentials(credentials)
+            poliformatService.login()
+            true
         } else {
-            CompletableFuture.completedFuture(false)
+            false
         }
     }
 
-    override fun existSavedCredentials(): Boolean {
-        return appModule.instance<File>("credentials").exists()
+    override suspend fun existSavedCredentials(): Boolean {
+        return credentialsStorage.hasCredentials()
     }
 
-    override fun currentUser(): CompletableFuture<UserInfo> = repo.getCurrentUser()
+    override suspend fun currentUser(): UserInfo = withContext(coroutineContext) {
+        repo.getCurrentUser()
+    }
 
-    override fun logout(): CompletableFuture<Unit> {
+    override suspend fun logout() = withContext(coroutineContext) {
         credentialsHandler.cleanCredentials()
-        return credentialsStorage.removeCredentials()
+        credentialsStorage.removeCredentials()
     }
 }

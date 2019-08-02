@@ -5,14 +5,13 @@ import domain.SubjectInfo
 import domain.UserInfo
 import java.net.URL
 import java.nio.file.Path
-import java.util.concurrent.CompletableFuture
 
 interface Repository {
-    fun getCurrentUser(): CompletableFuture<UserInfo>
-    fun getSiteSubjectNames(): CompletableFuture<Map<GradId, SubjectName>>
-    fun getSiteSubjects(): CompletableFuture<List<SubjectInfo>>
-    fun getSubjectContent(id: String): CompletableFuture<ContentEntity>
-    fun downloadFile(url: URL, dest: Path): CompletableFuture<Boolean>
+    suspend fun getCurrentUser(): UserInfo
+    suspend fun getSiteSubjectNames(): Map<GradId, SubjectName>
+    suspend fun getSiteSubjects(): List<SubjectInfo>
+    suspend fun getSubjectContent(id: String): ContentEntity
+    suspend fun downloadFile(url: URL, dest: Path): Boolean
 }
 
 typealias GradId = String
