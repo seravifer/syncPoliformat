@@ -34,7 +34,7 @@ dependencies {
     implementation(Deps.kotlinx_coroutines_fx)
     implementation(Deps.kotlin_logging)
     implementation(Deps.logback)
-    runtimeOnly(Deps.groovy) // Necesario para calcualar el directorio donde guardar el log
+    runtimeOnly(Deps.groovy) // Necesario para calcular el directorio donde guardar el log
 
     implementation(Deps.retrofit)
     implementation(Deps.retrofit_moshi)
@@ -43,9 +43,8 @@ dependencies {
     implementation(Deps.system_tray)
 
     implementation(Deps.kodein_generic_jvm)
-    testImplementation(Deps.spek_jvm)
-    testRuntimeOnly(Deps.spek_junit_runner)
-    testImplementation (Deps.mockito_kotlin)
+    testImplementation(Deps.mockk)
+    testImplementation(Deps.junit)
 }
 
 java {
@@ -70,13 +69,14 @@ tasks {
             jvmArgs("-Ddni=${System.getProperty("dni")}", "-Dclau=${System.getProperty("clau")}")
             println(System.getProperty("dni"))
         }
-        useJUnitPlatform {
-            includeEngines("spek2")
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
         }
     }
 
     application {
-        mainClassName = "App"
+        mainClassName = "syncPoliformat.App"
         version = appVersion
     }
 }
@@ -86,7 +86,7 @@ tasks.withType(KotlinCompile::class)
             it.kotlinOptions { freeCompilerArgs = listOf("-Xnew-inference") }
         }
 
-val fatJar by tasks.creating(Jar::class.java) {
+val fatJar by tasks.creating(Jar::class) {
     archiveBaseName.set(project.name)
     manifest {
         attributes(

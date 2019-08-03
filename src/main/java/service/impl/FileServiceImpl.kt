@@ -1,15 +1,17 @@
 package service.impl
 
-import appComponent
 import com.squareup.moshi.JsonAdapter
 import data.Repository
 import domain.ContentEntity
 import domain.PoliformatFile
 import domain.SubjectInfo
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import mu.KLogging
-import org.kodein.di.direct
-import org.kodein.di.generic.instance
 import service.FileService
 import service.SubjectService
 import utils.Utils
@@ -21,7 +23,11 @@ import kotlin.coroutines.CoroutineContext
 class FileServiceImpl(
         private val repo: Repository,
         private val subjectService: SubjectService,
-        private val subjectsFile: File
+        private val subjectsFile: File,
+        private val poliformatFolder: File,
+        private val subjectFileFactory: (SubjectInfo) -> File,
+        private val contentEntityJsonAdapter: JsonAdapter<ContentEntity>,
+        private val subjectsMapJsonAdapter: JsonAdapter<Map<String, String>>
 ) : FileService, CoroutineScope {
     private val parentJob = Job()
     override val coroutineContext: CoroutineContext = parentJob + Dispatchers.IO
@@ -32,8 +38,8 @@ class FileServiceImpl(
         val filesToDownload = if (subjectInfo.lastUpdate.isEmpty()) {
             filesFromPoliformat
         } else {
-            val oldFilesJson = appComponent.direct.instance<SubjectInfo, File>(arg = subjectInfo).readText()
-            val oldFilesData = appComponent.direct.instance<JsonAdapter<ContentEntity>>().fromJson(oldFilesJson)
+            val oldFilesJson = subjectFileFactory(subjectInfo).readText()
+            val oldFilesData = contentEntityJsonAdapter.fromJson(oldFilesJson)
             filesFromPoliformat - oldFilesData!!.collection
         }
         downloadFiles(filesToDownload).forEach { it.await() }
@@ -46,12 +52,16 @@ class FileServiceImpl(
     private fun downloadFiles(files: Sequence<PoliformatFile>): List<Deferred<Boolean>> {
         return files.filter { !it.isFolder }
                 .map {
-                    val path = appComponent.direct.instance<File>("poliformat").toPath()
+                    val path = poliformatFolder.toPath()
                             .resolve(it.localPath)
                             .changeExtension(Paths.get(it.url.path).toFile().extension)
                     path.parent.toFile().mkdirs()
-                    logger.info { "Downloading file: $path\n" }
-                    async { repo.downloadFile(it.url, path) }
+                    logger.info { "Downloading file: $path" }
+                    async {
+                        repo.downloadFile(it.url, path).also {
+                            logger.debug { "Downloaded file: $path" }
+                        }
+                    }
                 }.toList()
     }
 
@@ -60,15 +70,15 @@ class FileServiceImpl(
     }
 
     private fun saveSubjectUpdateDate(subject: SubjectInfo, now: String) {
-        val map = appComponent.direct.instance<JsonAdapter<Map<String, String>>>().fromJson(subjectsFile.readText()) as MutableMap<String, String>
+        val map = subjectsMapJsonAdapter.fromJson(subjectsFile.readText()) as MutableMap<String, String>
         map[subject.id] = now
         subject.lastUpdate = now
-        subjectsFile.writeText(appComponent.direct.instance<JsonAdapter<Map<String, String>>>().toJson(map))
+        subjectsFile.writeText(subjectsMapJsonAdapter.toJson(map))
     }
 
     private fun saveContentInfo(subjectInfo: SubjectInfo, subjectContent: ContentEntity) {
-        val json = appComponent.direct.instance<JsonAdapter<ContentEntity>>().toJson(subjectContent)
-        appComponent.direct.instance<SubjectInfo, File>(arg = subjectInfo).writeText(json)
+        val json = contentEntityJsonAdapter.toJson(subjectContent)
+        subjectFileFactory(subjectInfo).writeText(json)
     }
 
     companion object : KLogging()

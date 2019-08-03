@@ -3,7 +3,7 @@ package domain
 import com.squareup.moshi.Json
 import domain.json.adapter.PosixDate
 import java.net.URL
-import java.util.*
+import java.util.Date
 
 class UserInfo(
         @PosixDate
@@ -47,4 +47,12 @@ class UserInfo(
         val entityId: String? = null,
         @Json(name = "entityTitle")
         val entityTitle: String? = null
-)
+) {
+        override fun equals(other: Any?): Boolean {
+                return other is UserInfo && other.entityId == entityId
+        }
+
+        override fun hashCode(): Int {
+                return entityId.hashCode()
+        }
+}

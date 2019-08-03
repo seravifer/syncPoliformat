@@ -9,16 +9,13 @@ object Deps {
     const val kotlin_logging = Artifact.kotlin_logging + ":" + Version.kotlin_logging
     const val retrofit = Artifact.retrofit + ":" + Version.retrofit
     const val retrofit_moshi = Artifact.retrofit_moshi + ":" + Version.retrofit
-    const val retrofit_java8 = Artifact.retrofit_java8 + ":" + Version.retrofit
     const val retrofit_jspoon = Artifact.retrofit_jspoon + ":" + Version.retrofit_jspoon
     const val system_tray = Artifact.system_tray + ":" + Version.system_tray
     const val kodein_generic_jvm = Artifact.kodein_generic_jvm + ":" + Version.kodein
-    const val kodein_config_jvm = Artifact.kodein_config_jvm + ":" + Version.kodein
-    const val spek_jvm = Artifact.spek_jvm + ":" + Version.spek
-    const val spek_junit_runner = Artifact.spek_junit_runner + ":" + Version.spek
-    const val mockito_kotlin = Artifact.mockito_kotlin + ":" + Version.mockito_kotlin
+    const val mockk = Artifact.mockk + ":" + Version.mockk
     const val kotlinx_coroutines_core = Artifact.kotlinx_coroutines_core + ":" + Version.kotlinx_coroutines
     const val kotlinx_coroutines_fx = Artifact.kotlinx_coroutines_fx + ":" + Version.kotlinx_coroutines
+    const val junit = Artifact.junit + ":" + Version.junit
 }
 
 object Artifact {
@@ -39,9 +36,10 @@ object Artifact {
     const val kodein_config_jvm = "org.kodein.di:kodein-di-conf-jvm"
     const val spek_jvm = "org.spekframework.spek2:spek-dsl-jvm"
     const val spek_junit_runner = "org.spekframework.spek2:spek-runner-junit5"
-    const val mockito_kotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin"
+    const val mockk = "io.mockk:mockk"
     const val kotlinx_coroutines_core = "org.jetbrains.kotlinx:kotlinx-coroutines-core"
     const val kotlinx_coroutines_fx = "org.jetbrains.kotlinx:kotlinx-coroutines-javafx"
+    const val junit = "org.junit.jupiter:junit-jupiter"
 }
 
 object Version {
@@ -58,6 +56,7 @@ object Version {
     const val system_tray = "3.17"
     const val kodein = "6.3.3"
     const val spek = "2.0.6"
-    const val mockito_kotlin = "2.1.0"
+    const val mockk = "1.9.3"
     const val kotlinx_coroutines = "1.3.0-RC"
+    const val junit = "5.5.1"
 }

@@ -1,12 +1,10 @@
 package controller
 
-import appComponent
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXCheckBox
 import com.jfoenix.controls.JFXPasswordField
 import com.jfoenix.controls.JFXProgressBar
 import data.network.BadCredentialsException
-import domain.UserInfo
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable
@@ -21,19 +19,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KLogging
-import org.kodein.di.Multi2
-import org.kodein.di.direct
-import org.kodein.di.generic.M
-import org.kodein.di.generic.instance
 import service.AuthenticationService
 import java.net.URL
-import java.util.*
+import java.util.ResourceBundle
 import kotlin.coroutines.CoroutineContext
 
 class LoginController(
         private val authService: AuthenticationService,
-        private val stage: Stage
-) : Initializable, CoroutineScope {
+        private val stage: Stage,
+        private val navigationHandler: NavigationHandler
+) : Initializable, Controller, CoroutineScope {
 
     @FXML
     private lateinit var usernameID: JFXPasswordField
@@ -56,6 +51,8 @@ class LoginController(
     @FXML
     private lateinit var sceneID: AnchorPane
 
+    private val scene: Scene
+
     private val parentJob = Job()
     override val coroutineContext: CoroutineContext = parentJob + Dispatchers.Main
 
@@ -64,11 +61,23 @@ class LoginController(
         fxmlLoader.setController(this)
         val parent = fxmlLoader.load<Parent>()
 
-        val scene = Scene(parent)
+        scene = Scene(parent)
         scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
+    }
 
-        stage.scene = scene
+    override fun show(changeScene: Boolean) {
+        if (changeScene) {
+            stage.hide()
+            stage.scene = scene
+        }
         stage.show()
+        if (!changeScene) {
+            stage.toFront()
+        }
+    }
+
+    override fun hide() {
+        stage.hide()
     }
 
     @FXML
@@ -95,8 +104,7 @@ class LoginController(
                 if (loggedIn) {
                     logger.debug { "Signed in!" }
                     val user = authService.currentUser()
-                    stage.hide()
-                    appComponent.direct.instance<Multi2<Stage, UserInfo>, HomeController>(arg = M(stage, user))
+                    navigationHandler.send(Home(user))
                 } else {
                     errorID.isVisible = true
                     passwordID.text = ""

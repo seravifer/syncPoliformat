@@ -1,5 +1,6 @@
 import org.kodein.di.direct
 import org.kodein.di.generic.instance
+import syncPoliformat.appComponent
 import utils.EncryptedStorage
 
 object TestEncryption {

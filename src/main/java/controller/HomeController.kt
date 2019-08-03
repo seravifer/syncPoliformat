@@ -2,7 +2,6 @@ package controller
 
 import domain.SubjectInfo
 import domain.UserInfo
-import dorkbox.systemTray.SystemTray
 import dorkbox.util.Desktop
 import javafx.beans.binding.Bindings
 import javafx.beans.binding.BooleanBinding
@@ -28,12 +27,10 @@ import kotlinx.coroutines.launch
 import mu.KLogging
 import service.AuthenticationService
 import service.SiteService
-import utils.OS
 import java.io.File
 import java.net.URL
-import java.util.*
+import java.util.ResourceBundle
 import kotlin.coroutines.CoroutineContext
-import kotlin.system.exitProcess
 
 class HomeController(
         private val siteService: SiteService,
@@ -41,10 +38,9 @@ class HomeController(
         private val stage: Stage,
         private val user: UserInfo,
         private val subjectComponentFactory: (SubjectInfo) -> SubjectComponent,
-        private val loginControllerFactory: (Stage) -> LoginController,
-        private val os: OS,
+        private val navigationHandler: NavigationHandler,
         private val poliformatFolder: File
-) : Initializable, CoroutineScope {
+) : Initializable, Controller, CoroutineScope {
 
     @FXML
     private lateinit var nameID: Label
@@ -58,6 +54,8 @@ class HomeController(
     @FXML
     private lateinit var listID: VBox
 
+    private val scene: Scene
+
     private val parentJob = Job()
     override val coroutineContext: CoroutineContext = parentJob + Dispatchers.Main
 
@@ -68,11 +66,23 @@ class HomeController(
         fxmlLoader.setController(this)
         val parent = fxmlLoader.load<Parent>()
 
-        val scene = Scene(parent)
+        scene = Scene(parent)
         scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
+    }
 
-        stage.scene = scene
+    override fun show(changeScene: Boolean) {
+        if (changeScene) {
+            stage.hide()
+            stage.scene = scene
+        }
         stage.show()
+        if (!changeScene) {
+            stage.toFront()
+        }
+    }
+
+    override fun hide() {
+        stage.hide()
     }
 
     @FXML
@@ -82,40 +92,33 @@ class HomeController(
             mailID.text = email
         }
 
-        launch {
-            try {
-                val subjects = siteService.getSubjects()
-                subjects.sortedBy(SubjectInfo::name)
-                        .forEach {
-                            val component = subjectComponentFactory(it)
-                            updating = updating.or(component.updating)
-                            listID.children.add(component)
-                        }
-            } catch (e: Exception) {
-                logger.error(e) { "Error al recuperar las asignaturas.\n" }
+        setupSubjectList()
+        setupOptionsContextMenu()
+    }
+
+    private fun setupSubjectList() = launch {
+        try {
+            val subjects = siteService.getSubjects()
+            subjects.sortedBy(SubjectInfo::name).forEach {
+                val component = subjectComponentFactory(it)
+                updating = updating.or(component.updating)
+                listID.children.add(component)
             }
+        } catch (e: Exception) {
+            logger.error(e) { "Error al recuperar las asignaturas.\n" }
         }
+    }
 
-        val contextMenu = ContextMenu()
-
-        val item1 = MenuItem("Sobre nosotros")
-        item1.setOnAction { launchAbout() }
-
-        val item2 = MenuItem("Feedback...")
-        item2.setOnAction { sendFeedbak() }
-
-        val item3 = MenuItem("Cerrar sesión")
-        item3.setOnAction { launchSettings() }
-
-        val item4 = MenuItem("Salir")
-        item4.setOnAction {
-            if (os !== OS.WINDOWS) SystemTray.get().shutdown()
-            exitProcess(0)
+    private fun setupOptionsContextMenu() {
+        with(ContextMenu()) {
+            items.addAll(
+                    MenuItem("Sobre nosotros").apply { setOnAction { launchAbout() } },
+                    MenuItem("Feedback...").apply { setOnAction { sendFeedbak() } },
+                    SeparatorMenuItem(),
+                    MenuItem("Cerrar sesión").apply { setOnAction { launchSettings() } },
+                    MenuItem("Salir").apply { setOnAction { launch { navigationHandler.send(Exit) } } })
+            settingsID.setOnMouseClicked { show(settingsID, Side.LEFT, 0.0, 0.0) }
         }
-
-        contextMenu.items.addAll(item1, item2, SeparatorMenuItem(), item3, item4)
-
-        settingsID.setOnMouseClicked { contextMenu.show(settingsID, Side.LEFT, 0.0, 0.0) }
     }
 
     @FXML
@@ -126,6 +129,10 @@ class HomeController(
     @FXML
     private fun openWeb() {
         Desktop.browseURL("https://poliformat.upv.es/portal")
+    }
+
+    private fun sendFeedbak() {
+        Desktop.browseURL("https://docs.google.com/forms/d/e/1FAIpQLSeusf0F2u98Vn28xH7OE3BF6BlMl7ZCKPEdxo2MTqvO-3LlMg/viewform")
     }
 
     @FXML
@@ -150,17 +157,11 @@ class HomeController(
     private fun launchSettings() = launch {
         fun logout() = launch {
             authService.logout()
-            stage.hide()
-            loginControllerFactory(stage)
+            navigationHandler.send(Login)
         }
         if (updating.value) {
             updating.addListener { _, _, updating -> if (!updating) logout() }
         } else logout()
-
-    }
-
-    private fun sendFeedbak() {
-        Desktop.browseURL("https://docs.google.com/forms/d/e/1FAIpQLSeusf0F2u98Vn28xH7OE3BF6BlMl7ZCKPEdxo2MTqvO-3LlMg/viewform")
     }
 
     companion object : KLogging()
