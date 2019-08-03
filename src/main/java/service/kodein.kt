@@ -1,5 +1,6 @@
 package service
 
+import data.Data
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.factory
@@ -12,7 +13,7 @@ import service.impl.SubjectServiceImpl
 import syncPoliformat.ApplicationFiles
 
 val module = Kodein.Module("Services", false, "") {
-    import(data.module)
+    import(Data.module)
     bind<AuthenticationService>() with provider { AuthenticationServiceImpl(instance(), instance(), instance(), instance(), instance()) }
     bind<FileService>() with provider {
         FileServiceImpl(

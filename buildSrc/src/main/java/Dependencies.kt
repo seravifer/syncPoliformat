@@ -16,6 +16,7 @@ object Deps {
     const val kotlinx_coroutines_core = Artifact.kotlinx_coroutines_core + ":" + Version.kotlinx_coroutines
     const val kotlinx_coroutines_fx = Artifact.kotlinx_coroutines_fx + ":" + Version.kotlinx_coroutines
     const val junit = Artifact.junit + ":" + Version.junit
+    const val okhttp_logging_interceptor = Artifact.okhttp_logging_interceptor + ":" + Version.okhttp
 }
 
 object Artifact {
@@ -29,17 +30,14 @@ object Artifact {
     const val groovy = "org.codehaus.groovy:groovy"
     const val retrofit = "com.squareup.retrofit2:retrofit"
     const val retrofit_moshi = "com.squareup.retrofit2:converter-moshi"
-    const val retrofit_java8 = "com.squareup.retrofit2:adapter-java8"
     const val retrofit_jspoon = "pl.droidsonroids.retrofit2:converter-jspoon"
     const val system_tray = "com.dorkbox:SystemTray"
     const val kodein_generic_jvm = "org.kodein.di:kodein-di-generic-jvm"
-    const val kodein_config_jvm = "org.kodein.di:kodein-di-conf-jvm"
-    const val spek_jvm = "org.spekframework.spek2:spek-dsl-jvm"
-    const val spek_junit_runner = "org.spekframework.spek2:spek-runner-junit5"
     const val mockk = "io.mockk:mockk"
     const val kotlinx_coroutines_core = "org.jetbrains.kotlinx:kotlinx-coroutines-core"
     const val kotlinx_coroutines_fx = "org.jetbrains.kotlinx:kotlinx-coroutines-javafx"
     const val junit = "org.junit.jupiter:junit-jupiter"
+    const val okhttp_logging_interceptor = "com.squareup.okhttp3:logging-interceptor"
 }
 
 object Version {
@@ -55,8 +53,8 @@ object Version {
     const val retrofit_jspoon = "1.3.2"
     const val system_tray = "3.17"
     const val kodein = "6.3.3"
-    const val spek = "2.0.6"
     const val mockk = "1.9.3"
     const val kotlinx_coroutines = "1.3.0-RC"
     const val junit = "5.5.1"
+    const val okhttp = "4.0.1"
 }

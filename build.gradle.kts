@@ -39,6 +39,7 @@ dependencies {
     implementation(Deps.retrofit)
     implementation(Deps.retrofit_moshi)
     implementation(Deps.retrofit_jspoon)
+    implementation(Deps.okhttp_logging_interceptor)
 
     implementation(Deps.system_tray)
 
