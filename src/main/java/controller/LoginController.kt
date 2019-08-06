@@ -5,6 +5,8 @@ import com.jfoenix.controls.JFXCheckBox
 import com.jfoenix.controls.JFXPasswordField
 import com.jfoenix.controls.JFXProgressBar
 import data.network.BadCredentialsException
+import javafx.animation.Transition
+import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable
@@ -14,12 +16,15 @@ import javafx.scene.control.Label
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.AnchorPane
 import javafx.stage.Stage
+import javafx.util.Duration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KLogging
 import service.AuthenticationService
+import utils.fadein
+import utils.fadeout
 import java.net.URL
 import java.util.ResourceBundle
 import kotlin.coroutines.CoroutineContext
@@ -51,7 +56,7 @@ class LoginController(
     @FXML
     private lateinit var sceneID: AnchorPane
 
-    private val scene: Scene
+    private val root: Parent
 
     private val parentJob = Job()
     override val coroutineContext: CoroutineContext = parentJob + Dispatchers.Main
@@ -59,21 +64,36 @@ class LoginController(
     init {
         val fxmlLoader = FXMLLoader(javaClass.getResource("/view/login.fxml"))
         fxmlLoader.setController(this)
-        val parent = fxmlLoader.load<Parent>()
+        root = fxmlLoader.load()
 
-        scene = Scene(parent)
-        scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
+        if (stage.scene == null || stage.scene.root == null) {
+            val scene = Scene(root)
+            scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
+            stage.scene = scene
+        }
     }
 
     override fun show(changeScene: Boolean) {
-        if (changeScene) {
-            stage.hide()
-            stage.scene = scene
-        }
+        val firstTransition = prepareTransition(changeScene)
         stage.show()
+        firstTransition.play()
         if (!changeScene) {
             stage.toFront()
         }
+    }
+
+    private fun prepareTransition(changeScene: Boolean): Transition {
+        val fadein = fadein(Duration.millis(300.0), root)
+        root.opacity = 0.0
+
+        return if (changeScene && stage.scene.root != root) {
+            val fadeout = fadeout(Duration.millis(300.0), stage.scene.root)
+            fadeout.onFinished = EventHandler {
+                stage.scene.root = root
+                fadein.play()
+            }
+            fadeout
+        } else fadein
     }
 
     override fun hide() {
@@ -88,7 +108,7 @@ class LoginController(
             }
         }
 
-        sceneID.setOnKeyPressed { event -> if (event.code == KeyCode.ENTER) loginID.fire() }
+        sceneID.onKeyPressed = EventHandler { event -> if (event.code == KeyCode.ENTER) loginID.fire() }
     }
 
     @FXML

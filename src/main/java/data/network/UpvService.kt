@@ -1,9 +1,13 @@
 package data.network
 
 import data.network.scrapping.SubjectsList
-import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Field
+import retrofit2.http.FieldMap
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.POST
 
 interface UpvService {
     @FormUrlEncoded
@@ -15,7 +19,7 @@ interface UpvService {
                       "estilo" to "500",
                       "id" to "c",
                       "vista" to "MSE")
-    ) : Response<ResponseBody>
+    ) : Response<Unit>
 
     @GET("pls/soalu/sic_asi.Lista_asig")
     suspend fun subjects(): SubjectsList

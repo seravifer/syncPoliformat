@@ -1,11 +1,16 @@
 package controller
 
+import com.jfoenix.controls.JFXRippler
 import domain.SubjectInfo
 import domain.UserInfo
 import dorkbox.util.Desktop
-import javafx.beans.binding.Bindings
+import javafx.animation.ScaleTransition
+import javafx.animation.SequentialTransition
+import javafx.animation.Transition
 import javafx.beans.binding.BooleanBinding
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.collections.FXCollections
+import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable
@@ -22,13 +27,17 @@ import javafx.scene.image.Image
 import javafx.scene.layout.VBox
 import javafx.scene.shape.SVGPath
 import javafx.stage.Stage
+import javafx.util.Duration
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KLogging
 import service.AuthenticationService
 import service.SiteService
+import utils.fadein
+import utils.fadeout
 import java.io.File
 import java.net.URL
 import java.util.ResourceBundle
@@ -39,7 +48,7 @@ class HomeController(
         private val authService: AuthenticationService,
         private val stage: Stage,
         private val user: UserInfo,
-        private val subjectComponentFactory: (SubjectInfo) -> SubjectComponent,
+        private val asSubjectComponent: (SubjectInfo) -> SubjectComponent,
         private val navigationHandler: NavigationHandler,
         private val poliformatFolder: File
 ) : Initializable, Controller, CoroutineScope {
@@ -55,31 +64,96 @@ class HomeController(
 
     @FXML
     private lateinit var listID: VBox
+    private val subjectComponents = FXCollections.observableArrayList<SubjectComponent> {
+        arrayOf(it.updating)
+    }
 
-    private val scene: Scene
+    private val root: Parent
 
     private val parentJob = Job()
     override val coroutineContext: CoroutineContext = parentJob + Dispatchers.Main
 
-    var updating: BooleanBinding = Bindings.and(SimpleBooleanProperty(false), SimpleBooleanProperty(false))
+    private val subjectListInitJob = setupSubjectList()
+    private var subjectsAttached = false
+
+    private var updating: BooleanBinding = SimpleBooleanProperty(true).not()
 
     init {
         val fxmlLoader = FXMLLoader(javaClass.getResource("/view/home.fxml"))
         fxmlLoader.setController(this)
-        val parent = fxmlLoader.load<Parent>()
+        root = fxmlLoader.load()
 
-        scene = Scene(parent)
-        scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
+        if (stage.scene?.root == null) {
+            val scene = Scene(root)
+            scene.stylesheets.add(javaClass.getResource("/css/style.css").toString())
+            stage.scene = scene
+        }
+    }
+
+    @FXML
+    override fun initialize(location: URL, resources: ResourceBundle?) {
+        subjectListInitJob.start()
+
+        with(user) {
+            nameID.text = displayName
+            mailID.text = email
+        }
+
+        setupOptionsContextMenu()
     }
 
     override fun show(changeScene: Boolean) {
-        if (changeScene) {
-            stage.hide()
-            stage.scene = scene
-        }
+        val firstTransition = prepareTransition(changeScene)
         stage.show()
+        firstTransition.play()
         if (!changeScene) {
             stage.toFront()
+        }
+    }
+
+    private fun prepareTransition(changeScene: Boolean): Transition {
+        val fadein = fadein(Duration.millis(300.0), root)
+        root.opacity = 0.0
+
+        var subjectTransitionMaybe: Transition? = null
+        val firstTransition = if (changeScene && stage.scene?.root !== root) {
+            val fadeout = fadeout(Duration.millis(300.0), stage.scene.root)
+            fadeout.onFinished = EventHandler {
+                logger.debug { "Previuos view fadeout" }
+                if (subjectsAttached) {
+                    subjectTransitionMaybe = expandSubjectComponents()
+                }
+                stage.scene.root = root
+                fadein.play()
+            }
+            fadeout
+        } else fadein
+
+
+        if (subjectsAttached && !changeScene) {
+            subjectTransitionMaybe = expandSubjectComponents()
+        }
+        fadein.onFinished = EventHandler {
+            logger.debug { "Home fadein executed" }
+            subjectListInitJob.invokeOnCompletion {
+                logger.debug { "Subject list view initialized" }
+                val subjectTransition = subjectTransitionMaybe ?: expandSubjectComponents()
+                attachSubjects()
+                subjectTransition.play()
+            }
+        }
+        return firstTransition
+    }
+
+    private fun expandSubjectComponents(): Transition {
+        return subjectComponents.map {
+            val expand = ScaleTransition(Duration.millis(150.0), it)
+            expand.fromY = 0.0
+            expand.toY = 1.0
+            it.scaleY = 0.0
+            expand
+        }.fold(SequentialTransition()) { acc, fadein ->
+            acc.apply { children.add(fadein) }
         }
     }
 
@@ -87,44 +161,40 @@ class HomeController(
         stage.hide()
     }
 
-    @FXML
-    override fun initialize(location: URL, resources: ResourceBundle?) {
-        with(user) {
-            nameID.text = displayName
-            mailID.text = email
-        }
-
-        setupSubjectList()
-        setupOptionsContextMenu()
-    }
-
-    private fun setupSubjectList() = launch {
+    private fun setupSubjectList() = launch(start = CoroutineStart.LAZY) {
         try {
             val subjects = siteService.getSubjects()
-            subjects.sortedBy(SubjectInfo::name).forEach {
-                val component = subjectComponentFactory(it)
-                updating = updating.or(component.updating)
-                listID.children.add(component)
-            }
+            subjectComponents.addAll(subjects.sortedBy(SubjectInfo::name).map(asSubjectComponent).onEach {
+                updating = updating.or(it.updating)
+                it.scaleY = 0.0
+            })
         } catch (e: Exception) {
             logger.error(e) { "Error al recuperar las asignaturas.\n" }
+        }
+    }
+
+    private fun attachSubjects() {
+        if (!subjectsAttached) {
+            listID.children.addAll(subjectComponents.map {
+                JFXRippler(it).apply { ripplerFill = it.iconColorProperty.value.brighter() } })
+            subjectsAttached = true
         }
     }
 
     private fun setupOptionsContextMenu() {
         with(ContextMenu()) {
             items.addAll(
-                    MenuItem("Sobre nosotros").apply { setOnAction { launchAbout() } },
-                    MenuItem("Feedback...").apply { setOnAction { sendFeedbak() } },
+                    MenuItem("Sobre nosotros").apply { onAction = EventHandler { launchAbout() } },
+                    MenuItem("Feedback...").apply { onAction = EventHandler { sendFeedbak() } },
                     SeparatorMenuItem(),
                     MenuItem("Cerrar sesión").apply {
-                        setOnAction {
+                        onAction = EventHandler {
                             isDisable = true
                             logoutFromMenu().invokeOnCompletion { isDisable = false }
                         }
                     },
-                    MenuItem("Salir").apply { setOnAction { launch { navigationHandler.send(Exit) } } })
-            settingsID.setOnMouseClicked { show(settingsID, Side.LEFT, 0.0, 0.0) }
+                    MenuItem("Salir").apply { onAction = EventHandler { launch { navigationHandler.send(Exit) } } })
+            settingsID.onMouseClicked = EventHandler { show(settingsID, Side.LEFT, 0.0, 0.0) }
         }
     }
 
@@ -144,9 +214,7 @@ class HomeController(
 
     @FXML
     private fun updateAll() {
-        listID.children.asSequence()
-                .filterIsInstance(SubjectComponent::class.java)
-                .forEach { it.sync() }
+        subjectComponents.forEach { it.sync() }
     }
 
     private fun launchAbout() {
@@ -166,7 +234,6 @@ class HomeController(
             authService.logout()
             navigationHandler.send(if (stage.isShowing) Login else Exit)
         }.invokeOnCompletion {
-            logger.debug { "Completed logout coroutine" }
             if (it == null) job.complete() else job.completeExceptionally(it)
         }
         try {
@@ -178,15 +245,20 @@ class HomeController(
                         }
                     }
                 } else {
-                    logger.debug { "Completed logout coroutine" }
                     job.complete()
                 }
             } else logout()
         } catch (t: Throwable) {
-            logger.error(t) { "Completed logout coroutine" }
             job.completeExceptionally(t)
         }
         return job
+    }
+
+    private fun showExitDialog(): Boolean {
+        val alert = Alert(Alert.AlertType.WARNING,
+                "Aún se están sincronizando archivos\n¿Quieres que se cierre la sesion al finalizar?",
+                ButtonType.YES, ButtonType.NO)
+        return alert.showAndWait().orElse(ButtonType.NO) == ButtonType.YES
     }
 
     companion object : KLogging()
