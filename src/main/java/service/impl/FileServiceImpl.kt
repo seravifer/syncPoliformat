@@ -50,7 +50,7 @@ class FileServiceImpl(
     }
 
     private fun downloadFiles(files: Sequence<PoliformatFile>): List<Deferred<Boolean>> {
-        return files.filter { !it.isFolder }
+        return files.filter { !it.isFolder && it.type != "text/url" }
                 .map {
                     val path = poliformatFolder.toPath()
                             .resolve(it.localPath)

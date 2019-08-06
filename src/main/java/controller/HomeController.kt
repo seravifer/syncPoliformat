@@ -12,6 +12,8 @@ import javafx.fxml.Initializable
 import javafx.geometry.Side
 import javafx.scene.Parent
 import javafx.scene.Scene
+import javafx.scene.control.Alert
+import javafx.scene.control.ButtonType
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.Label
 import javafx.scene.control.MenuItem
@@ -115,7 +117,12 @@ class HomeController(
                     MenuItem("Sobre nosotros").apply { setOnAction { launchAbout() } },
                     MenuItem("Feedback...").apply { setOnAction { sendFeedbak() } },
                     SeparatorMenuItem(),
-                    MenuItem("Cerrar sesión").apply { setOnAction { launchSettings() } },
+                    MenuItem("Cerrar sesión").apply {
+                        setOnAction {
+                            isDisable = true
+                            logoutFromMenu().invokeOnCompletion { isDisable = false }
+                        }
+                    },
                     MenuItem("Salir").apply { setOnAction { launch { navigationHandler.send(Exit) } } })
             settingsID.setOnMouseClicked { show(settingsID, Side.LEFT, 0.0, 0.0) }
         }
@@ -153,15 +160,33 @@ class HomeController(
         stage.show()
     }
 
-    // TODO: Añadir dialogo de aviso de que se cerrará sesión al terminar de actualizar.
-    private fun launchSettings() = launch {
+    private fun logoutFromMenu(): Job {
+        val job = Job()
         fun logout() = launch {
             authService.logout()
-            navigationHandler.send(Login)
+            navigationHandler.send(if (stage.isShowing) Login else Exit)
+        }.invokeOnCompletion {
+            logger.debug { "Completed logout coroutine" }
+            if (it == null) job.complete() else job.completeExceptionally(it)
         }
-        if (updating.value) {
-            updating.addListener { _, _, updating -> if (!updating) logout() }
-        } else logout()
+        try {
+            if (updating.value) {
+                if (showExitDialog()) {
+                    updating.addListener { _, _, updating ->
+                        if (!updating) {
+                            logout()
+                        }
+                    }
+                } else {
+                    logger.debug { "Completed logout coroutine" }
+                    job.complete()
+                }
+            } else logout()
+        } catch (t: Throwable) {
+            logger.error(t) { "Completed logout coroutine" }
+            job.completeExceptionally(t)
+        }
+        return job
     }
 
     companion object : KLogging()

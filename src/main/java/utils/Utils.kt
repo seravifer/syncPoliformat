@@ -1,7 +1,8 @@
 package utils
 
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 object Utils {
     val curso: String by lazy {
@@ -15,6 +16,4 @@ object Utils {
         }
 
     fun now(): String = SimpleDateFormat("dd/MM/yyyy HH:mm").format(Date())
-
-    fun random(max: Int): Int = (Math.random() * max - 1).toInt()
 }

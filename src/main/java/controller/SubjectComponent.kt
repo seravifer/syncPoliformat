@@ -2,7 +2,9 @@ package controller
 
 import com.jfoenix.controls.JFXSpinner
 import domain.SubjectInfo
+import javafx.beans.property.ReadOnlyProperty
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.scene.control.Label
@@ -16,7 +18,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KLogging
 import service.FileService
-import utils.Utils
 import kotlin.coroutines.CoroutineContext
 
 class SubjectComponent(
@@ -52,6 +53,7 @@ class SubjectComponent(
     override val coroutineContext: CoroutineContext = parentJob + Dispatchers.Main
 
     val updating = SimpleBooleanProperty(false)
+    val iconColorProperty: ReadOnlyProperty<Color> = SimpleObjectProperty(Color.web(colors.random()))
 
     init {
         val fxmlLoader = FXMLLoader(javaClass.getResource("/view/subject.fxml"))
@@ -62,7 +64,7 @@ class SubjectComponent(
         nameID.text = subject.shortName
         longNameID.text = subject.name
         dateID.text = formatLastUpdate(subject.lastUpdate)
-        circleID.fill = Color.web(colors[Utils.random(colors.size)])
+        circleID.fillProperty().bind(iconColorProperty)
 
         if (subject.lastUpdate.isEmpty()) {
             syncID.isVisible = false

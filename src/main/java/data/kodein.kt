@@ -34,7 +34,7 @@ object Data : KLogging() {
                             logger.debug(message)
                         }
                     })
-                    interceptor.level = HttpLoggingInterceptor.Level.HEADERS
+                    interceptor.level = HttpLoggingInterceptor.Level.BASIC
                     interceptor.redactHeader("X-Sakai-Session")
                     addInterceptor(interceptor)
                 }
